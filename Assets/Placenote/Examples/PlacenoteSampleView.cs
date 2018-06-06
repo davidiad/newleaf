@@ -52,6 +52,8 @@ public class PlacenoteSampleView : MonoBehaviour, PlacenoteListener
     [SerializeField] Material mShapeMaterial;
     [SerializeField] PlacenoteARGeneratePlane mPNPlaneManager;
 
+    public Vector3 paintPosition;
+
     private UnityARSessionNativeInterface mSession;
     private bool mFrameUpdated = false;
     private UnityARImageFrameData mImage = null;
@@ -153,6 +155,9 @@ public class PlacenoteSampleView : MonoBehaviour, PlacenoteListener
             LibPlacenote.Instance.SendARFrame(mImage, arkitPosition, arkitQuat,
                                                mARCamera.videoParams.screenOrientation);
         }
+
+        paintPosition = Camera.main.transform.position +
+                                      Camera.main.transform.forward * 0.3f;
     }
 
 
@@ -404,7 +409,7 @@ public class PlacenoteSampleView : MonoBehaviour, PlacenoteListener
         Vector3 shapePosition = Camera.main.transform.position +
                                       Camera.main.transform.forward * 0.3f;
         Quaternion shapeRotation = Camera.main.transform.rotation;
-
+        Debug.Log("Drop Shape @ Pos: " + shapePosition + ", Rot: " + shapeRotation);
         System.Random rnd = new System.Random();
         PrimitiveType type = (PrimitiveType)rnd.Next(0, 3);
 
@@ -449,7 +454,10 @@ public class PlacenoteSampleView : MonoBehaviour, PlacenoteListener
     private JObject Sv3s2JSON()
     {
         SV3List sV3List = new SV3List();
-        sV3List.sv3s = new SerializableVector3[paintManager.currVertices.Count];
+        if (paintManager.currVertices.Count > 0)
+        {
+            sV3List.sv3s = new SerializableVector3[paintManager.currVertices.Count];
+        }
         for (int i = 0; i < paintManager.currVertices.Count; i++)
         {
             sV3List.sv3s[i] = paintManager.currVertices[i];
@@ -483,8 +491,13 @@ public class PlacenoteSampleView : MonoBehaviour, PlacenoteListener
 
     private void LoadSv3ListJSON(JToken mapMetadata)
     {
-        paintManager.currVertices.Clear();
-
+        if (paintManager)
+        {
+            //if (paintManager.currVertices)
+            //{
+                paintManager.currVertices.Clear();
+            //}
+        }
         if (mapMetadata is JObject && mapMetadata["sv3list"] is JObject)
         {
             SV3List sv3list = mapMetadata["sv3list"].ToObject<SV3List>();

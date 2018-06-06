@@ -6,6 +6,12 @@ using UnityEngine.UI;
 
 public class PaintManager : MonoBehaviour
 {
+
+    // Get paint position from PlacenoteSampleView script
+    public GameObject PSVGO;
+    public Vector3 paintPosition;
+    private PlacenoteSampleView PSV;
+
     public Button onoff;
     public GameObject paintTarget;
     private Mesh mesh; // save particles in a mesh
@@ -18,7 +24,7 @@ public class PaintManager : MonoBehaviour
     private Vector3 previousPosition;
 
     public List<ParticleSystem> particleSystemList; // Stores all particle systems
-    public List<Vector3> currVertices; // Stores current camera positions to paint
+    public List<Vector3> currVertices; // Stores current paint target positions to paint
     public ParticleSystem ps; // Stores current particle system
 
     [SerializeField] Camera mainCam;
@@ -41,13 +47,20 @@ public class PaintManager : MonoBehaviour
         particleSystemList = new List<ParticleSystem>();
         ps = Instantiate(particleSystemTemplate);
         currVertices = new List<Vector3>();
-        paintColor = Color.green;
+        paintColor = Color.blue;
         mesh = new Mesh();
+        PSV = PSVGO.GetComponent<PlacenoteSampleView>();
+        paintPosition = PSV.paintPosition;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (paintingOn)
+        {
+            Paint();
+        }
+
         if (paintingOn && newPaintVertices)
         {
             if (currVertices.Count > 0)
@@ -65,12 +78,14 @@ public class PaintManager : MonoBehaviour
                 newPaintVertices = false;
             }
         }
-        Paint();
+
+
     }
 
     public void TogglePaint()
     {
         paintingOn = !paintingOn;
+        // let user know that painting is on
         if (paintingOn)
         {
             onoff.transform.localScale = new Vector3(1.7f, 1.7f, 1.7f);
@@ -138,7 +153,9 @@ public class PaintManager : MonoBehaviour
 
     private void Paint()
     {
-        Vector3 paintPosition = paintTarget.transform.position;
+        Debug.Log("painting");
+       // paintPosition = paintTarget.transform.position;
+        paintPosition = PSV.paintPosition;
         //Camera.main.ScreenToWorldPoint(new Vector3(Screen.width / 2, Screen.height / 2, Camera.main.nearClipPlane)) + Camera.main.transform.forward * 2.0f;
         //Camera.main.transform.position + Camera.main.transform.forward * 0.3f;
         if (Vector3.Distance(paintPosition, previousPosition) > 0.025f)
