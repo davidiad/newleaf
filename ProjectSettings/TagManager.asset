@@ -9,6 +9,7 @@ TagManager:
   - PaintToggle
   - PaintBrush
   - PaintOn
+  - Mesh
   layers:
   - Default
   - TransparentFX

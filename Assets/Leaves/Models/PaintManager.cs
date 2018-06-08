@@ -27,6 +27,7 @@ public class PaintManager : MonoBehaviour
     public List<ParticleSystem> particleSystemList; // Stores all particle systems
     public List<Vector3> currVertices; // Stores current paint target positions to paint
     public ParticleSystem ps; // Stores current particle system
+    public GameObject paintBrushPrefab;
 
     [SerializeField] Camera mainCam;
 
@@ -87,6 +88,26 @@ public class PaintManager : MonoBehaviour
 */
     }
 
+    // Add a mesh painting brush to the paint target
+    private void AddBrush()
+    {
+        // instantiate a brush
+        // parent it to the paint target
+        GameObject newBrush = Instantiate(paintBrushPrefab, new Vector3(0f, 0f, 0f), Quaternion.Euler(new Vector3(0f,90f,0f)));
+        newBrush.transform.parent = paintTarget.gameObject.transform;
+        newBrush.transform.localPosition = new Vector3(0f, 0f, 0f);
+    } 
+
+    private void RemoveBrushFromTarget() {
+        // assuming there is only one paint brush as a time
+        GameObject brush = GameObject.FindWithTag("PaintBrush");
+        if (brush)
+        {
+            brush.tag = "Mesh";
+            brush.transform.parent = null;
+        }
+    }
+
     public void TogglePaint()
     {
         
@@ -98,9 +119,11 @@ public class PaintManager : MonoBehaviour
         if (paintOn)
         {
             onoff.transform.localScale = new Vector3(1.7f, 1.7f, 1.7f);
+            AddBrush();
         }
         else
         {
+            RemoveBrushFromTarget();
             onoff.transform.localScale = new Vector3(1f, 1f, 1f);
         }
     }
