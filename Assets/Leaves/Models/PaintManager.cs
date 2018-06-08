@@ -11,6 +11,7 @@ public class PaintManager : MonoBehaviour
     public GameObject PSVGO;
     public Vector3 paintPosition;
     private PlacenoteSampleView PSV;
+    public GameObject paintOnObject;
 
     public Button onoff;
     [SerializeField] private GameObject paintTarget;
@@ -19,7 +20,7 @@ public class PaintManager : MonoBehaviour
     public ParticleSystem particleSystemTemplate;
 
     private bool newPaintVertices;
-    private bool paintingOn;
+    private bool paintOn;
     private Color paintColor;
     private Vector3 previousPosition;
 
@@ -42,7 +43,8 @@ public class PaintManager : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        paintingOn = false;
+       
+        paintOn = false;
         newPaintVertices = false;
         particleSystemList = new List<ParticleSystem>();
         ps = Instantiate(particleSystemTemplate);
@@ -52,17 +54,19 @@ public class PaintManager : MonoBehaviour
         PSV = PSVGO.GetComponent<PlacenoteSampleView>();
         paintPosition = PSV.paintPosition;
         paintTarget = GameObject.FindWithTag("PaintTarget");
+        paintOnObject = GameObject.FindWithTag("PaintOn");
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (paintingOn)
+        /*
+        if (paintOn)
         {
             Paint();
         }
 
-        if (paintingOn && newPaintVertices)
+        if (paintOn && newPaintVertices)
         {
             if (currVertices.Count > 0)
             {
@@ -80,14 +84,18 @@ public class PaintManager : MonoBehaviour
             }
         }
 
-
+*/
     }
 
     public void TogglePaint()
     {
-        paintingOn = !paintingOn;
+        
+        paintOn = !paintOn;
+        //paintOnObject.PaintOn.paintOn = paintOn;// the state to an object from which other scripts can access
+        paintOnObject.GetComponent<PaintOn>().paintOn = paintOn; 
+
         // let user know that painting is on
-        if (paintingOn)
+        if (paintOn)
         {
             onoff.transform.localScale = new Vector3(1.7f, 1.7f, 1.7f);
         }
@@ -160,7 +168,7 @@ public class PaintManager : MonoBehaviour
         //Camera.main.transform.position + Camera.main.transform.forward * 0.3f;
         if (Vector3.Distance(paintPosition, previousPosition) > 0.025f)
         {
-            if (paintingOn) currVertices.Add(paintPosition);
+            if (paintOn) currVertices.Add(paintPosition);
             previousPosition = paintPosition;
             newPaintVertices = true;
 

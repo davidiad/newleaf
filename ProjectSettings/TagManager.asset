@@ -6,6 +6,9 @@ TagManager:
   tags:
   - PaintManager
   - PaintTarget
+  - PaintToggle
+  - PaintBrush
+  - PaintOn
   layers:
   - Default
   - TransparentFX

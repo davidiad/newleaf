@@ -20,6 +20,7 @@ We simply generate a segments joining the edges
 
 public class MeshExtrusion
 {
+
 	public class Edge
 	{
 		// The indiex to each vertex

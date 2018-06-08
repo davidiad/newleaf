@@ -1,4 +1,6 @@
-﻿// Generates an extrusion trail from the attached mesh
+﻿import UnityEngine.UI;
+
+// Generates an extrusion trail from the attached mesh
 // Uses the MeshExtrusion algorithm in MeshExtrusion.cs to generate and preprocess the mesh.
 var time = 2.0;
 var autoCalculateOrientation = true;
@@ -6,7 +8,14 @@ var minDistance = 0.1;
 var invertFaces = false;
 private var srcMesh : Mesh;
 private var precomputedEdges : MeshExtrusion.Edge[];
+
+// Painting
 private var paintOn = false;
+//private var paintToggle: GameObject;
+//private var paintManagerObject: GameObject;
+//private var paintManager;
+private var paintOnObject: GameObject;
+
 
 class ExtrudedTrailSection
 {
@@ -20,16 +29,33 @@ function Start ()
 
 	srcMesh = GetComponent(MeshFilter).sharedMesh;
 	precomputedEdges = MeshExtrusion.BuildManifoldEdges(srcMesh);
+    //paintToggle = GameObject.FindWithTag("PaintToggle");
+    //paintManagerObject = GameObject.FindWithTag("PaintManager");
+    //paintManager = paintManagerObject.GetComponent(PaintManager) as PaintManager;
+    paintOnObject = GameObject.FindWithTag("PaintOn");
 }
 
 public function togglePaint() {
-    paintOn = !paintOn;
-    //return paintOn;
+    paintOn = (paintOnObject.GetComponent(PaintOn) as PaintOn).paintOn;
+   /* paintOn = !paintOn;
+    // let user know that painting is on
+    if (paintOn)
+    {
+        paintToggle.transform.localScale = new Vector3(1.7f, 1.7f, 1.7f);
+        //var b: Button = paintToggle.GetComponent(Button) as Button;
+        paintToggle.GetComponent(UI.Button).onClick.AddListener(action);
+    }
+    else
+    {
+        paintToggle.transform.localScale = new Vector3(1f, 1f, 1f);
+    }*/
+
 }
 
 private var sections = new Array();
 
 function LateUpdate () {
+    paintOn = (paintOnObject.GetComponent(PaintOn) as PaintOn).paintOn;
     if (paintOn) {
 	var position = transform.position;
 	var now = Time.time;
