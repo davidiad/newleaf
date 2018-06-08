@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - PaintManager
+  - PaintTarget
   layers:
   - Default
   - TransparentFX

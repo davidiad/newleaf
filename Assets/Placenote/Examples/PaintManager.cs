@@ -13,7 +13,7 @@ public class PaintManager : MonoBehaviour
     private PlacenoteSampleView PSV;
 
     public Button onoff;
-    public GameObject paintTarget;
+    [SerializeField] private GameObject paintTarget;
     private Mesh mesh; // save particles in a mesh
 
     public ParticleSystem particleSystemTemplate;
@@ -51,6 +51,7 @@ public class PaintManager : MonoBehaviour
         mesh = new Mesh();
         PSV = PSVGO.GetComponent<PlacenoteSampleView>();
         paintPosition = PSV.paintPosition;
+        paintTarget = GameObject.FindWithTag("PaintTarget");
     }
 
     // Update is called once per frame
@@ -153,7 +154,6 @@ public class PaintManager : MonoBehaviour
 
     private void Paint()
     {
-        Debug.Log("painting");
        // paintPosition = paintTarget.transform.position;
         paintPosition = PSV.paintPosition;
         //Camera.main.ScreenToWorldPoint(new Vector3(Screen.width / 2, Screen.height / 2, Camera.main.nearClipPlane)) + Camera.main.transform.forward * 2.0f;
