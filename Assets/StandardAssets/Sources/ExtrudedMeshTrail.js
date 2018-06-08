@@ -6,6 +6,7 @@ var minDistance = 0.1;
 var invertFaces = false;
 private var srcMesh : Mesh;
 private var precomputedEdges : MeshExtrusion.Edge[];
+private var paintOn = false;
 
 class ExtrudedTrailSection
 {
@@ -16,13 +17,20 @@ class ExtrudedTrailSection
 
 function Start ()
 {
+
 	srcMesh = GetComponent(MeshFilter).sharedMesh;
 	precomputedEdges = MeshExtrusion.BuildManifoldEdges(srcMesh);
+}
+
+public function togglePaint() {
+    paintOn = !paintOn;
+    //return paintOn;
 }
 
 private var sections = new Array();
 
 function LateUpdate () {
+    if (paintOn) {
 	var position = transform.position;
 	var now = Time.time;
 	/*
@@ -106,6 +114,7 @@ function LateUpdate () {
 	
 	// Rebuild the extrusion mesh	
 	MeshExtrusion.ExtrudeMesh (srcMesh, GetComponent(MeshFilter).mesh, finalSections, precomputedEdges, invertFaces);
+    }
 }
 
 @script RequireComponent (MeshFilter)
