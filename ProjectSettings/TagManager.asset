@@ -10,6 +10,7 @@ TagManager:
   - PaintBrush
   - PaintOn
   - Mesh
+  - TargetSlider
   layers:
   - Default
   - TransparentFX

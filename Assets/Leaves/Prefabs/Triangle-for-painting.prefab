@@ -96,5 +96,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   time: 2
   autoCalculateOrientation: 1
-  minDistance: 0.005
+  minDistance: 0.03
   invertFaces: 0

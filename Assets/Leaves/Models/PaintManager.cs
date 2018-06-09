@@ -12,6 +12,8 @@ public class PaintManager : MonoBehaviour
     public Vector3 paintPosition;
     private PlacenoteSampleView PSV;
     public GameObject paintOnObject;
+    private GameObject targetSliderGO;
+    private Slider targetSlider;
 
     public Button onoff;
     [SerializeField] private GameObject paintTarget;
@@ -56,6 +58,8 @@ public class PaintManager : MonoBehaviour
         paintPosition = PSV.paintPosition;
         paintTarget = GameObject.FindWithTag("PaintTarget");
         paintOnObject = GameObject.FindWithTag("PaintOn");
+        targetSliderGO = GameObject.FindWithTag("TargetSlider");
+        targetSlider = targetSliderGO.GetComponent<Slider>();
     }
 
     // Update is called once per frame
@@ -86,6 +90,14 @@ public class PaintManager : MonoBehaviour
         }
 
 */
+    }
+
+    public void AdjustTargetDistance() {
+        if (paintTarget)
+        {
+            paintTarget.transform.localPosition = new Vector3(0f, 0f, targetSlider.value);
+        }
+            
     }
 
     // Add a mesh painting brush to the paint target
