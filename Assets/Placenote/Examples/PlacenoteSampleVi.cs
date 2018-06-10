@@ -253,6 +253,7 @@ public class PlacenoteSampleVi : MonoBehaviour, PlacenoteListener
 
                     LibPlacenote.Instance.StartSession();
                     mLabelText.text = "Loaded ID: " + mSelectedMapId;
+                    Debug.Log(LibPlacenote.Instance.GetMap());
                 }
                 else if (faulted)
                 {

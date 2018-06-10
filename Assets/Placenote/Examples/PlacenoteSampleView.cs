@@ -398,6 +398,9 @@ public class PlacenoteSampleView : MonoBehaviour, PlacenoteListener
                     metadata["location"]["altitude"] = locationInfo.altitude;
                 }
                 LibPlacenote.Instance.SetMetadata(mapId, metadata);
+                Debug.Log("OnSAVEMap***********");
+                Debug.Log(LibPlacenote.Instance.GetMap().ToString());
+                Debug.Log("END--OnSaveMap***********");
             },
             (completed, faulted, percentage) => { }
         );
@@ -554,6 +557,8 @@ public class PlacenoteSampleView : MonoBehaviour, PlacenoteListener
             mLabelText.text = "Localized";
             LoadShapesJSON(mSelectedMapInfo.userData);
             LoadSv3ListJSON(mSelectedMapInfo.userData);
+            Debug.Log("metadata:");
+            Debug.Log(mSelectedMapInfo.userData);
         }
         else if (currStatus == LibPlacenote.MappingStatus.RUNNING &&
                  prevStatus == LibPlacenote.MappingStatus.WAITING)
