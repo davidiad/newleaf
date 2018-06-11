@@ -358,6 +358,7 @@ public class PlacenoteSampleView : MonoBehaviour, PlacenoteListener
 
     public void OnSaveMapClick()
     {
+        SaveMeshes();
         if (!LibPlacenote.Instance.Initialized())
         {
             Debug.Log("SDK not yet initialized");
@@ -398,14 +399,14 @@ public class PlacenoteSampleView : MonoBehaviour, PlacenoteListener
                     metadata["location"]["altitude"] = locationInfo.altitude;
                 }
 
-                //SaveMeshes();
-                List<Vector3> cvs = paintManager.currVertices;
-                for (int i = 0; i < cvs.Count; i++)
-                {
+                
+                //List<Vector3> cvs = paintManager.currVertices;
+                //for (int i = 0; i < cvs.Count; i++)
+                //{
                     
-                    Vector3 point = paintManager.currVertices[i];
-                    Debug.Log(point.ToString("F4"));
-                }
+                //    Vector3 point = paintManager.currVertices[i];
+                //    Debug.Log(point.ToString("F4"));
+                //}
                 LibPlacenote.Instance.SetMetadata(mapId, metadata);
 
             },
@@ -416,15 +417,33 @@ public class PlacenoteSampleView : MonoBehaviour, PlacenoteListener
     private void SaveMeshes() {
         // TODO: Add the current PaintBrush as well
         GameObject[] meshes = GameObject.FindGameObjectsWithTag("Mesh");
-        Mesh meshToSave = meshes[0].GetComponent<Mesh>(); // assumimg 1 exists for now
-        ES3File es3File = new ES3File(false);
-        es3File.Save<Mesh>("MyMesh", meshToSave);
+        Mesh meshToSave = meshes[0].GetComponent<MeshFilter>().sharedMesh; // assumimg 1 exists for now
+        ES3File es3File = new ES3File("testingMeshSave.es3");
+        Debug.Log("meshToSave");
+        Debug.Log(meshToSave);
+        es3File.Save<Mesh>("Mesh", meshToSave);
+        es3File.Sync();
         // Save your data to the ES3File.
         //es3File.Save<Transform>("myTransform", this.transform);
         //es3File.Save<string>("myName", myScript.name);
 
         // Get the ES3File as a string.
-        //string fileAsString = es3File.LoadRawString();
+        string fileAsString = es3File.LoadRawString();
+        Debug.Log(fileAsString.Length);
+        Debug.Log(Application.persistentDataPath);
+        ES3File es3fileLoading = new ES3File((new ES3Settings()).encoding.GetBytes(fileAsString), false);
+
+        // Load the data from the ES3File.
+        Mesh newMesh = new Mesh();
+        es3fileLoading.LoadInto<Mesh>("Mesh", newMesh);
+        GameObject newGO = new GameObject("newGO");
+        newGO.AddComponent<MeshFilter>();
+        newGO.GetComponent<MeshFilter>().sharedMesh = newMesh;
+        newGO.transform.position = new Vector3(0.2f, 0.2f, 0.2f);
+
+        //myScript.name = es3File.Load<string>("myName");
+
+
     }
 
 
