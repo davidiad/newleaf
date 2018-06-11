@@ -65,6 +65,7 @@ public class PaintManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        currVertices = paintOnObject.GetComponent<PaintOn>().currentVertices;
         /*
         if (paintOn)
         {

@@ -5,13 +5,12 @@ using UnityEngine;
 public class PaintOn : MonoBehaviour {
     public bool paintOn = false;
 
-	// Use this for initialization
+    public List<Vector3> currentVertices = new List<Vector3>();
+
 	void Start () {
-		
+        //currentVertices = new List<Vector3>();
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+
+
+
 }

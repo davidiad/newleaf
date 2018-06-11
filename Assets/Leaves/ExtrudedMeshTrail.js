@@ -1,21 +1,20 @@
 ﻿import UnityEngine.UI;
+import System.Collections.Generic;
 
 // Generates an extrusion trail from the attached mesh
 // Uses the MeshExtrusion algorithm in MeshExtrusion.cs to generate and preprocess the mesh.
 var time = 2.0;
 var autoCalculateOrientation = true;
-var minDistance = 0.1;
+var minDistance = 0.2;
 var invertFaces = false;
 private var srcMesh : Mesh;
 private var precomputedEdges : MeshExtrusion.Edge[];
 
 // Painting
 private var paintOn = false;
-//private var paintToggle: GameObject;
-//private var paintManagerObject: GameObject;
-//private var paintManager;
 private var paintOnObject: GameObject;
-
+private var paintOnComponent: PaintOn;
+private var paintVertices : List.<Vector3>;
 
 class ExtrudedTrailSection
 {
@@ -33,29 +32,20 @@ function Start ()
     //paintManagerObject = GameObject.FindWithTag("PaintManager");
     //paintManager = paintManagerObject.GetComponent(PaintManager) as PaintManager;
     paintOnObject = GameObject.FindWithTag("PaintOn");
+    paintOnComponent = paintOnObject.GetComponent(PaintOn) as PaintOn;
+    paintVertices = new List.<Vector3>();
 }
 
 public function togglePaint() {
-    paintOn = (paintOnObject.GetComponent(PaintOn) as PaintOn).paintOn;
-   /* paintOn = !paintOn;
-    // let user know that painting is on
-    if (paintOn)
-    {
-        paintToggle.transform.localScale = new Vector3(1.7f, 1.7f, 1.7f);
-        //var b: Button = paintToggle.GetComponent(Button) as Button;
-        paintToggle.GetComponent(UI.Button).onClick.AddListener(action);
-    }
-    else
-    {
-        paintToggle.transform.localScale = new Vector3(1f, 1f, 1f);
-    }*/
+    paintOn = paintOnComponent.paintOn;
+    //paintOn = (paintOnObject.GetComponent(PaintOn) as PaintOn).paintOn;
 
 }
 
 private var sections = new Array();
 
 function LateUpdate () {
-    paintOn = (paintOnObject.GetComponent(PaintOn) as PaintOn).paintOn;
+    paintOn = paintOnComponent.paintOn;
     if (paintOn) {
 	var position = transform.position;
 	var now = Time.time;
@@ -75,6 +65,8 @@ function LateUpdate () {
 		section.matrix = transform.localToWorldMatrix;
 		section.time = now;
 		sections.Unshift(section);
+        paintOnComponent.currentVertices.Add(position);
+        //paintVertices.Add(position);
 	}
 	
 	// We need at least 2 sections to create the line
@@ -88,7 +80,7 @@ function LateUpdate () {
 	for (var i=0;i<sections.length;i++)
 	{
     
-        // explicit declarations as Extruded Trail Sections seems to be required by compiler
+        // explicit declarations as Extruded Trail Sections required by compiler
         var s0: ExtrudedTrailSection = sections[0];
         var s1: ExtrudedTrailSection = sections[1];
         var si: ExtrudedTrailSection = sections[i]; 

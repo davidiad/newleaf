@@ -1,0 +1,137 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &129910
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 478526}
+  - component: {fileID: 11466620}
+  m_Layer: 0
+  m_Name: ES2 Auto Save Global Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &478526
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 129910}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.9305375, y: 0.9982562, z: -1.4244883}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &11466620
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 129910}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48ff16d2ac3a9c74b838a9c89b316154, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefabArray: []
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 0}
+      propertyPath: scenes.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: prefabArray.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: scenes.Array.data[0].files.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: scenes.Array.data[1].files.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: scenes.Array.data[0].scenePath
+      value: to Save Tests/Test Scene.unity/Test Scene.unity
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: es2Logo16x16
+      value: 
+      objectReference: {fileID: 2800000, guid: 4a1edce209f684578ab4f86ce0ff397c, type: 3}
+    - target: {fileID: 0}
+      propertyPath: es2Logo20x20
+      value: 
+      objectReference: {fileID: 2800000, guid: 9ae699a9a6ceb42c6850b9d188488618, type: 3}
+    - target: {fileID: 0}
+      propertyPath: es2LogoGrey20x20
+      value: 
+      objectReference: {fileID: 2800000, guid: f542f83f566ab42f3a926ee0dcdc133e, type: 3}
+    - target: {fileID: 0}
+      propertyPath: scenes.Array.data[0].files.Array.data[0]
+      value: Assets/Easy Save 2/Auto Save/ES2AutoSave_d3364793e6614caf9a9613225234455b.cs
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: scenes.Array.data[0].files.Array.data[1]
+      value: Assets/Easy Save 2/Auto Save/ES2AutoSave_d3364793e6614caf9a9613225234455b.cs
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: scenes.Array.data[0].files.Array.data[2]
+      value: Assets/Easy Save 2/Auto Save/ES2AutoSave_9800718157424d8db482961ff150f636.cs
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: scenes.Array.data[0].files.Array.data[3]
+      value: Assets/Easy Save 2/Auto Save/ES2AutoSave_9800718157424d8db482961ff150f636.cs
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: scenes.Array.data[1].scenePath
+      value: Assets/Testing/Auto Save Tests/Test Scene.unity
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: scenes.Array.data[1].files.Array.data[0]
+      value: Assets/Easy Save 2/Auto Save/ES2AutoSave_76655fa982ae40d2b55e24a14f301393.cs
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: scenes.Array.data[1].files.Array.data[1]
+      value: Assets/Easy Save 2/Auto Save/ES2AutoSave_4150335419454a5c875000453136cdca.cs
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: scenes.Array.data[1].files.Array.data[2]
+      value: Assets/Easy Save 2/Auto Save/ES2AutoSave_f9debeab7d294ff89cb722694c69e661.cs
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: prefabArray.Array.data[0]
+      value: 
+      objectReference: {fileID: 11494768, guid: b5f378281281944c988981c601039b90,
+        type: 2}
+    - target: {fileID: 0}
+      propertyPath: prefabArray.Array.data[1]
+      value: 
+      objectReference: {fileID: 11483090, guid: c907f21b0da1e4d2287dfe9eeb309156,
+        type: 2}
+    - target: {fileID: 0}
+      propertyPath: prefabArray.Array.data[2]
+      value: 
+      objectReference: {fileID: 11443630, guid: d80d75b0abdf64d1980fd5b523075978,
+        type: 2}
+    - target: {fileID: 0}
+      propertyPath: autoSavesToProcess.Array.data[0]
+      value: 
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 129910}
+  m_IsPrefabParent: 1

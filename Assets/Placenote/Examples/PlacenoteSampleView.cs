@@ -397,13 +397,34 @@ public class PlacenoteSampleView : MonoBehaviour, PlacenoteListener
                     metadata["location"]["longitude"] = locationInfo.longitude;
                     metadata["location"]["altitude"] = locationInfo.altitude;
                 }
+
+                //SaveMeshes();
+                List<Vector3> cvs = paintManager.currVertices;
+                for (int i = 0; i < cvs.Count; i++)
+                {
+                    
+                    Vector3 point = paintManager.currVertices[i];
+                    Debug.Log(point.ToString("F4"));
+                }
                 LibPlacenote.Instance.SetMetadata(mapId, metadata);
-                Debug.Log("OnSAVEMap***********");
-                Debug.Log(LibPlacenote.Instance.GetMap().ToString());
-                Debug.Log("END--OnSaveMap***********");
+
             },
             (completed, faulted, percentage) => { }
         );
+    }
+
+    private void SaveMeshes() {
+        // TODO: Add the current PaintBrush as well
+        GameObject[] meshes = GameObject.FindGameObjectsWithTag("Mesh");
+        Mesh meshToSave = meshes[0].GetComponent<Mesh>(); // assumimg 1 exists for now
+        ES3File es3File = new ES3File(false);
+        es3File.Save<Mesh>("MyMesh", meshToSave);
+        // Save your data to the ES3File.
+        //es3File.Save<Transform>("myTransform", this.transform);
+        //es3File.Save<string>("myName", myScript.name);
+
+        // Get the ES3File as a string.
+        //string fileAsString = es3File.LoadRawString();
     }
 
 
@@ -465,11 +486,11 @@ public class PlacenoteSampleView : MonoBehaviour, PlacenoteListener
         {
             sV3List.sv3s[i] = paintManager.currVertices[i];
         }
-        sV3List.sv3s = new SerializableVector3[4];
-        sV3List.sv3s[0] = new SerializableVector3(1, 2, 3);
-        sV3List.sv3s[1] = new SerializableVector3(10, 2, 3);
-        sV3List.sv3s[2] = new SerializableVector3(1, 20, 3);
-        sV3List.sv3s[3] = new SerializableVector3(1, 2, 30);
+        //sV3List.sv3s = new SerializableVector3[4];
+        //sV3List.sv3s[0] = new SerializableVector3(1, 2, 3);
+        //sV3List.sv3s[1] = new SerializableVector3(10, 2, 3);
+        //sV3List.sv3s[2] = new SerializableVector3(1, 20, 3);
+        //sV3List.sv3s[3] = new SerializableVector3(1, 2, 30);
 
         Debug.Log("XXXXXX: " + sV3List.sv3s.Length);
         JObject jo = JObject.FromObject(sV3List);
