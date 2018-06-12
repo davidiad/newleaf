@@ -12,6 +12,7 @@ private var precomputedEdges : MeshExtrusion.Edge[];
 
 // Painting
 private var paintOn = false;
+private bool meshLoading = false; // allow mesh to extrude when reloading a mesh from a loaded map
 private var paintOnObject: GameObject;
 private var paintOnComponent: PaintOn;
 private var paintVertices : List.<Vector3>;
@@ -46,7 +47,7 @@ private var sections = new Array();
 
 function LateUpdate () {
     paintOn = paintOnComponent.paintOn;
-    if (paintOn) {
+    if (paintOn || meshLoading) {
 	var position = transform.position;
 	var now = Time.time;
 	/*

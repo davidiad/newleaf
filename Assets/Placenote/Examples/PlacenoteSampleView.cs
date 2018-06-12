@@ -358,7 +358,6 @@ public class PlacenoteSampleView : MonoBehaviour, PlacenoteListener
 
     public void OnSaveMapClick()
     {
-        SaveMeshes();
         if (!LibPlacenote.Instance.Initialized())
         {
             Debug.Log("SDK not yet initialized");
@@ -410,7 +409,11 @@ public class PlacenoteSampleView : MonoBehaviour, PlacenoteListener
                 LibPlacenote.Instance.SetMetadata(mapId, metadata);
 
             },
-            (completed, faulted, percentage) => { }
+            (completed, faulted, percentage) => { 
+            Debug.Log("completed: " + completed);
+            Debug.Log("faulted: " + faulted);
+            Debug.Log("percentage: " + percentage);
+        }
         );
     }
 
@@ -556,6 +559,7 @@ public class PlacenoteSampleView : MonoBehaviour, PlacenoteListener
                 Debug.Log("YYYYY " + sv3);
                 paintManager.currVertices.Add(vector);
             }
+            paintManager.RecreatePaintedMesh();
         }
     }
 
@@ -617,4 +621,5 @@ public class PlacenoteSampleView : MonoBehaviour, PlacenoteListener
             }
         }
     }
+
 }

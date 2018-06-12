@@ -107,9 +107,30 @@ public class PaintManager : MonoBehaviour
         // instantiate a brush
         // parent it to the paint target
         GameObject newBrush = Instantiate(paintBrushPrefab, new Vector3(0f, 0f, 0f), Quaternion.Euler(new Vector3(0f,90f,0f)));
-        newBrush.transform.parent = paintTarget.gameObject.transform;
+        newBrush.transform.parent = paintTarget.gameObject.transform; // attach the object that acts as a brush to the paintTarget
         newBrush.transform.localPosition = new Vector3(0f, 0f, 0f);
     } 
+
+    public void RecreatePaintedMesh() {
+        Debug.Log("Recreate Mesh");
+        // position the paintbrush at the first point of the vertex list
+        if (currVertices.Count > 0)
+        {
+            GameObject newBrush = Instantiate(paintBrushPrefab, currVertices[0], Quaternion.Euler(new Vector3(0f, 90f, 0f)));
+            StartCoroutine(PaintMesh(newBrush));
+        }
+    }
+
+    private IEnumerator PaintMesh(GameObject brush) {
+        Debug.Log("In PaintMesh coroutine");
+        for (int i = 1; i < currVertices.Count; i++) {
+            Debug.Log("i: " + i);
+            Debug.Log("currVertices[i]: " + currVertices[i]);
+            brush.transform.position = currVertices[i];
+            yield return new WaitForSeconds(0.03f); // allow enough time for the previous mesh section to be generated
+        }
+
+    }
 
     private void RemoveBrushFromTarget() {
         // assuming there is only one paint brush as a time
