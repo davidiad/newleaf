@@ -4,9 +4,19 @@ using UnityEngine;
 using UnityEngine.XR.iOS;
 using UnityEngine.UI;
 
+
+public class PaintStrokes
+{
+    //public int ID { get; set; }
+    //public string SomethingWithText { get; set; }
+    public List<Vector3> verts { get; set; }
+    public Color color { get; set; }
+
+}
+
 public class PaintManager : MonoBehaviour
 {
-
+    //public class PaintingList : List<PaintStrokes> { }
     // Get paint position from PlacenoteSampleView script
     public GameObject PSVGO;
     public Vector3 paintPosition;
@@ -27,8 +37,10 @@ public class PaintManager : MonoBehaviour
     private Color paintColor;
     private Vector3 previousPosition;
 
+    public List<PaintStrokes> paintStrokesList;
     public List<ParticleSystem> particleSystemList; // Stores all particle systems
     public List<Vector3> currVertices; // Stores current paint target positions to paint
+
     public ParticleSystem ps; // Stores current particle system
     public GameObject paintBrushPrefab;
     private GameObject paintBrush;
@@ -52,6 +64,7 @@ public class PaintManager : MonoBehaviour
         paintOn = false;
         newPaintVertices = false;
         particleSystemList = new List<ParticleSystem>();
+        paintStrokesList = new List<PaintStrokes>();
         ps = Instantiate(particleSystemTemplate);
         currVertices = new List<Vector3>();
         paintColor = Color.blue;
@@ -75,18 +88,29 @@ public class PaintManager : MonoBehaviour
 
         if (endPainting)
         {
-            Vector3[] positions = new Vector3[1000];
+            // Get the vertices of the trail renderer(s)
+            Vector3[] positions = new Vector3[1000]; // assuming there'll never be > 1000
             paintBrush = GameObject.FindWithTag("PaintBrush");
             if (!paintBrush){
                 paintBrush = GameObject.FindGameObjectsWithTag("Mesh")[0];
             }
+            // TrailRenderer.GetPositions adds its positions to an existing arrays, and returns the # of vertices
             int numPos = paintBrush.GetComponent<TrailRenderer>().GetPositions(positions);
-            Debug.Log("N " + numPos);
             List<Vector3> vertList = new List<Vector3>();
             for (int i = 0; i < numPos; i++) {
                 vertList.Add(positions[i]);
             }
-            paintOnComponent.currentVertices = vertList;
+
+            //***New Way, can hold >1 paint mesh/strokes***
+            // Only add the new PaintStrokes if it's newly created, not if loading from a saved map
+            if (!paintOnComponent.meshLoading) 
+            {
+                PaintStrokes paintStrokes = new PaintStrokes();
+                paintStrokes.verts = vertList;
+                paintStrokesList.Add(paintStrokes);
+            }
+
+            paintOnComponent.currentVertices = vertList; // old way, still working
 
             paintBrush.transform.parent = null;
             paintBrush.tag = "Mesh";
@@ -130,24 +154,23 @@ public class PaintManager : MonoBehaviour
         {
             paintTarget.transform.localPosition = new Vector3(0f, 0f, targetSlider.value);
         }
-            
     }
 
     // Add a mesh painting brush to the paint target
-    private void AddBrush()
+    private void AddBrushToTarget()
     {
         // instantiate a brush
         // parent it to the paint target
         GameObject newBrush = Instantiate(paintBrushPrefab, new Vector3(0f, 0f, 0f), Quaternion.Euler(new Vector3(0f,0f,0f)));
         newBrush.transform.parent = paintTarget.gameObject.transform; // attach the object that acts as a brush to the paintTarget
         newBrush.transform.localPosition = new Vector3(0f, 0f, 0f);
-        newBrush.GetComponent<TrailRenderer>().Clear(); // remove trail from 1st frame with odd, unwanted line
+        newBrush.GetComponent<TrailRenderer>().Clear(); // remove trail from 1st frame with odd, unwanted line (comes from Trail rendering before first point is established)
     } 
 
-    public void RecreatePaintedMesh() {
-        Debug.Log("Recreate Mesh");
+    public void RecreatePaintedStrokes() {
         paintOnComponent.meshLoading = true;
         // position the paintbrush at the first point of the vertex list
+        //TODO: Use the entire paint stroke list
         if (currVertices.Count > 0)
         {
             GameObject newBrush = Instantiate(paintBrushPrefab, currVertices[0], Quaternion.Euler(new Vector3(0f, 90f, 0f)));
@@ -161,8 +184,9 @@ public class PaintManager : MonoBehaviour
             Debug.Log("i: " + i);
             Debug.Log("currVertices[i]: " + currVertices[i]);
             brush.transform.position = currVertices[i];
-            yield return new WaitForSeconds(0.03f); // allow enough time for the previous mesh section to be generated
+            yield return new WaitForSeconds(0.01f); // allow enough time for the previous mesh section to be generated
         }
+        //TODO: Loop thru all groups of verts, not just 1
         paintOnComponent.meshLoading = false;
         paintOnComponent.endPainting = true; // flag to destroy mesh extrusion component
     }
@@ -188,7 +212,7 @@ public class PaintManager : MonoBehaviour
         if (paintOn)
         {
             onoff.transform.localScale = new Vector3(1.7f, 1.7f, 1.7f);
-            AddBrush();
+            AddBrushToTarget();
         }
         else
         {

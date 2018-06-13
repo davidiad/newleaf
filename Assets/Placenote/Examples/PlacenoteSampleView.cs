@@ -565,7 +565,7 @@ public class PlacenoteSampleView : MonoBehaviour, PlacenoteListener
                 paintManager.currVertices.Add(vector);
             }
 
-            paintManager.RecreatePaintedMesh();
+            paintManager.RecreatePaintedStrokes();
         }
     }
 
