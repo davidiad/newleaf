@@ -31,6 +31,7 @@ public class PaintManager : MonoBehaviour
     public List<Vector3> currVertices; // Stores current paint target positions to paint
     public ParticleSystem ps; // Stores current particle system
     public GameObject paintBrushPrefab;
+    private GameObject paintBrush;
 
     [SerializeField] Camera mainCam;
 
@@ -67,7 +68,36 @@ public class PaintManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
         currVertices = paintOnComponent.currentVertices;
+
+        bool endPainting = paintOnComponent.endPainting;
+
+        if (endPainting)
+        {
+            Vector3[] positions = new Vector3[1000];
+            paintBrush = GameObject.FindWithTag("PaintBrush");
+            if (!paintBrush){
+                paintBrush = GameObject.FindGameObjectsWithTag("Mesh")[0];
+            }
+            int numPos = paintBrush.GetComponent<TrailRenderer>().GetPositions(positions);
+            Debug.Log("N " + numPos);
+            List<Vector3> vertList = new List<Vector3>();
+            for (int i = 0; i < numPos; i++) {
+                vertList.Add(positions[i]);
+            }
+            paintOnComponent.currentVertices = vertList;
+
+            paintBrush.transform.parent = null;
+            paintBrush.tag = "Mesh";
+            paintOnComponent.endPainting = false;
+            paintOnComponent.meshLoading = false;
+            //Destroy(this.gameObject.GetComponent(ExtrudedMeshTrail));
+        }
+
+
+
+
         /*
         if (paintOn)
         {
@@ -108,9 +138,10 @@ public class PaintManager : MonoBehaviour
     {
         // instantiate a brush
         // parent it to the paint target
-        GameObject newBrush = Instantiate(paintBrushPrefab, new Vector3(0f, 0f, 0f), Quaternion.Euler(new Vector3(0f,90f,0f)));
+        GameObject newBrush = Instantiate(paintBrushPrefab, new Vector3(0f, 0f, 0f), Quaternion.Euler(new Vector3(0f,0f,0f)));
         newBrush.transform.parent = paintTarget.gameObject.transform; // attach the object that acts as a brush to the paintTarget
         newBrush.transform.localPosition = new Vector3(0f, 0f, 0f);
+        newBrush.GetComponent<TrailRenderer>().Clear(); // remove trail from 1st frame with odd, unwanted line
     } 
 
     public void RecreatePaintedMesh() {
@@ -163,6 +194,7 @@ public class PaintManager : MonoBehaviour
         {
             RemoveBrushFromTarget();
             onoff.transform.localScale = new Vector3(1f, 1f, 1f);
+            paintOnComponent.endPainting = true;
         }
     }
 
