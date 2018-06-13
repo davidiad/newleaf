@@ -66,6 +66,9 @@ public class PlacenoteSampleView : MonoBehaviour, PlacenoteListener
     private PaintManager paintManager;
 
     private LibPlacenote.MapInfo mSelectedMapInfo;
+
+    private bool hasLocalized; // flag to prevent continually reloading the metadata when position is lost and regained
+
     private string mSelectedMapId
     {
         get
@@ -82,6 +85,7 @@ public class PlacenoteSampleView : MonoBehaviour, PlacenoteListener
     // Use this for initialization
     void Start()
     {
+        hasLocalized = false;
         Input.location.Start();
 
         mMapListPanel.SetActive(false);
@@ -211,6 +215,7 @@ public class PlacenoteSampleView : MonoBehaviour, PlacenoteListener
         mPlaneDetectionToggle.GetComponent<Toggle>().isOn = false;
 
         LibPlacenote.Instance.StopSession();
+        hasLocalized = false;
     }
 
 
@@ -242,7 +247,7 @@ public class PlacenoteSampleView : MonoBehaviour, PlacenoteListener
             ToastManager.ShowToast("SDK not yet initialized", 2f);
             return;
         }
-
+        hasLocalized = false;
         mLabelText.text = "Loading Map ID: " + mSelectedMapId;
         LibPlacenote.Instance.LoadMap(mSelectedMapId,
             (completed, faulted, percentage) =>
@@ -599,11 +604,15 @@ public class PlacenoteSampleView : MonoBehaviour, PlacenoteListener
         if (currStatus == LibPlacenote.MappingStatus.RUNNING &&
             prevStatus == LibPlacenote.MappingStatus.LOST)
         {
-            mLabelText.text = "Localized";
-            LoadShapesJSON(mSelectedMapInfo.userData);
-            LoadSv3ListJSON(mSelectedMapInfo.userData);
-            Debug.Log("metadata:");
-            Debug.Log(mSelectedMapInfo.userData);
+            if (!hasLocalized)
+            {
+                mLabelText.text = "Localized";
+                LoadShapesJSON(mSelectedMapInfo.userData);
+                LoadSv3ListJSON(mSelectedMapInfo.userData);
+                Debug.Log("metadata:");
+                Debug.Log(mSelectedMapInfo.userData);
+                hasLocalized = true;
+            }
         }
         else if (currStatus == LibPlacenote.MappingStatus.RUNNING &&
                  prevStatus == LibPlacenote.MappingStatus.WAITING)
