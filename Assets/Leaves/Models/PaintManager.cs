@@ -12,6 +12,7 @@ public class PaintManager : MonoBehaviour
     public Vector3 paintPosition;
     private PlacenoteSampleView PSV;
     public GameObject paintOnObject;
+    private PaintOn paintOnComponent;
     private GameObject targetSliderGO;
     private Slider targetSlider;
 
@@ -58,6 +59,7 @@ public class PaintManager : MonoBehaviour
         paintPosition = PSV.paintPosition;
         paintTarget = GameObject.FindWithTag("PaintTarget");
         paintOnObject = GameObject.FindWithTag("PaintOn");
+        paintOnComponent = paintOnObject.GetComponent<PaintOn>();
         targetSliderGO = GameObject.FindWithTag("TargetSlider");
         targetSlider = targetSliderGO.GetComponent<Slider>();
     }
@@ -65,7 +67,7 @@ public class PaintManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        currVertices = paintOnObject.GetComponent<PaintOn>().currentVertices;
+        currVertices = paintOnComponent.currentVertices;
         /*
         if (paintOn)
         {
@@ -113,6 +115,7 @@ public class PaintManager : MonoBehaviour
 
     public void RecreatePaintedMesh() {
         Debug.Log("Recreate Mesh");
+        paintOnComponent.meshLoading = true;
         // position the paintbrush at the first point of the vertex list
         if (currVertices.Count > 0)
         {
@@ -129,7 +132,8 @@ public class PaintManager : MonoBehaviour
             brush.transform.position = currVertices[i];
             yield return new WaitForSeconds(0.03f); // allow enough time for the previous mesh section to be generated
         }
-
+        paintOnComponent.meshLoading = false;
+        paintOnComponent.endPainting = true; // flag to destroy mesh extrusion component
     }
 
     private void RemoveBrushFromTarget() {

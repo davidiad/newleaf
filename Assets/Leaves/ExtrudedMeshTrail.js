@@ -12,10 +12,11 @@ private var precomputedEdges : MeshExtrusion.Edge[];
 
 // Painting
 private var paintOn = false;
-private bool meshLoading = false; // allow mesh to extrude when reloading a mesh from a loaded map
+private var meshLoading = false; // allow mesh to extrude when reloading a mesh from a loaded map
 private var paintOnObject: GameObject;
 private var paintOnComponent: PaintOn;
 private var paintVertices : List.<Vector3>;
+public var endPainting = false;
 
 class ExtrudedTrailSection
 {
@@ -43,10 +44,24 @@ public function togglePaint() {
 
 }
 
+
+
 private var sections = new Array();
+
+function Update() {
+    endPainting = paintOnComponent.endPainting;
+    if (endPainting) {
+        this.tag = "Mesh";
+        this.transform.parent = null;
+        paintOnComponent.endPainting = false;
+        paintOnComponent.meshLoading = false;
+        Destroy(this.gameObject.GetComponent(ExtrudedMeshTrail));
+    }
+}
 
 function LateUpdate () {
     paintOn = paintOnComponent.paintOn;
+    meshLoading = paintOnComponent.meshLoading;
     if (paintOn || meshLoading) {
 	var position = transform.position;
 	var now = Time.time;
