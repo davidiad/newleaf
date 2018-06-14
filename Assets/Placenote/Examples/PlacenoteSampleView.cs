@@ -505,14 +505,29 @@ public class PlacenoteSampleView : MonoBehaviour, PlacenoteListener
     private JObject Sv3s2JSON()
     {
         SV3List sV3List = new SV3List();
-        if (paintManager.currVertices.Count > 0)
+        //if (paintManager.currVertices.Count > 0)
+        // for now, saving just the first PaintStroke
+        int vertCount = paintManager.paintStrokesList[0].verts.Count;
+        Debug.Log("vertCount" + vertCount);
+        if (vertCount > 0)
         {
-            sV3List.sv3s = new SerializableVector3[paintManager.currVertices.Count];
+            sV3List.sv3s = new SerializableVector3[vertCount];
         }
-        for (int i = 0; i < paintManager.currVertices.Count; i++)
+        for (int i = 0; i < vertCount; i++)
         {
-            sV3List.sv3s[i] = paintManager.currVertices[i];
+            sV3List.sv3s[i] = paintManager.paintStrokesList[0].verts[i];
         }
+
+        //for (int i = 0; i < paintManager.paintStrokesList.Count; i++)
+        //{
+        //    int count = 
+        //    for (int j = 0; i < paintManager.paintStrokesList[i].verts.Count; j++)
+        //    {
+        //        sV3List.sv3s[i] = paintManager.paintStrokesList[i].verts[j];
+
+        //    }
+        //    //sV3List.sv3s[i] = paintManager.currVertices[i];
+        //}
         //sV3List.sv3s = new SerializableVector3[4];
         //sV3List.sv3s[0] = new SerializableVector3(1, 2, 3);
         //sV3List.sv3s[1] = new SerializableVector3(10, 2, 3);

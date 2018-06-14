@@ -82,12 +82,13 @@ public class PaintManager : MonoBehaviour
     void Update()
     {
         
-        currVertices = paintOnComponent.currentVertices;
+        currVertices = paintOnComponent.currentVertices; //TODO: update only when needed, not every frame
 
         bool endPainting = paintOnComponent.endPainting;
 
         if (endPainting)
         {
+            /*
             // Get the vertices of the trail renderer(s)
             Vector3[] positions = new Vector3[1000]; // assuming there'll never be > 1000
             paintBrush = GameObject.FindWithTag("PaintBrush");
@@ -114,8 +115,9 @@ public class PaintManager : MonoBehaviour
 
             paintBrush.transform.parent = null;
             paintBrush.tag = "Mesh";
-            paintOnComponent.endPainting = false;
-            paintOnComponent.meshLoading = false;
+            */
+            //paintOnComponent.endPainting = false;
+            //paintOnComponent.meshLoading = false;
             //Destroy(this.gameObject.GetComponent(ExtrudedMeshTrail));
         }
 
@@ -196,8 +198,33 @@ public class PaintManager : MonoBehaviour
         GameObject brush = GameObject.FindWithTag("PaintBrush");
         if (brush)
         {
-            brush.tag = "Mesh";
+            // Add the verts of the trail renderer to PaintStrokeList
+            AddPaintStrokeToList();
+            // Now that the PaintStroke has been saved, unparent it from the target so it's positioned in worldspace
+            brush.tag = "PaintStroke";
             brush.transform.parent = null;
+        }
+    }
+
+    private void AddPaintStrokeToList () {
+        // Get the vertices of the trail renderer(s)
+        Vector3[] positions = new Vector3[1000]; // assuming there'll never be > 1000
+        paintBrush = GameObject.FindWithTag("PaintBrush"); // Will be a different paintBrush each time, so set here, not in Start
+
+        // TrailRenderer.GetPositions adds its positions to an existing arrays, and returns the # of vertices
+        int numPos = paintBrush.GetComponent<TrailRenderer>().GetPositions(positions);
+        List<Vector3> vertList = new List<Vector3>();
+        for (int i = 0; i < numPos; i++)
+        {
+            vertList.Add(positions[i]);
+        }
+
+        // Only add the new PaintStrokes if it's newly created, not if loading from a saved map
+        if (!paintOnComponent.meshLoading)
+        {
+            PaintStrokes paintStrokes = new PaintStrokes();
+            paintStrokes.verts = vertList;
+            paintStrokesList.Add(paintStrokes);
         }
     }
 
