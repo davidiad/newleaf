@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using System.IO;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
-/*
+
 [System.Serializable]
 public class ShapeInfo
 {
@@ -21,8 +21,7 @@ public class ShapeInfo
     public float qw;
     public int shapeType;
 }
-*/
-/*
+
 
 [System.Serializable]
 public class SV3List
@@ -37,8 +36,8 @@ public class ShapeList
     public ShapeInfo[] shapes;
 }
 
-*/
-public class PlacenoteSampleVi : MonoBehaviour, PlacenoteListener
+
+public class LeavesView : MonoBehaviour, PlacenoteListener
 {
     [SerializeField] GameObject mMapSelectedPanel;
     [SerializeField] GameObject mInitButtonPanel;
@@ -53,6 +52,8 @@ public class PlacenoteSampleVi : MonoBehaviour, PlacenoteListener
     [SerializeField] Material mShapeMaterial;
     [SerializeField] PlacenoteARGeneratePlane mPNPlaneManager;
 
+    public Vector3 paintPosition;
+
     private UnityARSessionNativeInterface mSession;
     private bool mFrameUpdated = false;
     private UnityARImageFrameData mImage = null;
@@ -65,6 +66,9 @@ public class PlacenoteSampleVi : MonoBehaviour, PlacenoteListener
     private PaintManager paintManager;
 
     private LibPlacenote.MapInfo mSelectedMapInfo;
+
+    private bool hasLocalized; // flag to prevent continually reloading the metadata when position is lost and regained
+
     private string mSelectedMapId
     {
         get
@@ -81,6 +85,7 @@ public class PlacenoteSampleVi : MonoBehaviour, PlacenoteListener
     // Use this for initialization
     void Start()
     {
+        hasLocalized = false;
         Input.location.Start();
 
         mMapListPanel.SetActive(false);
@@ -90,6 +95,7 @@ public class PlacenoteSampleVi : MonoBehaviour, PlacenoteListener
         StartARKit();
         FeaturesVisualizer.EnablePointcloud();
         LibPlacenote.Instance.RegisterListener(this);
+
 
         GameObject pmgo = GameObject.FindWithTag("PaintManager");
         paintManager = pmgo.GetComponent<PaintManager>();
@@ -154,6 +160,9 @@ public class PlacenoteSampleVi : MonoBehaviour, PlacenoteListener
             LibPlacenote.Instance.SendARFrame(mImage, arkitPosition, arkitQuat,
                                                mARCamera.videoParams.screenOrientation);
         }
+
+        paintPosition = Camera.main.transform.position +
+                                      Camera.main.transform.forward * 0.3f;
     }
 
 
@@ -180,7 +189,7 @@ public class PlacenoteSampleVi : MonoBehaviour, PlacenoteListener
             {
                 if (mapId.userData != null)
                 {
-                    Debug.Log(mapId.userData.ToString(Formatting.None));
+                    //Debug.Log(mapId.userData.ToString(Formatting.None));
                 }
                 AddMapToList(mapId);
             }
@@ -207,6 +216,7 @@ public class PlacenoteSampleVi : MonoBehaviour, PlacenoteListener
         mPlaneDetectionToggle.GetComponent<Toggle>().isOn = false;
 
         LibPlacenote.Instance.StopSession();
+        hasLocalized = false;
     }
 
 
@@ -238,7 +248,7 @@ public class PlacenoteSampleVi : MonoBehaviour, PlacenoteListener
             ToastManager.ShowToast("SDK not yet initialized", 2f);
             return;
         }
-
+        hasLocalized = false;
         mLabelText.text = "Loading Map ID: " + mSelectedMapId;
         LibPlacenote.Instance.LoadMap(mSelectedMapId,
             (completed, faulted, percentage) =>
@@ -253,7 +263,8 @@ public class PlacenoteSampleVi : MonoBehaviour, PlacenoteListener
 
                     LibPlacenote.Instance.StartSession();
                     mLabelText.text = "Loaded ID: " + mSelectedMapId;
-                    Debug.Log(LibPlacenote.Instance.GetMap());
+                    //Debug.Log("VERSION?: ");
+                    //Debug.Log(mSelectedMapInfo.userData["version"]["a"].ToObject<float>());
                 }
                 else if (faulted)
                 {
@@ -394,10 +405,57 @@ public class PlacenoteSampleVi : MonoBehaviour, PlacenoteListener
                     metadata["location"]["longitude"] = locationInfo.longitude;
                     metadata["location"]["altitude"] = locationInfo.altitude;
                 }
+
+
+                //List<Vector3> cvs = paintManager.currVertices;
+                //for (int i = 0; i < cvs.Count; i++)
+                //{
+
+                //    Vector3 point = paintManager.currVertices[i];
+                //    Debug.Log(point.ToString("F4"));
+                //}
                 LibPlacenote.Instance.SetMetadata(mapId, metadata);
+
             },
-            (completed, faulted, percentage) => { }
+            (completed, faulted, percentage) => {
+                //Debug.Log("completed: " + completed);
+                //Debug.Log("faulted: " + faulted);
+                //Debug.Log("percentage: " + percentage);
+            }
         );
+    }
+
+    private void SaveMeshes()
+    {
+        // TODO: Add the current PaintBrush as well
+        GameObject[] meshes = GameObject.FindGameObjectsWithTag("Mesh");
+        Mesh meshToSave = meshes[0].GetComponent<MeshFilter>().sharedMesh; // assumimg 1 exists for now
+        ES3File es3File = new ES3File("testingMeshSave.es3");
+        Debug.Log("meshToSave");
+        Debug.Log(meshToSave);
+        es3File.Save<Mesh>("Mesh", meshToSave);
+        es3File.Sync();
+        // Save your data to the ES3File.
+        //es3File.Save<Transform>("myTransform", this.transform);
+        //es3File.Save<string>("myName", myScript.name);
+
+        // Get the ES3File as a string.
+        string fileAsString = es3File.LoadRawString();
+        Debug.Log(fileAsString.Length);
+        Debug.Log(Application.persistentDataPath);
+        ES3File es3fileLoading = new ES3File((new ES3Settings()).encoding.GetBytes(fileAsString), false);
+
+        // Load the data from the ES3File.
+        Mesh newMesh = new Mesh();
+        es3fileLoading.LoadInto<Mesh>("Mesh", newMesh);
+        GameObject newGO = new GameObject("newGO");
+        newGO.AddComponent<MeshFilter>();
+        newGO.GetComponent<MeshFilter>().sharedMesh = newMesh;
+        newGO.transform.position = new Vector3(0.2f, 0.2f, 0.2f);
+
+        //myScript.name = es3File.Load<string>("myName");
+
+
     }
 
 
@@ -406,7 +464,7 @@ public class PlacenoteSampleVi : MonoBehaviour, PlacenoteListener
         Vector3 shapePosition = Camera.main.transform.position +
                                       Camera.main.transform.forward * 0.3f;
         Quaternion shapeRotation = Camera.main.transform.rotation;
-
+        Debug.Log("Drop Shape @ Pos: " + shapePosition + ", Rot: " + shapeRotation);
         System.Random rnd = new System.Random();
         PrimitiveType type = (PrimitiveType)rnd.Next(0, 3);
 
@@ -451,16 +509,34 @@ public class PlacenoteSampleVi : MonoBehaviour, PlacenoteListener
     private JObject Sv3s2JSON()
     {
         SV3List sV3List = new SV3List();
-        sV3List.sv3s = new SerializableVector3[paintManager.currVertices.Count];
-        for (int i = 0; i < paintManager.currVertices.Count; i++)
+        //if (paintManager.currVertices.Count > 0)
+        // for now, saving just the first PaintStroke
+        int vertCount = paintManager.paintStrokesList[0].verts.Count;
+        Debug.Log("vertCount" + vertCount);
+        if (vertCount > 0)
         {
-            sV3List.sv3s[i] = paintManager.currVertices[i];
+            sV3List.sv3s = new SerializableVector3[vertCount];
         }
-        sV3List.sv3s = new SerializableVector3[4];
-        sV3List.sv3s[0] = new SerializableVector3(1, 2, 3);
-        sV3List.sv3s[1] = new SerializableVector3(10, 2, 3);
-        sV3List.sv3s[2] = new SerializableVector3(1, 20, 3);
-        sV3List.sv3s[3] = new SerializableVector3(1, 2, 30);
+        for (int i = 0; i < vertCount; i++)
+        {
+            sV3List.sv3s[i] = paintManager.paintStrokesList[0].verts[i];
+        }
+
+        //for (int i = 0; i < paintManager.paintStrokesList.Count; i++)
+        //{
+        //    int count = 
+        //    for (int j = 0; i < paintManager.paintStrokesList[i].verts.Count; j++)
+        //    {
+        //        sV3List.sv3s[i] = paintManager.paintStrokesList[i].verts[j];
+
+        //    }
+        //    //sV3List.sv3s[i] = paintManager.currVertices[i];
+        //}
+        //sV3List.sv3s = new SerializableVector3[4];
+        //sV3List.sv3s[0] = new SerializableVector3(1, 2, 3);
+        //sV3List.sv3s[1] = new SerializableVector3(10, 2, 3);
+        //sV3List.sv3s[2] = new SerializableVector3(1, 20, 3);
+        //sV3List.sv3s[3] = new SerializableVector3(1, 2, 30);
 
         Debug.Log("XXXXXX: " + sV3List.sv3s.Length);
         JObject jo = JObject.FromObject(sV3List);
@@ -485,8 +561,13 @@ public class PlacenoteSampleVi : MonoBehaviour, PlacenoteListener
 
     private void LoadSv3ListJSON(JToken mapMetadata)
     {
-        paintManager.currVertices.Clear();
-
+        if (paintManager)
+        {
+            //if (paintManager.currVertices)
+            //{
+            paintManager.currVertices.Clear();
+            //}
+        }
         if (mapMetadata is JObject && mapMetadata["sv3list"] is JObject)
         {
             SV3List sv3list = mapMetadata["sv3list"].ToObject<SV3List>();
@@ -502,6 +583,8 @@ public class PlacenoteSampleVi : MonoBehaviour, PlacenoteListener
                 Debug.Log("YYYYY " + sv3);
                 paintManager.currVertices.Add(vector);
             }
+
+            paintManager.RecreatePaintedStrokes();
         }
     }
 
@@ -535,14 +618,22 @@ public class PlacenoteSampleVi : MonoBehaviour, PlacenoteListener
     public void OnStatusChange(LibPlacenote.MappingStatus prevStatus,
                                 LibPlacenote.MappingStatus currStatus)
     {
+        //Debug.Log("VERSION?: ");
+        //Debug.Log(mSelectedMapInfo.userData["version"]["a"].ToObject<float>());
         Debug.Log("prevStatus: " + prevStatus.ToString() +
                    " currStatus: " + currStatus.ToString());
         if (currStatus == LibPlacenote.MappingStatus.RUNNING &&
             prevStatus == LibPlacenote.MappingStatus.LOST)
         {
-            mLabelText.text = "Localized";
-            LoadShapesJSON(mSelectedMapInfo.userData);
-            LoadSv3ListJSON(mSelectedMapInfo.userData);
+            if (!hasLocalized)
+            {
+                mLabelText.text = "Localized";
+                LoadShapesJSON(mSelectedMapInfo.userData);
+                LoadSv3ListJSON(mSelectedMapInfo.userData);
+                Debug.Log("metadata:");
+                Debug.Log(mSelectedMapInfo.userData);
+                hasLocalized = true;
+            }
         }
         else if (currStatus == LibPlacenote.MappingStatus.RUNNING &&
                  prevStatus == LibPlacenote.MappingStatus.WAITING)
@@ -561,4 +652,5 @@ public class PlacenoteSampleVi : MonoBehaviour, PlacenoteListener
             }
         }
     }
+
 }

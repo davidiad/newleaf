@@ -20,7 +20,7 @@ public class PaintManager : MonoBehaviour
     // Get paint position from PlacenoteSampleView script
     public GameObject PSVGO;
     public Vector3 paintPosition;
-    private PlacenoteSampleView PSV;
+    private LeavesView PSV;
     public GameObject paintOnObject;
     private PaintOn paintOnComponent;
     private GameObject targetSliderGO;
@@ -69,7 +69,7 @@ public class PaintManager : MonoBehaviour
         currVertices = new List<Vector3>();
         paintColor = Color.blue;
         mesh = new Mesh();
-        PSV = PSVGO.GetComponent<PlacenoteSampleView>();
+        PSV = PSVGO.GetComponent<LeavesView>();
         paintPosition = PSV.paintPosition;
         paintTarget = GameObject.FindWithTag("PaintTarget");
         paintOnObject = GameObject.FindWithTag("PaintOn");
