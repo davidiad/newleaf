@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using System.IO;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
-
+/*
 [System.Serializable]
 public class ShapeInfo
 {
@@ -653,3 +653,4 @@ public class PlacenoteSampleView : MonoBehaviour, PlacenoteListener
     }
 
 }
+*/
