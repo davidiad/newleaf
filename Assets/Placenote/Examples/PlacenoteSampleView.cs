@@ -96,6 +96,7 @@ public class PlacenoteSampleView : MonoBehaviour, PlacenoteListener
         FeaturesVisualizer.EnablePointcloud();
         LibPlacenote.Instance.RegisterListener(this);
 
+
         GameObject pmgo = GameObject.FindWithTag("PaintManager");
         paintManager = pmgo.GetComponent<PaintManager>();
     }
@@ -262,6 +263,8 @@ public class PlacenoteSampleView : MonoBehaviour, PlacenoteListener
 
                     LibPlacenote.Instance.StartSession();
                     mLabelText.text = "Loaded ID: " + mSelectedMapId;
+                    //Debug.Log("VERSION?: ");
+                    //Debug.Log(mSelectedMapInfo.userData["version"]["a"].ToObject<float>());
                 }
                 else if (faulted)
                 {
@@ -614,6 +617,8 @@ public class PlacenoteSampleView : MonoBehaviour, PlacenoteListener
     public void OnStatusChange(LibPlacenote.MappingStatus prevStatus,
                                 LibPlacenote.MappingStatus currStatus)
     {
+        //Debug.Log("VERSION?: ");
+        //Debug.Log(mSelectedMapInfo.userData["version"]["a"].ToObject<float>());
         Debug.Log("prevStatus: " + prevStatus.ToString() +
                    " currStatus: " + currStatus.ToString());
         if (currStatus == LibPlacenote.MappingStatus.RUNNING &&
