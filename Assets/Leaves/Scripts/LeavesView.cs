@@ -22,6 +22,18 @@ public class ShapeInfo
     public int shapeType;
 }
 
+[System.Serializable]
+public class PaintStrokesList
+{
+    public SV3List[] paintStrokes;
+}
+
+[System.Serializable]
+public class PaintStrokesListList
+{
+    public PaintStrokesList[] paintStrokesList;
+}
+
 
 [System.Serializable]
 public class SV3List
@@ -62,6 +74,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
     private List<ShapeInfo> shapeInfoList = new List<ShapeInfo>();
     private List<GameObject> shapeObjList = new List<GameObject>();
     private List<SerializableVector3> v3list = new List<SerializableVector3>();
+    private List<PaintStrokesList> sPaintStrokesListList = new List<PaintStrokesList>();
 
     private PaintManager paintManager;
 
@@ -506,6 +519,45 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         shapeInfoList.Clear();
     }
 
+    private JObject PaintStrokes2JSON()
+    {
+        PaintStrokesListList psLL = new PaintStrokesListList();
+
+        int psCount = paintManager.paintStrokesList.Count;
+        //int vertCount = paintManager.paintStrokesList[0].verts.Count;
+
+        if (psCount > 0)
+        {
+            psLL.paintStrokesList = new SerializableVector3[vertCount];
+        }
+        for (int i = 0; i < vertCount; i++)
+        {
+            sV3List.sv3s[i] = paintManager.paintStrokesList[0].verts[i];
+        }
+
+        //for (int i = 0; i < paintManager.paintStrokesList.Count; i++)
+        //{
+        //    int count = 
+        //    for (int j = 0; i < paintManager.paintStrokesList[i].verts.Count; j++)
+        //    {
+        //        sV3List.sv3s[i] = paintManager.paintStrokesList[i].verts[j];
+
+        //    }
+        //    //sV3List.sv3s[i] = paintManager.currVertices[i];
+        //}
+        //sV3List.sv3s = new SerializableVector3[4];
+        //sV3List.sv3s[0] = new SerializableVector3(1, 2, 3);
+        //sV3List.sv3s[1] = new SerializableVector3(10, 2, 3);
+        //sV3List.sv3s[2] = new SerializableVector3(1, 20, 3);
+        //sV3List.sv3s[3] = new SerializableVector3(1, 2, 30);
+
+        Debug.Log("XXXXXX: " + sV3List.sv3s.Length);
+        JObject jo = JObject.FromObject(sV3List);
+        Debug.Log("XXXXXX: " + jo);
+
+        return JObject.FromObject(sV3List);
+    }
+
     private JObject Sv3s2JSON()
     {
         SV3List sV3List = new SV3List();
@@ -608,6 +660,29 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
                 GameObject shape = ShapeFromInfo(shapeInfo);
                 shapeObjList.Add(shape);
             }
+        }
+    }
+
+    private void LoadPaintStrokesJSON(JToken mapMetadata)
+    {
+        //ClearShapes(); // Clear the paintstrokes
+
+        if (mapMetadata is JObject && mapMetadata["paintStrokes"] is JObject)
+        {
+            PaintStrokesListList paintStrokesLL = mapMetadata["paintStrokesLL"].ToObject<PaintStrokesListList>();
+            if (paintStrokesLL.paintStrokesList == null)
+            {
+                Debug.Log("no PaintStrokes were added");
+                return;
+            }
+
+            // (may need to do a for loop to ensure they stay in order?)
+            //foreach (var ps in paintStrokesLL)
+            //{
+            //    sPaintStrokesListList.Add(ps);
+            //    GameObject shape = ShapeFromInfo(shapeInfo);
+            //    shapeObjList.Add(shape);
+            //}
         }
     }
 
