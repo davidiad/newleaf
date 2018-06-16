@@ -5,7 +5,7 @@ using UnityEngine.XR.iOS;
 using UnityEngine.UI;
 
 
-public class PaintStrokes
+public class PaintStroke
 {
     //public int ID { get; set; }
     //public string SomethingWithText { get; set; }
@@ -37,7 +37,7 @@ public class PaintManager : MonoBehaviour
     private Color paintColor;
     private Vector3 previousPosition;
 
-    public List<PaintStrokes> paintStrokesList;
+    public List<PaintStroke> paintStrokesList;
     public List<ParticleSystem> particleSystemList; // Stores all particle systems
     public List<Vector3> currVertices; // Stores current paint target positions to paint
 
@@ -64,7 +64,7 @@ public class PaintManager : MonoBehaviour
         paintOn = false;
         newPaintVertices = false;
         particleSystemList = new List<ParticleSystem>();
-        paintStrokesList = new List<PaintStrokes>();
+        paintStrokesList = new List<PaintStroke>();
         ps = Instantiate(particleSystemTemplate);
         currVertices = new List<Vector3>();
         paintColor = Color.blue;
@@ -222,9 +222,9 @@ public class PaintManager : MonoBehaviour
         // Only add the new PaintStrokes if it's newly created, not if loading from a saved map
         if (!paintOnComponent.meshLoading)
         {
-            PaintStrokes paintStrokes = new PaintStrokes();
-            paintStrokes.verts = vertList;
-            paintStrokesList.Add(paintStrokes);
+            PaintStroke paintStroke = new PaintStroke();
+            paintStroke.verts = vertList;
+            paintStrokesList.Add(paintStroke);
         }
     }
 

@@ -23,15 +23,16 @@ public class ShapeInfo
 }
 
 [System.Serializable]
-public class PaintStrokesList
+public class PaintStrokeInfo
 {
-    public SV3List[] paintStrokes;
+    public SV3List[] verts;
+    // color
 }
 
 [System.Serializable]
-public class PaintStrokesListList
+public class PaintStrokeList
 {
-    public PaintStrokesList[] paintStrokesList;
+    public PaintStrokeInfo[] strokes;
 }
 
 
@@ -51,6 +52,7 @@ public class ShapeList
 
 public class LeavesView : MonoBehaviour, PlacenoteListener
 {
+    // Getting refs to buttons in the UI
     [SerializeField] GameObject mMapSelectedPanel;
     [SerializeField] GameObject mInitButtonPanel;
     [SerializeField] GameObject mMappingButtonPanel;
@@ -74,7 +76,8 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
     private List<ShapeInfo> shapeInfoList = new List<ShapeInfo>();
     private List<GameObject> shapeObjList = new List<GameObject>();
     private List<SerializableVector3> v3list = new List<SerializableVector3>();
-    private List<PaintStrokesList> sPaintStrokesListList = new List<PaintStrokesList>();
+    private List<PaintStrokeInfo> paintStrokesInfoList = new List<PaintStrokeInfo>();
+    private List<PaintStroke> paintStrokeObjList = new List<PaintStroke>();
 
     private PaintManager paintManager;
 
@@ -343,7 +346,6 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         ConfigureSession(false);
     }
 
-
     private void ConfigureSession(bool clearPlanes)
     {
         ARKitWorldTrackingSessionConfiguration config =
@@ -496,9 +498,38 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         shapeObjList.Add(shape);
     }
 
+    public void OnDropPaintStrokeClick()  // called when newMap is clicked (?) Add all the paint strokes to the lists
+    {
+        paintStrokeObjList = paintManager.paintStrokesList;
+        // for each PaintStroke, convert to a PaintStrokeInfo, and add to paintStrokesInfoList
+        foreach (var ps in paintStrokeObjList )
+        {
+            PaintStrokeInfo psi = new PaintStrokeInfo();
+        
+                //psi.verts  = new SerializableVector3[vertCount];
+
+            for (int i = 0; i < ps.verts.Count; i++)
+            {
+                // TODO: can we eliminate two i's?
+                psi.verts[i].sv3s[i] = new SerializableVector3(ps.verts[i].x, ps.verts[i].y, ps.verts[i].z);
+                    
+            }
+    }
+
 
     private GameObject ShapeFromInfo(ShapeInfo info)
     {
+        GameObject shape = GameObject.CreatePrimitive((PrimitiveType)info.shapeType);
+        shape.transform.position = new Vector3(info.px, info.py, info.pz);
+        shape.transform.rotation = new Quaternion(info.qx, info.qy, info.qz, info.qw);
+        shape.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
+        shape.GetComponent<MeshRenderer>().material = mShapeMaterial;
+
+        return shape;
+    }
+
+    private GameObject PaintStrokeFromInfo(PaintStrokeInfo info)
+    {//? should be a PaintStrokes object (see PaintManager), instead of a Game Object?
         GameObject shape = GameObject.CreatePrimitive((PrimitiveType)info.shapeType);
         shape.transform.position = new Vector3(info.px, info.py, info.pz);
         shape.transform.rotation = new Quaternion(info.qx, info.qy, info.qz, info.qw);
