@@ -23,9 +23,11 @@ public class ShapeInfo
 }
 
 [System.Serializable]
+
+// analogous to SV3List, but could add other attributes, such as color
 public class PaintStrokeInfo
 {
-    public SV3List[] verts;
+    public SerializableVector3[] verts;
     // color
 }
 
@@ -502,18 +504,23 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
     {
         paintStrokeObjList = paintManager.paintStrokesList;
         // for each PaintStroke, convert to a PaintStrokeInfo, and add to paintStrokesInfoList
-        foreach (var ps in paintStrokeObjList )
+        if (paintStrokeObjList.Count > 0)
         {
-            PaintStrokeInfo psi = new PaintStrokeInfo();
-        
-                //psi.verts  = new SerializableVector3[vertCount];
-
-            for (int i = 0; i < ps.verts.Count; i++)
+            foreach (var ps in paintStrokeObjList) // TODO: convert to for loop (?)
             {
-                // TODO: can we eliminate two i's?
-                psi.verts[i].sv3s[i] = new SerializableVector3(ps.verts[i].x, ps.verts[i].y, ps.verts[i].z);
-                    
+                PaintStrokeInfo psi = new PaintStrokeInfo();
+                int vertCount = ps.verts.Count;
+                if (vertCount > 0)
+                {
+                    for (int j = 0; j < ps.verts.Count; j++)
+                    {
+                        psi.verts[j] = new SerializableVector3(ps.verts[j].x, ps.verts[j].y, ps.verts[j].z);
+
+                    }
+                    paintStrokesInfoList.Add(psi);
+                }
             }
+        }
     }
 
 
