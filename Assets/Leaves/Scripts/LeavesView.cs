@@ -390,6 +390,8 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
             return;
         }
 
+        OnDropPaintStrokeClick();
+
         bool useLocation = Input.location.status == LocationServiceStatus.Running;
         LocationInfo locationInfo = Input.location.lastData;
 
@@ -409,11 +411,15 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
 
                 JObject metadata = new JObject();
+
                 JObject shapeList = Shapes2JSON();
                 metadata["shapeList"] = shapeList;
 
                 JObject sv3list = Sv3s2JSON();
                 metadata["sv3list"] = sv3list;
+
+                JObject paintStrokeList = PaintStrokes2JSON();
+                metadata["paintStrokeList"] = paintStrokeList;
 
                 if (useLocation)
                 {
@@ -500,25 +506,36 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         shapeObjList.Add(shape);
     }
 
-    public void OnDropPaintStrokeClick()  // called when newMap is clicked (?) Add all the paint strokes to the lists at once
+    public void OnDropPaintStrokeClick()  // called when SaveMap is clicked. Add all the paint strokes to the lists at once
     {
+        Debug.Log("1-OnDropPaintStrokeClick");
         paintStrokeObjList = paintManager.paintStrokesList;
+        Debug.Log("2-OnDropPaintStrokeClick");
         // for each PaintStroke, convert to a PaintStrokeInfo, and add to paintStrokesInfoList
         if (paintStrokeObjList.Count > 0)
         {
+            Debug.Log("3-OnDropPaintStrokeClick");
             foreach (var ps in paintStrokeObjList) // TODO: convert to for loop (?)
             {
-                PaintStrokeInfo psi = new PaintStrokeInfo();
                 int vertCount = ps.verts.Count;
+                Debug.Log("4-OnDropPaintStrokeClick");
+                PaintStrokeInfo psi = new PaintStrokeInfo();
+                SerializableVector3[] psiverts = new SerializableVector3[vertCount];
+                psi.verts = psiverts;
+                
                 if (vertCount > 0)
                 {
+                    Debug.Log("5-OnDropPaintStrokeClick");
                     for (int j = 0; j < ps.verts.Count; j++)
                     {
-                       // psi.verts[j] = new SerializableVector3(ps.verts[j].x, ps.verts[j].y, ps.verts[j].z);
-                        psi.verts[j] = ps.verts[j]; // auto-conversion sv3 and Vector3
+                        Debug.Log("6-OnDropPaintStrokeClick and ps.verts.Count is: " + ps.verts.Count);
+                        //psi.verts[j] = new SerializableVector3(ps.verts[j].x, ps.verts[j].y, ps.verts[j].z);
 
+                        psi.verts[j] = ps.verts[j]; // auto-conversion sv3 and Vector3
                     }
+                    Debug.Log("7-OnDropPaintStrokeClick");
                     paintStrokeInfoList.Add(psi);
+                    Debug.Log("8-OnDropPaintStrokeClick");
                 }
             }
         }
@@ -684,9 +701,9 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
     {
         ClearPaintStrokes(); // Clear the paintstrokes
 
-        if (mapMetadata is JObject && mapMetadata["PaintStrokes"] is JObject)
+        if (mapMetadata is JObject && mapMetadata["paintStrokeList"] is JObject)
         {
-            PaintStrokeList paintStrokes = mapMetadata["PaintStrokes"].ToObject<PaintStrokeList>();
+            PaintStrokeList paintStrokes = mapMetadata["paintStrokeList"].ToObject<PaintStrokeList>();
             if (paintStrokes.strokes == null)
             {
                 Debug.Log("no PaintStrokes were added");
@@ -722,6 +739,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
                 mLabelText.text = "Localized";
                 LoadShapesJSON(mSelectedMapInfo.userData);
                 LoadSv3ListJSON(mSelectedMapInfo.userData);
+                LoadPaintStrokesJSON(mSelectedMapInfo.userData);
                 Debug.Log("metadata:");
                 Debug.Log(mSelectedMapInfo.userData);
                 hasLocalized = true;
