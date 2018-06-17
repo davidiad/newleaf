@@ -500,7 +500,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         shapeObjList.Add(shape);
     }
 
-    public void OnDropPaintStrokeClick()  // called when newMap is clicked (?) Add all the paint strokes to the lists
+    public void OnDropPaintStrokeClick()  // called when newMap is clicked (?) Add all the paint strokes to the lists at once
     {
         paintStrokeObjList = paintManager.paintStrokesList;
         // for each PaintStroke, convert to a PaintStrokeInfo, and add to paintStrokesInfoList
@@ -514,7 +514,8 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
                 {
                     for (int j = 0; j < ps.verts.Count; j++)
                     {
-                        psi.verts[j] = new SerializableVector3(ps.verts[j].x, ps.verts[j].y, ps.verts[j].z);
+                       // psi.verts[j] = new SerializableVector3(ps.verts[j].x, ps.verts[j].y, ps.verts[j].z);
+                        psi.verts[j] = ps.verts[j]; // auto-conversion sv3 and Vector3
 
                     }
                     paintStrokesInfoList.Add(psi);
@@ -535,15 +536,16 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         return shape;
     }
 
-    private GameObject PaintStrokeFromInfo(PaintStrokeInfo info)
-    {//? should be a PaintStrokes object (see PaintManager), instead of a Game Object?
-        GameObject shape = GameObject.CreatePrimitive((PrimitiveType)info.shapeType);
-        shape.transform.position = new Vector3(info.px, info.py, info.pz);
-        shape.transform.rotation = new Quaternion(info.qx, info.qy, info.qz, info.qw);
-        shape.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
-        shape.GetComponent<MeshRenderer>().material = mShapeMaterial;
+    private PaintStroke PaintStrokeFromInfo(PaintStrokeInfo info)
+    {
+        PaintStroke paintStroke = new PaintStroke();
 
-        return shape;
+        for (int i = 0; i < info.verts.Length; i++)
+        {
+            paintStroke.verts[i] = info.verts[i];
+        }
+
+        return paintStroke;
     }
 
 
@@ -559,41 +561,9 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
     private JObject PaintStrokes2JSON()
     {
-        PaintStrokesListList psLL = new PaintStrokesListList();
-
-        int psCount = paintManager.paintStrokesList.Count;
-        //int vertCount = paintManager.paintStrokesList[0].verts.Count;
-
-        if (psCount > 0)
-        {
-            psLL.paintStrokesList = new SerializableVector3[vertCount];
-        }
-        for (int i = 0; i < vertCount; i++)
-        {
-            sV3List.sv3s[i] = paintManager.paintStrokesList[0].verts[i];
-        }
-
-        //for (int i = 0; i < paintManager.paintStrokesList.Count; i++)
-        //{
-        //    int count = 
-        //    for (int j = 0; i < paintManager.paintStrokesList[i].verts.Count; j++)
-        //    {
-        //        sV3List.sv3s[i] = paintManager.paintStrokesList[i].verts[j];
-
-        //    }
-        //    //sV3List.sv3s[i] = paintManager.currVertices[i];
-        //}
-        //sV3List.sv3s = new SerializableVector3[4];
-        //sV3List.sv3s[0] = new SerializableVector3(1, 2, 3);
-        //sV3List.sv3s[1] = new SerializableVector3(10, 2, 3);
-        //sV3List.sv3s[2] = new SerializableVector3(1, 20, 3);
-        //sV3List.sv3s[3] = new SerializableVector3(1, 2, 30);
-
-        Debug.Log("XXXXXX: " + sV3List.sv3s.Length);
-        JObject jo = JObject.FromObject(sV3List);
-        Debug.Log("XXXXXX: " + jo);
-
-        return JObject.FromObject(sV3List);
+        // ?? Why create a new PaintStrokeList with copied values?
+        // usings paintStrokesInfoList directly
+        return JObject.FromObject(paintStrokesInfoList);
     }
 
     private JObject Sv3s2JSON()
