@@ -4,8 +4,8 @@ using UnityEngine;
 using UnityEngine.XR.iOS;
 using UnityEngine.UI;
 
-
-public class PaintStroke
+// (?) Should this be a struct?
+public class PaintStroke : MonoBehaviour
 {
     //public int ID { get; set; }
     //public string SomethingWithText { get; set; }

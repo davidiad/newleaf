@@ -78,7 +78,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
     private List<ShapeInfo> shapeInfoList = new List<ShapeInfo>();
     private List<GameObject> shapeObjList = new List<GameObject>();
     private List<SerializableVector3> v3list = new List<SerializableVector3>();
-    private List<PaintStrokeInfo> paintStrokesInfoList = new List<PaintStrokeInfo>();
+    private List<PaintStrokeInfo> paintStrokeInfoList = new List<PaintStrokeInfo>();
     private List<PaintStroke> paintStrokeObjList = new List<PaintStroke>();
 
     private PaintManager paintManager;
@@ -518,12 +518,11 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
                         psi.verts[j] = ps.verts[j]; // auto-conversion sv3 and Vector3
 
                     }
-                    paintStrokesInfoList.Add(psi);
+                    paintStrokeInfoList.Add(psi);
                 }
             }
         }
     }
-
 
     private GameObject ShapeFromInfo(ShapeInfo info)
     {
@@ -559,11 +558,21 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         shapeInfoList.Clear();
     }
 
+    private void ClearPaintStrokes()
+    {
+        foreach (var ps in paintStrokeObjList)
+        {
+            Destroy(ps);
+        }
+        paintStrokeObjList.Clear();
+        paintStrokeInfoList.Clear();
+    }
+
     private JObject PaintStrokes2JSON()
     {
         // ?? Why create a new PaintStrokeList with copied values?
         // usings paintStrokesInfoList directly
-        return JObject.FromObject(paintStrokesInfoList);
+        return JObject.FromObject(paintStrokeInfoList);
     }
 
     private JObject Sv3s2JSON()
@@ -673,24 +682,24 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
     private void LoadPaintStrokesJSON(JToken mapMetadata)
     {
-        //ClearShapes(); // Clear the paintstrokes
+        ClearPaintStrokes(); // Clear the paintstrokes
 
-        if (mapMetadata is JObject && mapMetadata["paintStrokes"] is JObject)
+        if (mapMetadata is JObject && mapMetadata["PaintStrokes"] is JObject)
         {
-            PaintStrokesListList paintStrokesLL = mapMetadata["paintStrokesLL"].ToObject<PaintStrokesListList>();
-            if (paintStrokesLL.paintStrokesList == null)
+            PaintStrokeList paintStrokes = mapMetadata["PaintStrokes"].ToObject<PaintStrokeList>();
+            if (paintStrokes.strokes == null)
             {
                 Debug.Log("no PaintStrokes were added");
                 return;
             }
 
             // (may need to do a for loop to ensure they stay in order?)
-            //foreach (var ps in paintStrokesLL)
-            //{
-            //    sPaintStrokesListList.Add(ps);
-            //    GameObject shape = ShapeFromInfo(shapeInfo);
-            //    shapeObjList.Add(shape);
-            //}
+            foreach (var paintInfo in paintStrokes.strokes)
+            {
+                paintStrokeInfoList.Add(paintInfo);
+                PaintStroke paintstroke = PaintStrokeFromInfo(paintInfo);
+                paintStrokeObjList.Add(paintstroke);
+            }
         }
     }
 
