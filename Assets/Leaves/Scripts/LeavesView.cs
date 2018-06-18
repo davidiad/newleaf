@@ -418,8 +418,8 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
                 JObject sv3list = Sv3s2JSON();
                 metadata["sv3list"] = sv3list;
 
-                JObject paintStrokeList = PaintStrokes2JSON();
-                metadata["paintStrokeList"] = paintStrokeList;
+                //JObject paintStrokeList = PaintStrokes2JSON();
+                //metadata["paintStrokeList"] = paintStrokeList;
 
                 if (useLocation)
                 {
@@ -587,9 +587,32 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
     private JObject PaintStrokes2JSON()
     {
-        // ?? Why create a new PaintStrokeList with copied values?
-        // usings paintStrokesInfoList directly
-        return JObject.FromObject(paintStrokeInfoList);
+        // Create a new PaintStrokeList with values copied from paintStrokesInfoList(a List of PaintStrokeInfo)
+        // Despite the name, PaintStrokeList contains an array (not a List) of PaintStrokeInfo
+        // Need this array to convert to a JObject
+
+        /* // for reference:
+        public class PaintStrokeList
+        {
+            public PaintStrokeInfo[] strokes;
+        }
+        public class PaintStrokeInfo
+        {
+            public SerializableVector3[] verts;
+        }
+        */
+
+        PaintStrokeList psList = new PaintStrokeList();
+        // define the array
+        PaintStrokeInfo[] psiArray = new PaintStrokeInfo[paintStrokeInfoList.Count];
+        psList.strokes = psiArray;
+        // populate the array
+        for (int i = 0; i < paintStrokeInfoList.Count; i++)
+        {
+            psiArray[i].verts = paintStrokeInfoList[i].verts;
+        }
+
+        return JObject.FromObject(psList);
     }
 
     private JObject Sv3s2JSON()
