@@ -4,20 +4,18 @@ using UnityEngine;
 using UnityEngine.XR.iOS;
 using UnityEngine.UI;
 
-// (?) Should this be a struct?
+// (?) Should this be a struct? (or Scriptable object?)
 public class PaintStroke : MonoBehaviour
 {
     //public int ID { get; set; }
     //public string SomethingWithText { get; set; }
-    public List<Vector3> verts { get; set; }
-    public Color color { get; set; }
+    public List<Vector3> verts;// { get; set; }
+    public Color color;// { get; set; }
 
 }
 
 public class PaintManager : MonoBehaviour
 {
-    //public class PaintingList : List<PaintStrokes> { }
-    // Get paint position from PlacenoteSampleView script
     public GameObject PSVGO;
     public Vector3 paintPosition;
     private LeavesView PSV;
@@ -57,7 +55,6 @@ public class PaintManager : MonoBehaviour
         //UnityARSessionNativeInterface.ARFrameUpdatedEvent -= ARFrameUpdated;
     }
 
-    // Use this for initialization
     void Start()
     {
        
@@ -77,11 +74,9 @@ public class PaintManager : MonoBehaviour
         targetSliderGO = GameObject.FindWithTag("TargetSlider");
         targetSlider = targetSliderGO.GetComponent<Slider>();
     }
-
-    // Update is called once per frame
+ 
     void Update()
     {
-        
         currVertices = paintOnComponent.currentVertices; //TODO: update only when needed, not every frame
 
         bool endPainting = paintOnComponent.endPainting;
@@ -158,7 +153,7 @@ public class PaintManager : MonoBehaviour
         }
     }
 
-    // Add a mesh painting brush to the paint target
+    // Add a mesh (or trailrender) painting brush to the paint target
     private void AddBrushToTarget()
     {
         // instantiate a brush
@@ -199,32 +194,38 @@ public class PaintManager : MonoBehaviour
         if (brush)
         {
             // Add the verts of the trail renderer to PaintStrokeList
-            AddPaintStrokeToList();
+            AddPaintStrokeToList(brush);
             // Now that the PaintStroke has been saved, unparent it from the target so it's positioned in worldspace
             brush.tag = "PaintStroke";
             brush.transform.parent = null;
+            // Remove the reticle and brush, no longer needed
+            foreach (Transform child in brush.transform)
+            {
+                Destroy(child.gameObject);
+            }
         }
     }
 
-    private void AddPaintStrokeToList () {
+    private void AddPaintStrokeToList (GameObject brush) {
         // Get the vertices of the trail renderer(s)
         Vector3[] positions = new Vector3[1000]; // assuming there'll never be > 1000
-        paintBrush = GameObject.FindWithTag("PaintBrush"); // Will be a different paintBrush each time, so set here, not in Start
 
         // TrailRenderer.GetPositions adds its positions to an existing arrays, and returns the # of vertices
-        int numPos = paintBrush.GetComponent<TrailRenderer>().GetPositions(positions);
+        int numPos = brush.GetComponent<TrailRenderer>().GetPositions(positions);
         List<Vector3> vertList = new List<Vector3>();
         for (int i = 0; i < numPos; i++)
         {
             vertList.Add(positions[i]);
         }
-
+        Debug.Log("vertCOunt: " + vertList.Count);
         // Only add the new PaintStrokes if it's newly created, not if loading from a saved map
         if (!paintOnComponent.meshLoading)
         {
-            PaintStroke paintStroke = new PaintStroke();
+
+            PaintStroke paintStroke = brush.AddComponent<PaintStroke>();
             paintStroke.verts = vertList;
             paintStrokesList.Add(paintStroke);
+            Debug.Log("Adding PStroke to List: " + paintStroke);
         }
     }
 
