@@ -418,8 +418,8 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
                 JObject sv3list = Sv3s2JSON();
                 metadata["sv3list"] = sv3list;
 
-                //JObject paintStrokeList = PaintStrokes2JSON();
-                //metadata["paintStrokeList"] = paintStrokeList;
+                JObject paintStrokeList = PaintStrokes2JSON();
+                metadata["paintStrokeList"] = paintStrokeList;
 
                 if (useLocation)
                 {
@@ -508,34 +508,34 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
     public void OnDropPaintStrokeClick()  // called when SaveMap is clicked. Add all the paint strokes to the lists at once
     {
-        Debug.Log("1-OnDropPaintStrokeClick");
+        //Debug.Log("1-OnDropPaintStrokeClick");
         paintStrokeObjList = paintManager.paintStrokesList;
-        Debug.Log("2-OnDropPaintStrokeClick");
+        //Debug.Log("2-OnDropPaintStrokeClick");
         // for each PaintStroke, convert to a PaintStrokeInfo, and add to paintStrokesInfoList
         if (paintStrokeObjList.Count > 0)
         {
-            Debug.Log("3-OnDropPaintStrokeClick");
+            //Debug.Log("3-OnDropPaintStrokeClick");
             foreach (var ps in paintStrokeObjList) // TODO: convert to for loop (?)
             {
                 int vertCount = ps.verts.Count;
-                Debug.Log("4-OnDropPaintStrokeClick");
+                //Debug.Log("4-OnDropPaintStrokeClick");
                 PaintStrokeInfo psi = new PaintStrokeInfo();
                 SerializableVector3[] psiverts = new SerializableVector3[vertCount];
                 psi.verts = psiverts;
                 
                 if (vertCount > 0)
                 {
-                    Debug.Log("5-OnDropPaintStrokeClick");
+                    //Debug.Log("5-OnDropPaintStrokeClick");
                     for (int j = 0; j < ps.verts.Count; j++)
                     {
-                        Debug.Log("6-OnDropPaintStrokeClick and ps.verts.Count is: " + ps.verts.Count);
+                        //Debug.Log("6-OnDropPaintStrokeClick and ps.verts.Count is: " + ps.verts.Count);
                         //psi.verts[j] = new SerializableVector3(ps.verts[j].x, ps.verts[j].y, ps.verts[j].z);
 
                         psi.verts[j] = ps.verts[j]; // auto-conversion sv3 and Vector3
                     }
-                    Debug.Log("7-OnDropPaintStrokeClick");
+                    //Debug.Log("7-OnDropPaintStrokeClick");
                     paintStrokeInfoList.Add(psi);
-                    Debug.Log("8-OnDropPaintStrokeClick");
+                    //Debug.Log("8-OnDropPaintStrokeClick");
                 }
             }
         }
@@ -551,19 +551,6 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
         return shape;
     }
-
-    private PaintStroke PaintStrokeFromInfo(PaintStrokeInfo info)
-    {
-        PaintStroke paintStroke = new PaintStroke();
-
-        for (int i = 0; i < info.verts.Length; i++)
-        {
-            paintStroke.verts[i] = info.verts[i];
-        }
-
-        return paintStroke;
-    }
-
 
     private void ClearShapes()
     {
@@ -609,6 +596,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         // populate the array
         for (int i = 0; i < paintStrokeInfoList.Count; i++)
         {
+            psiArray[i] = new PaintStrokeInfo();
             psiArray[i].verts = paintStrokeInfoList[i].verts;
         }
 
@@ -692,8 +680,6 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
                 Debug.Log("YYYYY " + sv3);
                 paintManager.currVertices.Add(vector);
             }
-
-            paintManager.RecreatePaintedStrokes();
         }
     }
 
@@ -738,9 +724,42 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
             {
                 paintStrokeInfoList.Add(paintInfo);
                 PaintStroke paintstroke = PaintStrokeFromInfo(paintInfo);
-                paintStrokeObjList.Add(paintstroke);
+                paintStrokeObjList.Add(paintstroke); // should be used by PaintManager to recreate painting
             }
+            paintManager.paintStrokesList = paintStrokeObjList; // not really objects, rather components
+            paintManager.RecreatePaintedStrokes();
         }
+    }
+
+    private void TestPaintStrokeInfo() {
+        PaintStrokeInfo psi = new PaintStrokeInfo();
+        psi.verts = new SerializableVector3[3];
+        psi.verts[0] = new SerializableVector3(1, 2, 3);
+        psi.verts[1] = new SerializableVector3(10, 2, 3);
+        psi.verts[2] = new SerializableVector3(1, 20, 3);
+        PaintStroke ps = PaintStrokeFromInfo(psi);
+        Debug.Log("ps: ?????????:");
+        Debug.Log(ps);
+    }
+
+    private PaintStroke PaintStrokeFromInfo(PaintStrokeInfo info)
+    {
+        //TODO: Won't work with 'new' because PaintStroke is a monobehavior. Probably better if PaintStroke is not a monobehavior
+        //PaintStroke paintStroke = new PaintStroke();
+        GameObject psHolder = new GameObject("psholder");
+        psHolder.AddComponent<PaintStroke>();
+        PaintStroke paintStroke = psHolder.GetComponent<PaintStroke>();
+        List<Vector3> v = new List<Vector3>();
+        paintStroke.verts = v;
+        for (int i = 0; i < info.verts.Length; i++)
+        {
+            //paintStroke.verts[i] = info.verts[i];  // implicit conversion of SV3 to Vector3
+            paintStroke.verts.Add(info.verts[i]);
+        }
+        Debug.Log(paintStroke.verts[0]);
+        Debug.Log(paintStroke.verts[1]);
+        Debug.Log(paintStroke.verts[2]);
+        return paintStroke;
     }
 
 

@@ -4,14 +4,13 @@ using UnityEngine;
 using UnityEngine.XR.iOS;
 using UnityEngine.UI;
 
-// (?) Should this be a struct? (or Scriptable object?)
+// TODO:(?) Should this be a struct? (or Scriptable object?)
 public class PaintStroke : MonoBehaviour
 {
     //public int ID { get; set; }
     //public string SomethingWithText { get; set; }
     public List<Vector3> verts;// { get; set; }
     public Color color;// { get; set; }
-
 }
 
 public class PaintManager : MonoBehaviour
@@ -57,7 +56,6 @@ public class PaintManager : MonoBehaviour
 
     void Start()
     {
-       
         paintOn = false;
         newPaintVertices = false;
         particleSystemList = new List<ParticleSystem>();
@@ -166,27 +164,50 @@ public class PaintManager : MonoBehaviour
 
     public void RecreatePaintedStrokes() {
         paintOnComponent.meshLoading = true;
-        // position the paintbrush at the first point of the vertex list
-        //TODO: Use the entire paint stroke list
-        if (currVertices.Count > 0)
+        // The paint stroke info that was saved with the map should already have been put into paintStrokesList
+        foreach (PaintStroke paintstroke in paintStrokesList)
         {
-            GameObject newBrush = Instantiate(paintBrushPrefab, currVertices[0], Quaternion.Euler(new Vector3(0f, 90f, 0f)));
-            StartCoroutine(PaintMesh(newBrush));
+            if (paintstroke.verts.Count > 2) // no point in drawing a single vert
+            {
+                // position the new paintbrush at the first point of the vertex list
+                GameObject newBrush = Instantiate(paintBrushPrefab, paintstroke.verts[0], Quaternion.Euler(new Vector3(0f, 90f, 0f)));
+                StartCoroutine(PaintTrail(newBrush, paintstroke));
+            }
         }
+        // previous way, does only the first one
+        //if (currVertices.Count > 0)
+        //{
+        //    GameObject newBrush = Instantiate(paintBrushPrefab, currVertices[0], Quaternion.Euler(new Vector3(0f, 90f, 0f)));
+        //    StartCoroutine(PaintMesh(newBrush));
+        //}
     }
 
-    private IEnumerator PaintMesh(GameObject brush) {
-        Debug.Log("In PaintMesh coroutine");
-        for (int i = 1; i < currVertices.Count; i++) {
-            Debug.Log("i: " + i);
-            Debug.Log("currVertices[i]: " + currVertices[i]);
-            brush.transform.position = currVertices[i];
+    private IEnumerator PaintTrail(GameObject brush, PaintStroke paintstroke)
+    {
+        //Debug.Log("In PaintMesh coroutine");
+        for (int i = 1; i < paintstroke.verts.Count; i++)
+        {
+            //Debug.Log("i: " + i);
+            //Debug.Log("currVertices[i]: " + currVertices[i]);
+            brush.transform.position = paintstroke.verts[i];
             yield return new WaitForSeconds(0.01f); // allow enough time for the previous mesh section to be generated
         }
-        //TODO: Loop thru all groups of verts, not just 1
         paintOnComponent.meshLoading = false;
         paintOnComponent.endPainting = true; // flag to destroy mesh extrusion component
     }
+
+    //private IEnumerator PaintMesh(GameObject brush) {
+    //    //Debug.Log("In PaintMesh coroutine");
+    //    for (int i = 1; i < currVertices.Count; i++) {
+    //        //Debug.Log("i: " + i);
+    //        //Debug.Log("currVertices[i]: " + currVertices[i]);
+    //        brush.transform.position = currVertices[i];
+    //        yield return new WaitForSeconds(0.01f); // allow enough time for the previous mesh section to be generated
+    //    }
+    //    //TODO: Loop thru all groups of verts, not just 1
+    //    paintOnComponent.meshLoading = false;
+    //    paintOnComponent.endPainting = true; // flag to destroy mesh extrusion component
+    //}
 
     private void RemoveBrushFromTarget() {
         // assuming there is only one paint brush as a time
@@ -217,15 +238,13 @@ public class PaintManager : MonoBehaviour
         {
             vertList.Add(positions[i]);
         }
-        Debug.Log("vertCOunt: " + vertList.Count);
+
         // Only add the new PaintStrokes if it's newly created, not if loading from a saved map
         if (!paintOnComponent.meshLoading)
         {
-
             PaintStroke paintStroke = brush.AddComponent<PaintStroke>();
             paintStroke.verts = vertList;
             paintStrokesList.Add(paintStroke);
-            Debug.Log("Adding PStroke to List: " + paintStroke);
         }
     }
 
