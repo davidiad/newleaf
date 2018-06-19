@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.iOS;
 using UnityEngine.UI;
+using Ara;
+
 
 // TODO:(?) Should this be a struct? (or Scriptable object?)
 public class PaintStroke : MonoBehaviour
@@ -184,11 +186,8 @@ public class PaintManager : MonoBehaviour
 
     private IEnumerator PaintTrail(GameObject brush, PaintStroke paintstroke)
     {
-        //Debug.Log("In PaintMesh coroutine");
         for (int i = 1; i < paintstroke.verts.Count; i++)
         {
-            //Debug.Log("i: " + i);
-            //Debug.Log("currVertices[i]: " + currVertices[i]);
             brush.transform.position = paintstroke.verts[i];
             yield return new WaitForSeconds(0.01f); // allow enough time for the previous mesh section to be generated
         }
@@ -228,16 +227,32 @@ public class PaintManager : MonoBehaviour
     }
 
     private void AddPaintStrokeToList (GameObject brush) {
-        // Get the vertices of the trail renderer(s)
-        Vector3[] positions = new Vector3[1000]; // assuming there'll never be > 1000
+        List<Vector3> vertList = new List<Vector3>();
 
         // TrailRenderer.GetPositions adds its positions to an existing arrays, and returns the # of vertices
+        // Get the vertices of the trail renderer(s)
+        Vector3[] positions = new Vector3[1000]; // assuming there'll never be > 1000
+        // Note: // Trail Renderer may be turned off in favor of Ara Trail Renderer
         int numPos = brush.GetComponent<TrailRenderer>().GetPositions(positions);
-        List<Vector3> vertList = new List<Vector3>();
-        for (int i = 0; i < numPos; i++)
+        if (numPos > 0) 
         {
-            vertList.Add(positions[i]);
+            Debug.Log("Trail Renderer int: " + numPos);
+            for (int i = 0; i < numPos; i++)
+            {
+                vertList.Add(positions[i]);
+            }
+        } else {
+            // Ara Trail version
+            AraTrail araTrail = brush.GetComponent<AraTrail>();
+            int numPosAra = araTrail.points.Count;
+
+            for (int i = 0; i < numPosAra; i++)
+            {
+                vertList.Add(araTrail.points[i].position);
+            }
         }
+
+
 
         // Only add the new PaintStrokes if it's newly created, not if loading from a saved map
         if (!paintOnComponent.meshLoading)
@@ -298,38 +313,11 @@ public class PaintManager : MonoBehaviour
         currVertices = new List<Vector3>();
     }
 
-    public Mesh GetMesh()
-    {
-        // get all the particles, and save them in a mesh
-        //foreach (ParticleSystem partSys in particleSystemList)
-        //{
-        /*
-        ParticleSystem.Particle[] myParticles = (ParticleSystem)GetComponent("ParticleSystem");
-        partSys.GetParticles(myParticles);
-        foreach (Particle particle in myParticles)
-        {
-
-        }
-
-        ParticleSystem.Particle[] currentParticles = new ParticleSystem.Particle[partSys.particleCount]; 
-        partSys.GetParticles(currentParticles);
-        foreach (Particle particle in currentParticles) 
-        {
-
-        }
-        Vector3 [] verts = partSys.GetParticles()
-
-    }
-    */
-        return mesh;
-    }
 
     private void Paint()
     {
        // paintPosition = paintTarget.transform.position;
         paintPosition = PSV.paintPosition;
-        //Camera.main.ScreenToWorldPoint(new Vector3(Screen.width / 2, Screen.height / 2, Camera.main.nearClipPlane)) + Camera.main.transform.forward * 2.0f;
-        //Camera.main.transform.position + Camera.main.transform.forward * 0.3f;
         if (Vector3.Distance(paintPosition, previousPosition) > 0.025f)
         {
             if (paintOn) currVertices.Add(paintPosition);
@@ -338,23 +326,6 @@ public class PaintManager : MonoBehaviour
 
         }
     }
-    // Quaternion rot = Camera.main.transform.rotation;
-    /*
-    private void ARFrameUpdated(UnityARCamera arCamera)
-    {
-
-        Vector3 paintPosition = (Camera.main.transform.forward * 0.2f) + GetCameraPosition(arCamera);
-        if (Vector3.Distance(paintPosition, previousPosition) > 0.025f)
-        {
-            if (paintingOn) currVertices.Add(paintPosition);
-            previousPosition = paintPosition;
-            newPaintVertices = true;
-            Debug.Log("arCam Position: " + paintPosition);
-        } else {
-            Debug.Log("arCam Position, Painting off: " + paintPosition);
-        }
-    }
-    */
 
     private Vector3 GetCameraPosition(UnityARCamera cam)
     {

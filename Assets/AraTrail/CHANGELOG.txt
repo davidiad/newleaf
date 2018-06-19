@@ -1,0 +1,23 @@
+# Change Log
+All notable changes to “Ara Trails” will be documented in this file.
+
+## [1.0.2] - 2018-3-31
+### Added 
+- Timescale option: allows to use unscaled time instead of regular delta time.
+### Fixed 
+- Bug that prevented passing float.PositiveInfinity as the points lifetime.
+
+
+## [1.0.1] - 2018-3-06
+### Fixed 
+- Bug that caused the corner roundess feature to generate incorrect texture coordinates in certain cases.
+
+### Added
+- Warmup time for physical simulation of trails.
+
+### Changed
+- Order of inspector sections is now Overall > Lenght > Time > Emission > Phisics > Texture > Rendering.
+
+
+## [1.0.0] - 2017-10-16
+- Initial release.
