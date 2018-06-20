@@ -265,6 +265,7 @@ public class PaintManager : MonoBehaviour
         if (!paintOnComponent.meshLoading)
         {
             PaintStroke paintStroke = brush.AddComponent<PaintStroke>();
+            paintStroke.color = paintColor;
             paintStroke.verts = vertList;
             paintStrokesList.Add(paintStroke);
         }

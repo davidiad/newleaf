@@ -507,18 +507,18 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
     public void OnDropPaintStrokeClick()  // called when SaveMap is clicked. Add all the paint strokes to the lists at once
     {
-        //Debug.Log("1-OnDropPaintStrokeClick");
+        Debug.Log("1-OnDropPaintStrokeClick");
         paintStrokeObjList = paintManager.paintStrokesList;
-        //Debug.Log("2-OnDropPaintStrokeClick");
+        Debug.Log("2-OnDropPaintStrokeClick");
         // for each PaintStroke, convert to a PaintStrokeInfo, and add to paintStrokesInfoList
         if (paintStrokeObjList.Count > 0)
         {
-            //Debug.Log("3-OnDropPaintStrokeClick");
+            Debug.Log("3-OnDropPaintStrokeClick");
             foreach (var ps in paintStrokeObjList) // TODO: convert to for loop (?)
             {
                 // Add the intialColor of the paintstroke
                 Vector4 c = ps.color; // implicit conversion of Color to Vector4
-                //Debug.Log("4-OnDropPaintStrokeClick");
+                Debug.Log("4-OnDropPaintStrokeClick: " + c.x + " | " + c.y + " | " + c.z + " | " + c.w);
                 PaintStrokeInfo psi = new PaintStrokeInfo();
                 psi.initialColor = c; // implicit conversion of Vector4 to SerialiazableVector4  
 
@@ -529,7 +529,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
                 
                 if (vertCount > 0)
                 {
-                    //Debug.Log("5-OnDropPaintStrokeClick");
+                    Debug.Log("5-OnDropPaintStrokeClick");
                     for (int j = 0; j < ps.verts.Count; j++)
                     {
                         //Debug.Log("6-OnDropPaintStrokeClick and ps.verts.Count is: " + ps.verts.Count);
@@ -537,9 +537,9 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
                         psi.verts[j] = ps.verts[j]; // auto-conversion sv3 and Vector3
                     }
-                    //Debug.Log("7-OnDropPaintStrokeClick");
+                    Debug.Log("7-OnDropPaintStrokeClick");
                     paintStrokeInfoList.Add(psi);
-                    //Debug.Log("8-OnDropPaintStrokeClick");
+                    Debug.Log("8-OnDropPaintStrokeClick");
                 }
             }
         }
