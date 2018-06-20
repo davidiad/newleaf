@@ -23,12 +23,11 @@ public class ShapeInfo
 }
 
 [System.Serializable]
-
 // analogous to SV3List, but could add other attributes, such as color
 public class PaintStrokeInfo
 {
     public SerializableVector3[] verts;
-    // color
+    public SerializableVector4 initialColor; // initial color of stroke. Color implicitly converts to Vector4.
 }
 
 [System.Serializable]
@@ -517,9 +516,14 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
             //Debug.Log("3-OnDropPaintStrokeClick");
             foreach (var ps in paintStrokeObjList) // TODO: convert to for loop (?)
             {
-                int vertCount = ps.verts.Count;
+                // Add the intialColor of the paintstroke
+                Vector4 c = ps.color; // implicit conversion of Color to Vector4
                 //Debug.Log("4-OnDropPaintStrokeClick");
                 PaintStrokeInfo psi = new PaintStrokeInfo();
+                psi.initialColor = c; // implicit conversion of Vector4 to SerialiazableVector4  
+
+                // Add the verts
+                int vertCount = ps.verts.Count;
                 SerializableVector3[] psiverts = new SerializableVector3[vertCount];
                 psi.verts = psiverts;
                 
@@ -598,6 +602,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         {
             psiArray[i] = new PaintStrokeInfo();
             psiArray[i].verts = paintStrokeInfoList[i].verts;
+            psiArray[i].initialColor = paintStrokeInfoList[i].initialColor;
         }
 
         return JObject.FromObject(psList);
@@ -749,6 +754,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         GameObject psHolder = new GameObject("psholder");
         psHolder.AddComponent<PaintStroke>();
         PaintStroke paintStroke = psHolder.GetComponent<PaintStroke>();
+        paintStroke.color = new Color(info.initialColor.x, info.initialColor.y, info.initialColor.z, info.initialColor.w);
         List<Vector3> v = new List<Vector3>();
         paintStroke.verts = v;
         for (int i = 0; i < info.verts.Length; i++)
@@ -756,9 +762,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
             //paintStroke.verts[i] = info.verts[i];  // implicit conversion of SV3 to Vector3
             paintStroke.verts.Add(info.verts[i]);
         }
-        Debug.Log(paintStroke.verts[0]);
-        Debug.Log(paintStroke.verts[1]);
-        Debug.Log(paintStroke.verts[2]);
+
         return paintStroke;
     }
 

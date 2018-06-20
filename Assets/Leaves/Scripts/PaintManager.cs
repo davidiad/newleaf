@@ -12,6 +12,7 @@ public class PaintStroke : MonoBehaviour
     //public int ID { get; set; }
     //public string SomethingWithText { get; set; }
     public List<Vector3> verts;// { get; set; }
+    public List<Color> pointColors; // will hold colors of individual points
     public Color color;// { get; set; }
 }
 
@@ -175,6 +176,7 @@ public class PaintManager : MonoBehaviour
             {
                 // position the new paintbrush at the first point of the vertex list
                 GameObject newBrush = Instantiate(paintBrushPrefab, paintstroke.verts[0], Quaternion.Euler(new Vector3(0f, 90f, 0f)));
+                newBrush.GetComponent<AraTrail>().initialColor = paintstroke.color;
                 StartCoroutine(PaintTrail(newBrush, paintstroke));
             }
         }
@@ -230,7 +232,7 @@ public class PaintManager : MonoBehaviour
 
     private void AddPaintStrokeToList (GameObject brush) {
         List<Vector3> vertList = new List<Vector3>();
-
+        List<Color> colorList = new List<Color>();
         // TrailRenderer.GetPositions adds its positions to an existing arrays, and returns the # of vertices
         // Get the vertices of the trail renderer(s)
         Vector3[] positions = new Vector3[1000]; // assuming there'll never be > 1000
@@ -245,11 +247,15 @@ public class PaintManager : MonoBehaviour
         } else {
             // Ara Trail version
             AraTrail araTrail = brush.GetComponent<AraTrail>();
+            araTrail.initialColor = paintColor;
             int numPosAra = araTrail.points.Count;
 
             for (int i = 0; i < numPosAra; i++)
             {
                 vertList.Add(araTrail.points[i].position);
+                colorList.Add(araTrail.points[i].color); 
+                // alternately, could add the AraTrail points themselves to the Painstroke, 
+                // since they already hold the colors, plus other info such as discontinuous.
             }
         }
 
