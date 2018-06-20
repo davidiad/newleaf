@@ -162,6 +162,8 @@ public class PaintManager : MonoBehaviour
         newBrush.transform.parent = paintTarget.gameObject.transform; // attach the object that acts as a brush to the paintTarget
         newBrush.transform.localPosition = new Vector3(0f, 0f, 0f);
         newBrush.GetComponent<TrailRenderer>().Clear(); // remove trail from 1st frame with odd, unwanted line (comes from Trail rendering before first point is established)
+
+        newBrush.GetComponent<AraTrail>().initialColor = paintColor;
     } 
 
     public void RecreatePaintedStrokes() {
@@ -236,7 +238,6 @@ public class PaintManager : MonoBehaviour
         int numPos = brush.GetComponent<TrailRenderer>().GetPositions(positions);
         if (numPos > 0) 
         {
-            Debug.Log("Trail Renderer int: " + numPos);
             for (int i = 0; i < numPos; i++)
             {
                 vertList.Add(positions[i]);
@@ -290,7 +291,14 @@ public class PaintManager : MonoBehaviour
         {
             SaveParticleSystem();
         }
-        paintColor = Random.ColorHSV();
+
+        paintColor = Random.ColorHSV(hueMin: 0f, hueMax: 1f, saturationMin: 0.8f, saturationMax: 1f, valueMin: 0.8f, valueMax: 1f);
+
+        GameObject currentBrush = GameObject.FindWithTag("PaintBrush");
+        if (currentBrush)
+        {
+            currentBrush.GetComponent<AraTrail>().initialColor = paintColor;
+        }
     }
 
     public void Reset()
