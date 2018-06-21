@@ -12,6 +12,7 @@ TagManager:
   - Mesh
   - TargetSlider
   - PaintStroke
+  - PaintSlider
   layers:
   - Default
   - TransparentFX

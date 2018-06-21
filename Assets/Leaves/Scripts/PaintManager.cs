@@ -25,6 +25,7 @@ public class PaintManager : MonoBehaviour
     private PaintOn paintOnComponent;
     private GameObject targetSliderGO;
     private Slider targetSlider;
+    private Slider paintSlider;
 
     public Button onoff;
     [SerializeField] private GameObject paintTarget;
@@ -70,10 +71,12 @@ public class PaintManager : MonoBehaviour
         PSV = PSVGO.GetComponent<LeavesView>();
         paintPosition = PSV.paintPosition;
         paintTarget = GameObject.FindWithTag("PaintTarget");
+        paintSlider = GameObject.FindWithTag("PaintSlider").GetComponent<Slider>();
         paintOnObject = GameObject.FindWithTag("PaintOn");
         paintOnComponent = paintOnObject.GetComponent<PaintOn>();
         targetSliderGO = GameObject.FindWithTag("TargetSlider");
         targetSlider = targetSliderGO.GetComponent<Slider>();
+        AdjustPaintColor(); // set the color to what the color slider is set to
     }
  
     void Update()
@@ -146,6 +149,18 @@ public class PaintManager : MonoBehaviour
 
 */
     }
+
+    public void AdjustPaintColor() {
+        if (paintSlider) {
+            Gradient paintGradient = paintSlider.GetComponent<PaintGradient>().gradient;
+            paintColor = paintGradient.Evaluate(paintSlider.value);
+            GameObject currentBrush = GameObject.FindWithTag("PaintBrush");
+            if (currentBrush)
+            {
+                currentBrush.GetComponent<AraTrail>().initialColor = paintColor;
+            }
+        }
+    } 
 
     public void AdjustTargetDistance() {
         if (paintTarget)
