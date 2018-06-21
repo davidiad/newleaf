@@ -294,10 +294,10 @@ public class PaintManager : MonoBehaviour
 
     public void RandomizeColor()
     {
-        if (ps.particleCount > 0)
-        {
-            SaveParticleSystem();
-        }
+        //if (ps.particleCount > 0)
+        //{
+        //    SaveParticleSystem();
+        //}
 
         paintColor = Random.ColorHSV(hueMin: 0f, hueMax: 1f, saturationMin: 0.8f, saturationMax: 1f, valueMin: 0.8f, valueMax: 1f);
 
