@@ -66,6 +66,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
     [SerializeField] Text mLabelText;
     [SerializeField] Material mShapeMaterial;
     [SerializeField] PlacenoteARGeneratePlane mPNPlaneManager;
+    [SerializeField] Text uploadText;
 
     public Vector3 paintPosition;
 
@@ -396,7 +397,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
         mLabelText.text = "Saving...";
         LibPlacenote.Instance.SaveMap(
-            (mapId) =>
+            (mapId) =>  // savedCb   upon saving the map locally
             {
                 LibPlacenote.Instance.StopSession();
                 mLabelText.text = "Saved Map ID: " + mapId;
@@ -439,10 +440,14 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
                 LibPlacenote.Instance.SetMetadata(mapId, metadata);
 
             },
-            (completed, faulted, percentage) => {
-                //Debug.Log("completed: " + completed);
-                //Debug.Log("faulted: " + faulted);
-                //Debug.Log("percentage: " + percentage);
+            (completed, faulted, percentage) => { // progressCb  upon transfer to cloud
+                String percentText = (percentage * 100f).ToString();
+            uploadText.text = "Map upload status– Completed: " + completed + "    Faulted: " + faulted + "   " + "\n" + percentText + "% uploaded";
+                Debug.Log("faulted?: " + faulted);
+                Debug.Log("Completed?: " + completed);
+                //if (completed) {
+                //    mLabelText.text = "Map upload complete";
+                //}
             }
         );
     }
