@@ -296,7 +296,7 @@ public class PaintManager : MonoBehaviour
         // let user know that painting is on
         if (paintOn)
         {
-            onoff.transform.localScale = new Vector3(1.7f, 1.7f, 1.7f);
+            onoff.transform.localScale = new Vector3(1.15f, 1.15f, 1.15f);
             AddBrushToTarget();
         }
         else
