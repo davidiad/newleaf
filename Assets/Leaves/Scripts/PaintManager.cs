@@ -45,7 +45,7 @@ public class PaintManager : MonoBehaviour
     public ParticleSystem ps; // Stores current particle system
     public GameObject paintBrushPrefab;
     private GameObject paintBrush;
-
+    private CanvasGroup paintButtonGroup;
     [SerializeField] Camera mainCam;
 
     void OnEnable()
@@ -77,6 +77,8 @@ public class PaintManager : MonoBehaviour
         targetSliderGO = GameObject.FindWithTag("TargetSlider");
         targetSlider = targetSliderGO.GetComponent<Slider>();
         AdjustPaintColor(); // set the color to what the color slider is set to
+        paintButtonGroup = onoff.GetComponent<CanvasGroup>();
+        paintButtonGroup.alpha = 0.4f;
     }
  
     void Update()
@@ -296,13 +298,15 @@ public class PaintManager : MonoBehaviour
         // let user know that painting is on
         if (paintOn)
         {
-            onoff.transform.localScale = new Vector3(1.15f, 1.15f, 1.15f);
+            onoff.transform.localScale = new Vector3(1.1f, 1.1f, 1.1f);
+            paintButtonGroup.alpha = 1f;
             AddBrushToTarget();
         }
         else
         {
             RemoveBrushFromTarget();
             onoff.transform.localScale = new Vector3(1f, 1f, 1f);
+            paintButtonGroup.alpha = 0.4f;
             paintOnComponent.endPainting = true;
         }
     }
