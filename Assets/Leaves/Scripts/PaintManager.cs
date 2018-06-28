@@ -34,7 +34,7 @@ public class PaintManager : MonoBehaviour
     public ParticleSystem particleSystemTemplate;
 
     private bool newPaintVertices;
-    private bool paintOn;
+    public bool paintOn;
     private Color paintColor;
     private Vector3 previousPosition;
 
@@ -229,7 +229,7 @@ public class PaintManager : MonoBehaviour
     //    paintOnComponent.endPainting = true; // flag to destroy mesh extrusion component
     //}
 
-    private void RemoveBrushFromTarget() {
+    public void RemoveBrushFromTarget() {
         // assuming there is only one paint brush as a time
         GameObject brush = GameObject.FindWithTag("PaintBrush");
         if (brush)

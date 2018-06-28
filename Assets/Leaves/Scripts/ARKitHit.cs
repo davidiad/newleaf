@@ -32,7 +32,7 @@ namespace UnityEngine.XR.iOS
                     Debug.Log(string.Format("x:{0:0.######} y:{1:0.######} z:{2:0.######}", m_HitTransform.position.x, m_HitTransform.position.y, m_HitTransform.position.z));
                     if (!planePainting)
                     {
-                        PaintOnPlane();
+                        PaintPlaneOn();
                     }
                     //make sure PaintOnPlane() is called only once
                     planePainting = true;
@@ -43,9 +43,12 @@ namespace UnityEngine.XR.iOS
             return false;
         }
 
-        private void PaintOnPlane()
+        private void PaintPlaneOn()
         {
-            // Check if painting is on. If so, remove that brush
+            // Check if painting with device movement is on. If so, remove that brush, and turn painting off
+            if (paintManager.paintOn) {
+                paintManager.TogglePaint();
+            }
             // move paint target as child
             paintTarget.transform.SetParent(this.transform);
             paintTarget.transform.localPosition = Vector3.zero;
@@ -86,7 +89,7 @@ namespace UnityEngine.XR.iOS
                         y = screenPosition.y
                     };
 
-                    // prioritize reults types
+                    // prioritize results types
                     ARHitTestResultType[] resultTypes = {
                         //ARHitTestResultType.ARHitTestResultTypeExistingPlaneUsingGeometry,
                         ARHitTestResultType.ARHitTestResultTypeExistingPlaneUsingExtent, 
@@ -104,6 +107,13 @@ namespace UnityEngine.XR.iOS
                             return;
                         }
                     }
+                } else if (touch.phase == TouchPhase.Ended) 
+                {
+                    // reset the brush
+                    paintManager.RemoveBrushFromTarget();
+                    paintTarget.transform.SetParent(Camera.main.transform);
+                    paintManager.AdjustTargetDistance();
+                    planePainting = false;
                 }
             }
 #endif
