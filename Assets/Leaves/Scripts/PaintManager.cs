@@ -172,7 +172,7 @@ public class PaintManager : MonoBehaviour
     }
 
     // Add a mesh (or trailrender) painting brush to the paint target
-    private void AddBrushToTarget()
+    public void AddBrushToTarget()
     {
         // instantiate a brush
         // parent it to the paint target

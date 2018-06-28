@@ -455,7 +455,7 @@ MonoBehaviour:
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
   emit: 1
-  initialThickness: 0.03
+  initialThickness: 0.002
   initialColor: {r: 0.9937728, g: 0.69502157, b: 0.069012426, a: 1}
   initialVelocity: {x: 0, y: 0, z: 0}
   timeInterval: 0.025

@@ -13,6 +13,7 @@ TagManager:
   - TargetSlider
   - PaintStroke
   - PaintSlider
+  - PlanePainter
   layers:
   - Default
   - TransparentFX

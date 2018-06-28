@@ -9,6 +9,16 @@ namespace UnityEngine.XR.iOS
         public float maxRayDistance = 30.0f;
         public LayerMask collisionLayer = 1 << 10;  //ARKitPlane layer
 
+        private PaintManager paintManager;
+        private GameObject paintTarget;
+        private bool planePainting = false;
+
+        private void Start()
+        {
+            paintManager = GameObject.FindWithTag("PaintManager").GetComponent<PaintManager>();
+            paintTarget = GameObject.FindWithTag("PaintTarget");
+        }
+
         bool HitTestWithResultType(ARPoint point, ARHitTestResultType resultTypes)
         {
             List<ARHitTestResult> hitResults = UnityARSessionNativeInterface.GetARSessionNativeInterface().HitTest(point, resultTypes);
@@ -20,10 +30,27 @@ namespace UnityEngine.XR.iOS
                     m_HitTransform.position = UnityARMatrixOps.GetPosition(hitResult.worldTransform);
                     m_HitTransform.rotation = UnityARMatrixOps.GetRotation(hitResult.worldTransform);
                     Debug.Log(string.Format("x:{0:0.######} y:{1:0.######} z:{2:0.######}", m_HitTransform.position.x, m_HitTransform.position.y, m_HitTransform.position.z));
+                    if (!planePainting)
+                    {
+                        PaintOnPlane();
+                    }
+                    //make sure PaintOnPlane() is called only once
+                    planePainting = true;
                     return true;
                 }
+
             }
             return false;
+        }
+
+        private void PaintOnPlane()
+        {
+            // Check if painting is on. If so, remove that brush
+            // move paint target as child
+            paintTarget.transform.SetParent(this.transform);
+            paintTarget.transform.localPosition = Vector3.zero;
+            // add brush to paint target
+            paintManager.AddBrushToTarget();
         }
 
         // Update is called once per frame
