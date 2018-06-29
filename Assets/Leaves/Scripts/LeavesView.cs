@@ -329,7 +329,8 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
             return;
         }
 
-        mInitButtonPanel.SetActive(false);
+        //mInitButtonPanel.SetActive(false);
+        GameObject.FindWithTag("MapButton").GetComponent<CanvasGroup>().alpha = 1.0f;
         mMappingButtonPanel.SetActive(true);
         mPlaneDetectionToggle.SetActive(true);
         Debug.Log("Started Session");

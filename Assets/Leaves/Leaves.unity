@@ -7408,7 +7408,7 @@ GameObject:
   - component: {fileID: 1486774219}
   m_Layer: 5
   m_Name: MAP
-  m_TagString: Untagged
+  m_TagString: MapButton
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967295
@@ -7441,7 +7441,7 @@ CanvasGroup:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1486774217}
   m_Enabled: 1
-  m_Alpha: 1
+  m_Alpha: 0.4
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
@@ -9382,7 +9382,7 @@ MonoBehaviour:
         m_CallState: 2
     m_TypeName: UnityEngine.UI.Toggle+ToggleEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
-  m_IsOn: 0
+  m_IsOn: 1
 --- !u!224 &2036299909
 RectTransform:
   m_ObjectHideFlags: 0

@@ -9,12 +9,14 @@ namespace UnityEngine.XR.iOS
         public float maxRayDistance = 30.0f;
         public LayerMask collisionLayer = 1 << 10;  //ARKitPlane layer
 
+        private PaintOn paintOn; // holds paint status
         private PaintManager paintManager;
         private GameObject paintTarget;
         private bool planePainting = false;
 
         private void Start()
         {
+            paintOn = GameObject.FindWithTag("PaintOn").GetComponent<PaintOn>();
             paintManager = GameObject.FindWithTag("PaintManager").GetComponent<PaintManager>();
             paintTarget = GameObject.FindWithTag("PaintTarget");
         }
@@ -46,7 +48,7 @@ namespace UnityEngine.XR.iOS
         private void PaintPlaneOn()
         {
             // Check if painting with device movement is on. If so, remove that brush, and turn painting off
-            if (paintManager.paintOn) {
+            if (paintOn.paintOn) {
                 paintManager.TogglePaint();
             }
             // move paint target as child

@@ -34,7 +34,7 @@ public class PaintManager : MonoBehaviour
     public ParticleSystem particleSystemTemplate;
 
     private bool newPaintVertices;
-    public bool paintOn;
+    private bool paintOn;
     private Color paintColor;
     private Vector3 previousPosition;
 
@@ -286,6 +286,11 @@ public class PaintManager : MonoBehaviour
             paintStroke.verts = vertList;
             paintStrokesList.Add(paintStroke);
         }
+    }
+
+    private void ToggleButton()
+    {
+        
     }
 
     public void TogglePaint()
