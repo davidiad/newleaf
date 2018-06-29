@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine.EventSystems;
 
 namespace UnityEngine.XR.iOS
 {
@@ -7,7 +8,7 @@ namespace UnityEngine.XR.iOS
     {
         public Transform m_HitTransform;
         public float maxRayDistance = 30.0f;
-        public LayerMask collisionLayer = 1 << 10;  //ARKitPlane layer
+        public LayerMask collisionLayer = 1 << 8;  //ARKitPlane layer
 
         private PaintOn paintOn; // holds paint status
         private PaintManager paintManager;
@@ -24,7 +25,7 @@ namespace UnityEngine.XR.iOS
         bool HitTestWithResultType(ARPoint point, ARHitTestResultType resultTypes)
         {
             List<ARHitTestResult> hitResults = UnityARSessionNativeInterface.GetARSessionNativeInterface().HitTest(point, resultTypes);
-            if (hitResults.Count > 0)
+            if (hitResults.Count > 0 && !EventSystem.current.IsPointerOverGameObject())
             {
                 foreach (var hitResult in hitResults)
                 {
@@ -61,7 +62,7 @@ namespace UnityEngine.XR.iOS
         // Update is called once per frame
         void Update()
         {
-#if UNITY_EDITOR   //we will only use this script on the editor side, though there is nothing that would prevent it from working on device
+//#if UNITY_EDITOR   //we will only use this script on the editor side, though there is nothing that would prevent it from working on device
             if (Input.GetMouseButtonDown(0))
             {
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -79,7 +80,7 @@ namespace UnityEngine.XR.iOS
                     m_HitTransform.rotation = hit.transform.rotation;
                 }
             }
-#else
+//#else
             if (Input.touchCount > 0 && m_HitTransform != null)
             {
                 var touch = Input.GetTouch(0);
@@ -111,14 +112,18 @@ namespace UnityEngine.XR.iOS
                     }
                 } else if (touch.phase == TouchPhase.Ended) 
                 {
-                    // reset the brush
-                    paintManager.RemoveBrushFromTarget();
-                    paintTarget.transform.SetParent(Camera.main.transform);
-                    paintManager.AdjustTargetDistance();
-                    planePainting = false;
+                    if (paintTarget.transform.parent.gameObject.CompareTag("PlanePainter"))
+                    {
+                        Debug.Log("Removing brush from PlanePainter");
+                        // reset the brush
+                        paintManager.RemoveBrushFromTarget();
+                        paintTarget.transform.SetParent(Camera.main.transform);
+                        paintManager.AdjustTargetDistance();
+                        planePainting = false;
+                    }
                 }
             }
-#endif
+//#endif
 
         }
 
