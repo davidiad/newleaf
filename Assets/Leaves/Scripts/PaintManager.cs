@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.iOS;
 using UnityEngine.UI;
-using Ara;
-
+using Ara; // 3rd party Trail Renderer
 
 // TODO:(?) Should this be a struct? (or Scriptable object?)
 public class PaintStroke : MonoBehaviour
@@ -26,6 +25,8 @@ public class PaintManager : MonoBehaviour
     private GameObject targetSliderGO;
     private Slider targetSlider;
     private Slider paintSlider;
+
+    public float brushSize;
 
     public Button onoff;
     [SerializeField] private GameObject paintTarget;
@@ -60,6 +61,7 @@ public class PaintManager : MonoBehaviour
 
     void Start()
     {
+        brushSize = 0.005f; // in meters
         paintOn = false;
         newPaintVertices = false;
         particleSystemList = new List<ParticleSystem>();
@@ -171,6 +173,16 @@ public class PaintManager : MonoBehaviour
         }
     }
 
+    public void AdjustBrushSize() {
+        if (paintTarget) {
+            GameObject currentBrush = GameObject.FindWithTag("PaintBrush");
+            if (currentBrush)
+            {
+                currentBrush.GetComponent<AraTrail>().initialThickness = brushSize;
+            }
+        }
+    }
+
     // Add a mesh (or trailrender) painting brush to the paint target
     public void AddBrushToTarget()
     {
@@ -265,6 +277,7 @@ public class PaintManager : MonoBehaviour
             // Ara Trail version
             AraTrail araTrail = brush.GetComponent<AraTrail>();
             araTrail.initialColor = paintColor;
+            araTrail.initialThickness = brushSize;
             int numPosAra = araTrail.points.Count;
 
             for (int i = 0; i < numPosAra; i++)

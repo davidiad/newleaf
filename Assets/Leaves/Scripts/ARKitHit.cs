@@ -84,8 +84,13 @@ namespace UnityEngine.XR.iOS
             if (Input.touchCount > 0 && m_HitTransform != null)
             {
                 var touch = Input.GetTouch(0);
+
                 if (touch.phase == TouchPhase.Began || touch.phase == TouchPhase.Moved)
                 {
+                    Debug.Log("Touch Radius: " + touch.radius);
+                    paintManager.brushSize = touch.radius * 0.0003f; // radius usually in range of 20 to 40, as low as 10, as high as 200
+                    paintManager.AdjustBrushSize();
+                    // Adjust the size of the brush size button, and of the paintstroke
                     var screenPosition = Camera.main.ScreenToViewportPoint(touch.position);
                     ARPoint point = new ARPoint {
                         x = screenPosition.x,
