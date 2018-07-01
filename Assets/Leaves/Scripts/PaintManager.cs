@@ -12,7 +12,8 @@ public class PaintStroke : MonoBehaviour
     //public string SomethingWithText { get; set; }
     public List<Vector3> verts;// { get; set; }
     public List<Color> pointColors; // will hold colors of individual points
-    public Color color;// { get; set; }
+    // public List<float> pointSizes // will hold size of individual points
+    public Color color;// { get; set; } // initial color of stroke (and default color if no point color)
 }
 
 public class PaintManager : MonoBehaviour

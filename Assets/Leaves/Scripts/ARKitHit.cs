@@ -90,8 +90,11 @@ namespace UnityEngine.XR.iOS
                     Debug.Log("Touch Radius: " + touch.radius);
                     // radius usually in range of 20 to 40, as low as 10, as high as 200
                     // attempt to bring brush size to range of 1/4 cm to 10 cm
-                    paintManager.brushSize = (touch.radius * touch.radius * 0.0025f) * 0.0025f;
-                    Debug.Log("brushSize: " + paintManager.brushSize);
+                    float adjustedRadius = touch.radius * 0.002f;
+                    // if Apple pencil is being used, use the amount of pressure instead
+                    if (touch.type == TouchType.Stylus) { adjustedRadius = touch.pressure * 0.04f; }
+                    paintManager.brushSize = adjustedRadius * adjustedRadius;
+                    Debug.Log("brushSize: " + adjustedRadius);
                     paintManager.AdjustBrushSize();
                     // Adjust the size of the brush size button, and of the paintstroke
                     var screenPosition = Camera.main.ScreenToViewportPoint(touch.position);
