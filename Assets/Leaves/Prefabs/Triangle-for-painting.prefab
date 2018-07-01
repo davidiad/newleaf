@@ -459,7 +459,7 @@ MonoBehaviour:
   initialColor: {r: 0.9937728, g: 0.69502157, b: 0.069012426, a: 1}
   initialVelocity: {x: 0, y: 0, z: 0}
   timeInterval: 0.025
-  minDistance: 0.025
+  minDistance: 0.05
   time: 212
   enablePhysics: 0
   warmup: 0
@@ -473,8 +473,8 @@ MonoBehaviour:
   receiveShadows: 0
   useLightProbes: 0
   textureMode: 1
-  uvFactor: 0.1
-  tileAnchor: 0.448
+  uvFactor: 0.01
+  tileAnchor: 0
 --- !u!198 &198025165707391226
 ParticleSystem:
   m_ObjectHideFlags: 1
