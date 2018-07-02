@@ -357,7 +357,7 @@ MonoBehaviour:
   timescale: 0
   alignment: 0
   thickness: 1
-  smoothness: 8
+  smoothness: 5
   highQualityCorners: 0
   cornerRoundness: 12
   thicknessOverLenght:
@@ -459,8 +459,8 @@ MonoBehaviour:
   initialColor: {r: 0.9937728, g: 0.69502157, b: 0.069012426, a: 1}
   initialVelocity: {x: 0, y: 0, z: 0}
   timeInterval: 0.025
-  minDistance: 0.05
-  time: 212
+  minDistance: 0.01
+  time: 512
   enablePhysics: 0
   warmup: 0
   gravity: {x: 0, y: 0, z: 0}

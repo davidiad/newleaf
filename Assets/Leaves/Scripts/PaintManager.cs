@@ -50,6 +50,8 @@ public class PaintManager : MonoBehaviour
     private CanvasGroup paintButtonGroup;
     [SerializeField] Camera mainCam;
 
+    public bool paintOnTouch;
+
     void OnEnable()
     {
         //UnityARSessionNativeInterface.ARFrameUpdatedEvent += ARFrameUpdated;
@@ -64,6 +66,7 @@ public class PaintManager : MonoBehaviour
     {
         brushSize = 0.005f; // in meters
         paintOn = false;
+        paintOnTouch = true;
         newPaintVertices = false;
         particleSystemList = new List<ParticleSystem>();
         paintStrokesList = new List<PaintStroke>();
@@ -79,6 +82,7 @@ public class PaintManager : MonoBehaviour
         paintOnComponent = paintOnObject.GetComponent<PaintOn>();
         targetSliderGO = GameObject.FindWithTag("TargetSlider");
         targetSlider = targetSliderGO.GetComponent<Slider>();
+        AdjustTargetDistance();
         AdjustPaintColor(); // set the color to what the color slider is set to
         paintButtonGroup = onoff.GetComponent<CanvasGroup>();
         paintButtonGroup.alpha = 0.4f;
@@ -302,11 +306,6 @@ public class PaintManager : MonoBehaviour
         }
     }
 
-    private void ToggleButton()
-    {
-        
-    }
-
     public void TogglePaint()
     {
         
@@ -317,6 +316,7 @@ public class PaintManager : MonoBehaviour
         // let user know that painting is on
         if (paintOn)
         {
+            paintOnTouch = false;
             onoff.transform.localScale = new Vector3(1.1f, 1.1f, 1.1f);
             paintButtonGroup.alpha = 1f;
             AddBrushToTarget();
@@ -327,6 +327,7 @@ public class PaintManager : MonoBehaviour
             onoff.transform.localScale = new Vector3(1f, 1f, 1f);
             paintButtonGroup.alpha = 0.4f;
             paintOnComponent.endPainting = true;
+            paintOnTouch = true;
         }
     }
 

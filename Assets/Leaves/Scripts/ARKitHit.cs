@@ -33,12 +33,8 @@ namespace UnityEngine.XR.iOS
                     m_HitTransform.position = UnityARMatrixOps.GetPosition(hitResult.worldTransform);
                     m_HitTransform.rotation = UnityARMatrixOps.GetRotation(hitResult.worldTransform);
                     Debug.Log(string.Format("x:{0:0.######} y:{1:0.######} z:{2:0.######}", m_HitTransform.position.x, m_HitTransform.position.y, m_HitTransform.position.z));
-                    if (!planePainting)
-                    {
-                        PaintPlaneOn();
-                    }
-                    //make sure PaintOnPlane() is called only once
-                    planePainting = true;
+                    if (!planePainting) { PaintPlaneOn(); }
+
                     return true;
                 }
 
@@ -57,12 +53,14 @@ namespace UnityEngine.XR.iOS
             paintTarget.transform.localPosition = Vector3.zero;
             // add brush to paint target
             paintManager.AddBrushToTarget();
+            //make sure PaintOnPlane() is called only once
+            planePainting = true;
         }
 
         // Update is called once per frame
         void Update()
         {
-//#if UNITY_EDITOR   //we will only use this script on the editor side, though there is nothing that would prevent it from working on device
+#if UNITY_EDITOR   //we will only use this script on the editor side, though there is nothing that would prevent it from working on device
             if (Input.GetMouseButtonDown(0))
             {
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -80,13 +78,34 @@ namespace UnityEngine.XR.iOS
                     m_HitTransform.rotation = hit.transform.rotation;
                 }
             }
-//#else
+#else
+            // detect hit on plane in front of camera
+            if (paintManager.paintOnTouch && Input.touchCount > 0)
+            {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+
+                // try to hit plane collider gameobjects attached to camera
+                //effectively similar to calling HitTest with ARHitTestResultType.ARHitTestResultTypeExistingPlaneUsingExtent
+                if (Physics.Raycast(ray, out hit, maxRayDistance, collisionLayer))
+                {
+                    //we're going to get the position from the contact point
+                    m_HitTransform.position = hit.point;
+                    Debug.Log(string.Format("x:{0:0.######} y:{1:0.######} z:{2:0.######}", m_HitTransform.position.x, m_HitTransform.position.y, m_HitTransform.position.z));
+
+                    //and the rotation from the transform of the plane collider
+                    m_HitTransform.rotation = hit.transform.rotation;
+                    if (!planePainting) { PaintPlaneOn(); }
+                }
+            }
+
             if (Input.touchCount > 0 && m_HitTransform != null)
             {
                 var touch = Input.GetTouch(0);
 
                 if (touch.phase == TouchPhase.Began || touch.phase == TouchPhase.Moved)
                 {
+                    // Control size of brush with touch
                     Debug.Log("Touch Radius: " + touch.radius);
                     // radius usually in range of 20 to 40, as low as 10, as high as 200
                     // attempt to bring brush size to range of 1/4 cm to 10 cm
@@ -96,7 +115,8 @@ namespace UnityEngine.XR.iOS
                     paintManager.brushSize = adjustedRadius * adjustedRadius;
                     Debug.Log("brushSize: " + adjustedRadius);
                     paintManager.AdjustBrushSize();
-                    // Adjust the size of the brush size button, and of the paintstroke
+
+
                     var screenPosition = Camera.main.ScreenToViewportPoint(touch.position);
                     ARPoint point = new ARPoint {
                         x = screenPosition.x,
@@ -134,7 +154,7 @@ namespace UnityEngine.XR.iOS
                     }
                 }
             }
-//#endif
+#endif
 
         }
 

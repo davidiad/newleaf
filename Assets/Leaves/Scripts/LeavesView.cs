@@ -340,6 +340,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
     public void OnTogglePlaneDetection()
     {
         ConfigureSession(true);
+        paintManager.paintOnTouch = !mPlaneDetectionToggle.GetComponent<Toggle>().isOn;
     }
 
     private void StartARKit()
