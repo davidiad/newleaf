@@ -26,7 +26,7 @@ public class PaintManager : MonoBehaviour
     private GameObject targetSliderGO;
     private Slider targetSlider;
     private Slider paintSlider;
-
+    private Slider brushSizeSlider;
     public float brushSize;
 
     public Button onoff;
@@ -39,6 +39,7 @@ public class PaintManager : MonoBehaviour
     private bool paintOn;
     private Color paintColor;
     private Vector3 previousPosition;
+    public float strokeThickness; // multiplier, sets overall thickness of trail
 
     public List<PaintStroke> paintStrokesList;
     public List<ParticleSystem> particleSystemList; // Stores all particle systems
@@ -65,6 +66,7 @@ public class PaintManager : MonoBehaviour
     void Start()
     {
         brushSize = 0.005f; // in meters
+        strokeThickness = 1f;
         paintOn = false;
         paintOnTouch = true;
         newPaintVertices = false;
@@ -78,6 +80,7 @@ public class PaintManager : MonoBehaviour
         paintPosition = PSV.paintPosition;
         paintTarget = GameObject.FindWithTag("PaintTarget");
         paintSlider = GameObject.FindWithTag("PaintSlider").GetComponent<Slider>();
+        brushSizeSlider = GameObject.FindWithTag("SizeSlider").GetComponent<Slider>();
         paintOnObject = GameObject.FindWithTag("PaintOn");
         paintOnComponent = paintOnObject.GetComponent<PaintOn>();
         targetSliderGO = GameObject.FindWithTag("TargetSlider");
@@ -184,6 +187,18 @@ public class PaintManager : MonoBehaviour
             if (currentBrush)
             {
                 currentBrush.GetComponent<AraTrail>().initialThickness = brushSize;
+            }
+        }
+    }
+
+    public void AdjustBrushThickness()
+    {
+        if (paintTarget)
+        {
+            GameObject currentBrush = GameObject.FindWithTag("PaintBrush");
+            if (currentBrush)
+            {
+                currentBrush.GetComponent<AraTrail>().thickness = brushSizeSlider.value;
             }
         }
     }

@@ -24,8 +24,12 @@ namespace UnityEngine.XR.iOS
 
         bool HitTestWithResultType(ARPoint point, ARHitTestResultType resultTypes)
         {
+            if  (EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId)) {
+                return false;
+            }
+            Debug.Log("IN HIT TEST");
             List<ARHitTestResult> hitResults = UnityARSessionNativeInterface.GetARSessionNativeInterface().HitTest(point, resultTypes);
-            if (hitResults.Count > 0 && !EventSystem.current.IsPointerOverGameObject())
+            if (hitResults.Count > 0)
             {
                 foreach (var hitResult in hitResults)
                 {
@@ -72,33 +76,37 @@ namespace UnityEngine.XR.iOS
                 {
                     //we're going to get the position from the contact point
                     m_HitTransform.position = hit.point;
+
                     Debug.Log(string.Format("x:{0:0.######} y:{1:0.######} z:{2:0.######}", m_HitTransform.position.x, m_HitTransform.position.y, m_HitTransform.position.z));
 
                     //and the rotation from the transform of the plane collider
                     m_HitTransform.rotation = hit.transform.rotation;
                 }
             }
-#else
+            #else
             // detect hit on plane in front of camera
-            if (paintManager.paintOnTouch && Input.touchCount > 0)
+            if (!EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId)) // Block if over UI element
             {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                RaycastHit hit;
-
-                // try to hit plane collider gameobjects attached to camera
-                //effectively similar to calling HitTest with ARHitTestResultType.ARHitTestResultTypeExistingPlaneUsingExtent
-                if (Physics.Raycast(ray, out hit, maxRayDistance, collisionLayer))
+                if (paintManager.paintOnTouch && Input.touchCount > 0)
                 {
-                    //we're going to get the position from the contact point
-                    m_HitTransform.position = hit.point;
-                    Debug.Log(string.Format("x:{0:0.######} y:{1:0.######} z:{2:0.######}", m_HitTransform.position.x, m_HitTransform.position.y, m_HitTransform.position.z));
+                    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                    RaycastHit hit;
 
-                    //and the rotation from the transform of the plane collider
-                    m_HitTransform.rotation = hit.transform.rotation;
-                    if (!planePainting) { PaintPlaneOn(); }
+                    // try to hit plane collider gameobjects attached to camera
+                    //effectively similar to calling HitTest with ARHitTestResultType.ARHitTestResultTypeExistingPlaneUsingExtent
+                    if (Physics.Raycast(ray, out hit, maxRayDistance, collisionLayer))
+                    {
+                        //we're going to get the position from the contact point
+                        m_HitTransform.position = hit.point;
+                        Debug.Log("PAINTONTOUCH");
+                        Debug.Log(string.Format("x:{0:0.######} y:{1:0.######} z:{2:0.######}", m_HitTransform.position.x, m_HitTransform.position.y, m_HitTransform.position.z));
+
+                        //and the rotation from the transform of the plane collider
+                        m_HitTransform.rotation = hit.transform.rotation;
+                        if (!planePainting) { PaintPlaneOn(); }
+                    }
                 }
             }
-
             if (Input.touchCount > 0 && m_HitTransform != null)
             {
                 var touch = Input.GetTouch(0);

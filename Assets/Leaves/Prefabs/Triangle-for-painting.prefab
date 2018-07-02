@@ -357,9 +357,9 @@ MonoBehaviour:
   timescale: 0
   alignment: 0
   thickness: 1
-  smoothness: 5
+  smoothness: 3
   highQualityCorners: 0
-  cornerRoundness: 12
+  cornerRoundness: 9
   thicknessOverLenght:
     serializedVersion: 2
     m_Curve:
