@@ -55,7 +55,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _Alpha: 0.75
+    - _Alpha: 0.459
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
@@ -66,14 +66,14 @@ Material:
     - _Grid2Size: 0.1
     - _Grid3Size: 0.5
     - _GridSize: 0.05
-    - _LineSize: 0.16
+    - _LineSize: 0.172
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _SelectCell: 0
-    - _SelectedCellX: 0
-    - _SelectedCellY: 0
+    - _SelectCell: 1
+    - _SelectedCellX: 64
+    - _SelectedCellY: 63
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1

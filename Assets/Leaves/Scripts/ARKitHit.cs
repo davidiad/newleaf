@@ -34,7 +34,7 @@ namespace UnityEngine.XR.iOS
                 foreach (var hitResult in hitResults)
                 {
                     Debug.Log("Got hit!");
-                    m_HitTransform.position = UnityARMatrixOps.GetPosition(hitResult.worldTransform);
+                    m_HitTransform.position = UnityARMatrixOps.GetPosition(hitResult.worldTransform) + Vector3.up*0.01f; // move above grid slightly
                     m_HitTransform.rotation = UnityARMatrixOps.GetRotation(hitResult.worldTransform);
                     Debug.Log(string.Format("x:{0:0.######} y:{1:0.######} z:{2:0.######}", m_HitTransform.position.x, m_HitTransform.position.y, m_HitTransform.position.z));
                     if (!planePainting) { PaintPlaneOn(); }
@@ -54,7 +54,7 @@ namespace UnityEngine.XR.iOS
             }
             // move paint target as child
             paintTarget.transform.SetParent(this.transform);
-            paintTarget.transform.localPosition = Vector3.zero;
+            paintTarget.transform.localPosition = Vector3.zero; // raise slightly, so it is above plane grid (for horizontal planes)
             // add brush to paint target
             paintManager.AddBrushToTarget();
             //make sure PaintOnPlane() is called only once
