@@ -72,9 +72,9 @@ Shader "Unlit/GridLeaves"
             fixed4 frag (v2f i) : SV_Target
             {   
               
-                fixed r = DrawGrid(i.uv, _GridSize, 0.05);
-                fixed b = DrawGrid(i.uv, _Grid2Size, 0.025);
-                fixed g = DrawGrid(i.uv, _Grid3Size, 0.035);
+                fixed r = DrawGrid(i.uv, _GridSize, 0.035);
+                fixed b = DrawGrid(i.uv, _Grid2Size, 0.01);
+                fixed g = DrawGrid(i.uv, _Grid3Size, 0.005);
                 //return float4(0.8*r*_Alpha,0.8*g*_Alpha,0.8*b*_Alpha,(r+b+g)*_Alpha);
                 return float4(1.0,1.0,1.0,(r+b+g)*_Alpha);
             }

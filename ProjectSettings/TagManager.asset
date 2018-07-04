@@ -16,6 +16,7 @@ TagManager:
   - PlanePainter
   - MapButton
   - SizeSlider
+  - BrushColor
   layers:
   - Default
   - TransparentFX

@@ -38,6 +38,7 @@ public class PaintManager : MonoBehaviour
     private bool newPaintVertices;
     private bool paintOn;
     private Color paintColor;
+    private Material brushColorMat;
     private Vector3 previousPosition;
     public float strokeThickness; // multiplier, sets overall thickness of trail
 
@@ -89,6 +90,8 @@ public class PaintManager : MonoBehaviour
         AdjustPaintColor(); // set the color to what the color slider is set to
         paintButtonGroup = onoff.GetComponent<CanvasGroup>();
         paintButtonGroup.alpha = 0.4f;
+        brushColorMat = GameObject.FindWithTag("BrushColor").GetComponent<Renderer>().sharedMaterial;
+        brushColorMat.color = paintColor;
     }
  
     void Update()
@@ -171,6 +174,8 @@ public class PaintManager : MonoBehaviour
             {
                 currentBrush.GetComponent<AraTrail>().initialColor = paintColor;
             }
+            brushColorMat = GameObject.FindWithTag("BrushColor").GetComponent<Renderer>().sharedMaterial;
+            brushColorMat.color = paintColor; // Set the color of the brush, so user knows what color they are painting with
         }
     } 
 

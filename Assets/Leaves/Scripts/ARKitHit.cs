@@ -34,7 +34,7 @@ namespace UnityEngine.XR.iOS
                 foreach (var hitResult in hitResults)
                 {
                     Debug.Log("Got hit!");
-                    m_HitTransform.position = UnityARMatrixOps.GetPosition(hitResult.worldTransform) + Vector3.up*0.01f; // move above grid slightly
+                    m_HitTransform.position = UnityARMatrixOps.GetPosition(hitResult.worldTransform) + Vector3.up*0.02f; // move above grid slightly
                     m_HitTransform.rotation = UnityARMatrixOps.GetRotation(hitResult.worldTransform);
                     Debug.Log(string.Format("x:{0:0.######} y:{1:0.######} z:{2:0.######}", m_HitTransform.position.x, m_HitTransform.position.y, m_HitTransform.position.z));
                     if (!planePainting) { PaintPlaneOn(); }
