@@ -6238,8 +6238,8 @@ GameObject:
   - component: {fileID: 1107465797}
   - component: {fileID: 1107465800}
   m_Layer: 8
-  m_Name: Quad
-  m_TagString: Untagged
+  m_Name: CameraPaintingPlane
+  m_TagString: CamPaintingPlane
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

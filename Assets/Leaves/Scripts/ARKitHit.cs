@@ -13,6 +13,7 @@ namespace UnityEngine.XR.iOS
         private PaintOn paintOn; // holds paint status
         private PaintManager paintManager;
         private GameObject paintTarget;
+        private GameObject camPaintingPlane;
         private bool planePainting = false;
 
         private void Start()
@@ -20,6 +21,7 @@ namespace UnityEngine.XR.iOS
             paintOn = GameObject.FindWithTag("PaintOn").GetComponent<PaintOn>();
             paintManager = GameObject.FindWithTag("PaintManager").GetComponent<PaintManager>();
             paintTarget = GameObject.FindWithTag("PaintTarget");
+            camPaintingPlane = GameObject.FindWithTag("CameraPaintingPlane");
         }
 
         bool HitTestWithResultType(ARPoint point, ARHitTestResultType resultTypes)
@@ -54,7 +56,7 @@ namespace UnityEngine.XR.iOS
             }
             // move paint target as child
             paintTarget.transform.SetParent(this.transform);
-            paintTarget.transform.localPosition = Vector3.zero; // raise slightly, so it is above plane grid (for horizontal planes)
+            paintTarget.transform.localPosition = Vector3.zero;
             // add brush to paint target
             paintManager.AddBrushToTarget();
             //make sure PaintOnPlane() is called only once
@@ -104,6 +106,9 @@ namespace UnityEngine.XR.iOS
                         //and the rotation from the transform of the plane collider
                         m_HitTransform.rotation = hit.transform.rotation;
                         if (!planePainting) { PaintPlaneOn(); }
+                        // TODO: Deparent the plane that's been hit, so it is stationary in world space
+                        camPaintingPlane.transform.SetParent(null);
+            // When touch is ended, destroy that plane, and add a new one to camera rig (or reuse existing one)
                     }
                 }
             }
@@ -160,6 +165,9 @@ namespace UnityEngine.XR.iOS
                         paintManager.AdjustTargetDistance();
                         planePainting = false;
                     }
+            // TODO: add conditional for this
+                    camPaintingPlane.transform.SetParent(Camera.main.transform);
+            // TODO: reset the transform of camPaintingPlane
                 }
             }
 #endif
