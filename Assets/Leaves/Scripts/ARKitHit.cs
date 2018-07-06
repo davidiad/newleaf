@@ -13,15 +13,18 @@ namespace UnityEngine.XR.iOS
         private PaintOn paintOn; // holds paint status
         private PaintManager paintManager;
         private GameObject paintTarget;
-        private GameObject camPaintingPlane;
-        private bool planePainting = false;
+        [SerializeField]private GameObject camPaintingPlane;
+        [SerializeField]private bool planePainting = false;
+        private TransformValues localPlaneTransformValues;
 
         private void Start()
         {
             paintOn = GameObject.FindWithTag("PaintOn").GetComponent<PaintOn>();
             paintManager = GameObject.FindWithTag("PaintManager").GetComponent<PaintManager>();
             paintTarget = GameObject.FindWithTag("PaintTarget");
-            camPaintingPlane = GameObject.FindWithTag("CameraPaintingPlane");
+            camPaintingPlane = GameObject.FindWithTag("CamPaintingPlane");
+            localPlaneTransformValues = new TransformValues();
+            localPlaneTransformValues.TransferValues(camPaintingPlane.transform);
         }
 
         bool HitTestWithResultType(ARPoint point, ARHitTestResultType resultTypes)
@@ -50,10 +53,17 @@ namespace UnityEngine.XR.iOS
 
         private void PaintPlaneOn()
         {
+            Debug.Log("PP ON!!");
+            // save the transform again, in case the plane has been moved via the UI
+            localPlaneTransformValues.TransferValues(camPaintingPlane.transform); 
             // Check if painting with device movement is on. If so, remove that brush, and turn painting off
             if (paintOn.paintOn) {
                 paintManager.TogglePaint();
             }
+            // In case there is still an existing brush, remove it first, so we are starting a brand new stroke
+            paintManager.RemoveBrushFromTarget(); // some redundancy with toggle paint
+
+
             // move paint target as child
             paintTarget.transform.SetParent(this.transform);
             paintTarget.transform.localPosition = Vector3.zero;
@@ -61,6 +71,25 @@ namespace UnityEngine.XR.iOS
             paintManager.AddBrushToTarget();
             //make sure PaintOnPlane() is called only once
             planePainting = true;
+
+        }
+
+        private void PaintPlaneOff() 
+        {
+            Debug.Log("444444444");
+            Debug.Log("PP OFF````~~~~~~~~~~");
+            // reset the brush
+            paintManager.RemoveBrushFromTarget();
+            paintTarget.transform.SetParent(Camera.main.transform);
+            paintManager.AdjustTargetDistance();
+
+            // TODO: add conditional for this (no need to call when painting on ARPlanes)
+            camPaintingPlane.transform.SetParent(Camera.main.transform);
+            // Reset the transform of camPaintingPlane
+            camPaintingPlane.transform.localPosition    = localPlaneTransformValues.pos;
+            camPaintingPlane.transform.localRotation    = localPlaneTransformValues.rot;
+            camPaintingPlane.transform.localScale       = localPlaneTransformValues.scale;
+            planePainting = false;
         }
 
         // Update is called once per frame
@@ -85,30 +114,33 @@ namespace UnityEngine.XR.iOS
                     m_HitTransform.rotation = hit.transform.rotation;
                 }
             }
-            #else
+#else
             // detect hit on plane in front of camera
-            if (!EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId)) // Block if over UI element
+
+            if (paintManager.paintOnTouch && Input.touchCount > 0)
             {
-                if (paintManager.paintOnTouch && Input.touchCount > 0)
-                {
-                    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                    RaycastHit hit;
-
-                    // try to hit plane collider gameobjects attached to camera
-                    //effectively similar to calling HitTest with ARHitTestResultType.ARHitTestResultTypeExistingPlaneUsingExtent
-                    if (Physics.Raycast(ray, out hit, maxRayDistance, collisionLayer))
+                if (!EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId)) { // Block if over UI element
+                     
                     {
-                        //we're going to get the position from the contact point
-                        m_HitTransform.position = hit.point;
-                        Debug.Log("PAINTONTOUCH");
-                        Debug.Log(string.Format("x:{0:0.######} y:{1:0.######} z:{2:0.######}", m_HitTransform.position.x, m_HitTransform.position.y, m_HitTransform.position.z));
+                        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                        RaycastHit hit;
 
-                        //and the rotation from the transform of the plane collider
-                        m_HitTransform.rotation = hit.transform.rotation;
-                        if (!planePainting) { PaintPlaneOn(); }
-                        // TODO: Deparent the plane that's been hit, so it is stationary in world space
-                        camPaintingPlane.transform.SetParent(null);
-            // When touch is ended, destroy that plane, and add a new one to camera rig (or reuse existing one)
+                        // try to hit plane collider gameobjects attached to camera
+                        //effectively similar to calling HitTest with ARHitTestResultType.ARHitTestResultTypeExistingPlaneUsingExtent
+                        if (Physics.Raycast(ray, out hit, maxRayDistance, collisionLayer))
+                        {
+                            //we're going to get the position from the contact point
+                            m_HitTransform.position = hit.point;
+                            Debug.Log("PAINTONTOUCH");
+                            Debug.Log(string.Format("x:{0:0.######} y:{1:0.######} z:{2:0.######}", m_HitTransform.position.x, m_HitTransform.position.y, m_HitTransform.position.z));
+
+                            //and the rotation from the transform of the plane collider
+                            m_HitTransform.rotation = hit.transform.rotation;
+                            if (!planePainting) { PaintPlaneOn(); }
+                            // Deparent the plane that's been hit, so it is stationary in world space
+
+                            camPaintingPlane.transform.SetParent(null);
+                        }
                     }
                 }
             }
@@ -156,18 +188,22 @@ namespace UnityEngine.XR.iOS
                     }
                 } else if (touch.phase == TouchPhase.Ended) 
                 {
+            Debug.Log("000000000000000");
+                    Debug.Log("paintManager.paintOnTouch: " + paintManager.paintOnTouch);
                     if (paintTarget.transform.parent.gameObject.CompareTag("PlanePainter"))
                     {
-                        Debug.Log("Removing brush from PlanePainter");
-                        // reset the brush
-                        paintManager.RemoveBrushFromTarget();
-                        paintTarget.transform.SetParent(Camera.main.transform);
-                        paintManager.AdjustTargetDistance();
-                        planePainting = false;
+                        Debug.Log("111111111111");
+                        //if (!EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId)) // don't call when over UI
+                        //{
+                            Debug.Log("3333333333");
+                        if (planePainting) { 
+                            PaintPlaneOff(); 
+                            paintManager.paintOnTouch = true; 
+                        }
+                            
+                        //}
                     }
-            // TODO: add conditional for this
-                    camPaintingPlane.transform.SetParent(Camera.main.transform);
-            // TODO: reset the transform of camPaintingPlane
+
                 }
             }
 #endif

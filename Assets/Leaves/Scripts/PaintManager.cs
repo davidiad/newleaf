@@ -344,7 +344,7 @@ public class PaintManager : MonoBehaviour
         else
         {
             RemoveBrushFromTarget();
-            onoff.transform.localScale = new Vector3(1f, 1f, 1f);
+            onoff.transform.localScale = new Vector3(1f, 1f, 1f); // return paint button to normal size
             paintButtonGroup.alpha = 0.4f;
             paintOnComponent.endPainting = true;
             paintOnTouch = true;
