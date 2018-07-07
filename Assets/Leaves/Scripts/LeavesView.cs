@@ -147,8 +147,6 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         mSession.SetCapturePixelData(true, mImage.y.data, mImage.vu.data);
     }
 
-
-    // Update is called once per frame
     void Update()
     {
         if (mFrameUpdated)
@@ -168,6 +166,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
             {
                 mARKitInit = true;
                 mLabelText.text = "ARKit Initialized";
+
             }
 
             Matrix4x4 matrix = mSession.GetCameraPose();
@@ -181,6 +180,16 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
         paintPosition = Camera.main.transform.position +
                                       Camera.main.transform.forward * 0.3f;
+    }
+
+    private void LateUpdate()
+    {
+        if (mARKitInit)
+        {
+            mLabelText.text = "Auto start Mapping";
+            // automatically start mapping for Placenote map
+            OnNewMapClick();
+        }
     }
 
 
