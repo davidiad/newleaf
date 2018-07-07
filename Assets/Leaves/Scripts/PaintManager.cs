@@ -266,6 +266,8 @@ public class PaintManager : MonoBehaviour
     //    paintOnComponent.endPainting = true; // flag to destroy mesh extrusion component
     //}
 
+
+
     public void RemoveBrushFromTarget() {
         // assuming there is only one paint brush as a time
         GameObject brush = GameObject.FindWithTag("PaintBrush");
@@ -369,6 +371,7 @@ public class PaintManager : MonoBehaviour
 
     public void Reset()
     {
+        /* for reference, previous system that used particles
         foreach (ParticleSystem p in particleSystemList)
         {
             Destroy(p);
@@ -378,6 +381,31 @@ public class PaintManager : MonoBehaviour
         Destroy(ps);
         ps = Instantiate(particleSystemTemplate);
         currVertices = new List<Vector3>();
+        */
+
+        // Discard current brush, if there is one actively painting
+        DestroyBrush();
+        // Discard all paintstrokes (not saving, unless user requested a save)
+        DestroyAllPaintstrokes();
+        // Reset all pertinent parameters
+        paintOn = false;
+        paintOnComponent.paintOn = false;
+        paintOnComponent.endPainting = true;
+        paintOnTouch = true;
+    }
+
+    private void DestroyBrush() {
+        GameObject brush = GameObject.FindWithTag("PaintBrush");
+        if (brush) {
+            Destroy(brush);
+        }
+    }
+
+    private void DestroyAllPaintstrokes() {
+        GameObject[] paintstrokes = GameObject.FindGameObjectsWithTag("PaintStroke");
+        foreach (GameObject paintstrokeObject in paintstrokes) {
+            Destroy(paintstrokeObject);
+        }
     }
 
     private void SaveParticleSystem()

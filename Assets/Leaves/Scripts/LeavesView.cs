@@ -182,15 +182,15 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
                                       Camera.main.transform.forward * 0.3f;
     }
 
-    private void LateUpdate()
-    {
-        if (mARKitInit)
-        {
-            mLabelText.text = "Auto start Mapping";
-            // automatically start mapping for Placenote map
-            OnNewMapClick();
-        }
-    }
+    //private void LateUpdate()
+    //{
+    //    if (mARKitInit)
+    //    {
+    //        mLabelText.text = "Auto start Mapping";
+    //        // automatically start mapping for Placenote map
+    //        OnNewMapClick();
+    //    }
+    //}
 
 
     public void OnListMapClick()
@@ -234,6 +234,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
     public void OnExitClick()
     {
+        paintManager.Reset();
         mInitButtonPanel.SetActive(true);
         mExitButton.SetActive(false);
         mPlaneDetectionToggle.SetActive(false);
@@ -244,6 +245,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
         LibPlacenote.Instance.StopSession();
         hasLocalized = false;
+
     }
 
 
@@ -268,7 +270,10 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
     public void OnLoadMapClicked()
     {
         ConfigureSession(false);
-
+        // Since a session starts running after app launch automatically,
+        // ensure that if a session is already running, it is stopped
+        LibPlacenote.Instance.StopSession();
+        paintManager.Reset();
         if (!LibPlacenote.Instance.Initialized())
         {
             Debug.Log("SDK not yet initialized");
@@ -822,6 +827,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
             {
                 ClearShapes();
             }
+            //OnNewMapClick(); // start session automatically
         }
     }
 
