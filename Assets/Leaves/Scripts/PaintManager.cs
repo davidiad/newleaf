@@ -234,6 +234,8 @@ public class PaintManager : MonoBehaviour
                 StartCoroutine(PaintTrail(newBrush, paintstroke));
             }
         }
+        paintOnComponent.meshLoading = false;
+        paintOnComponent.endPainting = true; // flag to destroy mesh extrusion component
         // previous way, does only the first one
         //if (currVertices.Count > 0)
         //{
@@ -249,8 +251,16 @@ public class PaintManager : MonoBehaviour
             brush.transform.position = paintstroke.verts[i];
             yield return new WaitForSeconds(0.01f); // allow enough time for the previous mesh section to be generated
         }
-        paintOnComponent.meshLoading = false;
-        paintOnComponent.endPainting = true; // flag to destroy mesh extrusion component
+        // Add the verts of the trail renderer to PaintStrokeList
+        AddPaintStrokeToList(brush);
+        // Now that the PaintStroke has been saved, unparent it from the target so it's positioned in worldspace
+        brush.tag = "PaintStroke";
+        brush.transform.parent = null;
+        // Remove the reticle and brush, no longer needed
+        foreach (Transform child in brush.transform)
+        {
+            Destroy(child.gameObject);
+        }
     }
 
     //private IEnumerator PaintMesh(GameObject brush) {
@@ -269,7 +279,7 @@ public class PaintManager : MonoBehaviour
 
 
     public void RemoveBrushFromTarget() {
-        // assuming there is only one paint brush as a time
+        // assuming there is only one paint brush as a time (but there may be multiple paintbrushes when reloading)
         GameObject brush = GameObject.FindWithTag("PaintBrush");
         if (brush)
         {
@@ -283,6 +293,8 @@ public class PaintManager : MonoBehaviour
             {
                 Destroy(child.gameObject);
             }
+            paintOn = false;
+            paintOnComponent.paintOn = false;
         }
     }
 
@@ -406,6 +418,7 @@ public class PaintManager : MonoBehaviour
         foreach (GameObject paintstrokeObject in paintstrokes) {
             Destroy(paintstrokeObject);
         }
+        paintStrokesList.Clear();
     }
 
     private void SaveParticleSystem()

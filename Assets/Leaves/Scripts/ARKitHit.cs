@@ -200,10 +200,15 @@ namespace UnityEngine.XR.iOS
                             PaintPlaneOff(); 
                             paintManager.paintOnTouch = true; 
                         }
-                            
-                        //}
+                        /*
+                        // ensure that there is no brush attached to the PaintTarget
+                        foreach (Transform child in paintTarget.transform) {
+                            if (child.name.Contains("Triangle-for-painting")) {
+                                Destroy(child);
+                            }
+                        }
+                        */
                     }
-
                 }
             }
 #endif
