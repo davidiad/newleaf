@@ -161,15 +161,18 @@ namespace UnityEngine.XR.iOS
                     Debug.Log("brushSize: " + adjustedRadius);
                     paintManager.AdjustBrushSize();
 
+                    // This section is need for painting on AR planes, but interferes with painting on Camera plane
+                    if (paintManager.ARPlanePainting)
+                    {
+                        var screenPosition = Camera.main.ScreenToViewportPoint(touch.position);
+                        ARPoint point = new ARPoint
+                        {
+                            x = screenPosition.x,
+                            y = screenPosition.y
+                        };
 
-                    var screenPosition = Camera.main.ScreenToViewportPoint(touch.position);
-                    ARPoint point = new ARPoint {
-                        x = screenPosition.x,
-                        y = screenPosition.y
-                    };
-
-                    // prioritize results types
-                    ARHitTestResultType[] resultTypes = {
+                        // prioritize results types
+                        ARHitTestResultType[] resultTypes = {
                         //ARHitTestResultType.ARHitTestResultTypeExistingPlaneUsingGeometry,
                         ARHitTestResultType.ARHitTestResultTypeExistingPlaneUsingExtent, 
                         // if you want to use infinite planes use this:
@@ -177,13 +180,14 @@ namespace UnityEngine.XR.iOS
                         //ARHitTestResultType.ARHitTestResultTypeEstimatedHorizontalPlane, 
                         //ARHitTestResultType.ARHitTestResultTypeEstimatedVerticalPlane, 
                         //ARHitTestResultType.ARHitTestResultTypeFeaturePoint
-                    }; 
-                    
-                    foreach (ARHitTestResultType resultType in resultTypes)
-                    {
-                        if (HitTestWithResultType (point, resultType))
+                    };
+
+                        foreach (ARHitTestResultType resultType in resultTypes)
                         {
-                            return;
+                            if (HitTestWithResultType(point, resultType))
+                            {
+                                return;
+                            }
                         }
                     }
                 } else if (touch.phase == TouchPhase.Ended) 

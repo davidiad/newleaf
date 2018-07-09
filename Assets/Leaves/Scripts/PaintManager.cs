@@ -53,6 +53,7 @@ public class PaintManager : MonoBehaviour
     [SerializeField] Camera mainCam;
 
     public bool paintOnTouch;
+    public bool ARPlanePainting;
 
     void OnEnable()
     {

@@ -99,6 +99,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
     private SphereCollider mSphereColliderDummy;
     private CapsuleCollider mCapColliderDummy;
 
+    bool ARPlanePaintingStatus; 
 
     // Use this for initialization
     void Start()
@@ -117,6 +118,9 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
         GameObject pmgo = GameObject.FindWithTag("PaintManager");
         paintManager = pmgo.GetComponent<PaintManager>();
+        ARPlanePaintingStatus = mPlaneDetectionToggle.GetComponent<Toggle>().isOn;
+        paintManager.ARPlanePainting = ARPlanePaintingStatus;
+        paintManager.paintOnTouch = !ARPlanePaintingStatus; // TODO: make an enum to replace multiple bools
     }
 
 
@@ -354,7 +358,9 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
     public void OnTogglePlaneDetection()
     {
         ConfigureSession(true);
-        paintManager.paintOnTouch = !mPlaneDetectionToggle.GetComponent<Toggle>().isOn;
+        ARPlanePaintingStatus = mPlaneDetectionToggle.GetComponent<Toggle>().isOn;
+        paintManager.paintOnTouch = !ARPlanePaintingStatus;
+        paintManager.ARPlanePainting = ARPlanePaintingStatus;
     }
 
     private void StartARKit()
