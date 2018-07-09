@@ -251,8 +251,8 @@ public class PaintManager : MonoBehaviour
             brush.transform.position = paintstroke.verts[i];
             yield return new WaitForSeconds(0.01f); // allow enough time for the previous mesh section to be generated
         }
-        // Add the verts of the trail renderer to PaintStrokeList
-        AddPaintStrokeToList(brush);
+        //// Add the verts of the trail renderer to PaintStrokeList
+        //AddPaintStrokeToList(brush);
         // Now that the PaintStroke has been saved, unparent it from the target so it's positioned in worldspace
         brush.tag = "PaintStroke";
         brush.transform.parent = null;

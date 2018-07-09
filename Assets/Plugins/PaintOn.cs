@@ -17,10 +17,4 @@ public class PaintOn : MonoBehaviour {
         
     }
 
-	void Start () {
-        
-	}
-
-
-
 }
