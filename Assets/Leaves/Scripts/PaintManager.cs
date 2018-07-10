@@ -38,9 +38,10 @@ public class PaintManager : MonoBehaviour
     private bool newPaintVertices;
     private bool paintOn;
     private Color paintColor;
-    private Material brushColorMat;
+    private Material[] brushColorMats;
     private Vector3 previousPosition;
     public float strokeThickness; // multiplier, sets overall thickness of trail
+    private float colorDarken = 0.65f; // amount to darken the outer rings of the cursor
 
     public List<PaintStroke> paintStrokesList;
     public List<ParticleSystem> particleSystemList; // Stores all particle systems
@@ -77,6 +78,7 @@ public class PaintManager : MonoBehaviour
         ps = Instantiate(particleSystemTemplate);
         currVertices = new List<Vector3>();
         paintColor = Color.blue;
+        brushColorMats = GameObject.FindWithTag("BrushColor").GetComponent<Renderer>().materials;
         mesh = new Mesh();
         PSV = PSVGO.GetComponent<LeavesView>();
         paintPosition = PSV.paintPosition;
@@ -91,8 +93,7 @@ public class PaintManager : MonoBehaviour
         AdjustPaintColor(); // set the color to what the color slider is set to
         paintButtonGroup = onoff.GetComponent<CanvasGroup>();
         paintButtonGroup.alpha = 0.4f;
-        brushColorMat = GameObject.FindWithTag("BrushColor").GetComponent<Renderer>().sharedMaterial;
-        brushColorMat.color = paintColor;
+
     }
  
     void Update()
@@ -167,7 +168,8 @@ public class PaintManager : MonoBehaviour
     }
 
     public void AdjustPaintColor() {
-        if (paintSlider) {
+        if (paintSlider)
+        {
             Gradient paintGradient = paintSlider.GetComponent<PaintGradient>().gradient;
             paintColor = paintGradient.Evaluate(paintSlider.value);
             GameObject currentBrush = GameObject.FindWithTag("PaintBrush");
@@ -175,10 +177,17 @@ public class PaintManager : MonoBehaviour
             {
                 currentBrush.GetComponent<AraTrail>().initialColor = paintColor;
             }
-            brushColorMat = GameObject.FindWithTag("BrushColor").GetComponent<Renderer>().sharedMaterial;
-            brushColorMat.color = paintColor; // Set the color of the brush, so user knows what color they are painting with
+            UpdateBrushColor();
         }
-    } 
+    }
+
+    private void UpdateBrushColor()
+    {
+        //Set the color of the brush, so user knows what color they are painting with
+        // the outer, edge color -- adjust it to be darker
+        brushColorMats[0].color = new Color(paintColor.r * colorDarken, paintColor.g * colorDarken, paintColor.b * colorDarken);
+        brushColorMats[1].color = paintColor; // the inner color
+    }
 
     public void AdjustTargetDistance() {
         if (paintTarget)
