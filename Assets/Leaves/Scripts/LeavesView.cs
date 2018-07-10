@@ -443,13 +443,19 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
                 JObject paintStrokeList = PaintStrokes2JSON();
                 metadata["paintStrokeList"] = paintStrokeList;
 
+
                 if (useLocation)
                 {
                     metadata["location"] = new JObject();
                     metadata["location"]["latitude"] = locationInfo.latitude;
                     metadata["location"]["longitude"] = locationInfo.longitude;
                     metadata["location"]["altitude"] = locationInfo.altitude;
-                }
+            } else { // default location so that JSON object is not invalid due to missing data
+                metadata["location"] = new JObject();
+                    metadata["location"]["latitude"] = 50.0f;
+                    metadata["location"]["longitude"] = 100.0;
+                    metadata["location"]["altitude"] = 10.0f;
+            }
 
 
                 //List<Vector3> cvs = paintManager.currVertices;
