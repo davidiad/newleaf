@@ -117,7 +117,7 @@ namespace UnityEngine.XR.iOS
 #else
             // detect hit on plane in front of camera
 
-            if (paintManager.paintOnTouch && Input.touchCount > 0)
+            if (paintManager.paintOnTouch && Input.touchCount > 0 && !paintManager.ARPlanePainting)
             {
                 if (!EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId)) { // Block if over UI element
                      
@@ -126,7 +126,7 @@ namespace UnityEngine.XR.iOS
                         RaycastHit hit;
 
                         // try to hit plane collider gameobjects attached to camera
-                        //effectively similar to calling HitTest with ARHitTestResultType.ARHitTestResultTypeExistingPlaneUsingExtent
+                        // effectively similar to calling HitTest with ARHitTestResultType.ARHitTestResultTypeExistingPlaneUsingExtent
                         if (Physics.Raycast(ray, out hit, maxRayDistance, collisionLayer))
                         {
                             //we're going to get the position from the contact point
@@ -161,8 +161,8 @@ namespace UnityEngine.XR.iOS
                     Debug.Log("brushSize: " + adjustedRadius);
                     paintManager.AdjustBrushSize();
 
-                    // This section is need for painting on AR planes, but interferes with painting on Camera plane
-                    if (paintManager.ARPlanePainting)
+            // This section is need for painting on AR planes, but interferes with painting on Camera plane (hence the if statement)
+            if (paintManager.ARPlanePainting && touch.phase == TouchPhase.Moved && touch.phase != TouchPhase.Stationary) // try to avoid beginning touch which is off the plane
                     {
                         var screenPosition = Camera.main.ScreenToViewportPoint(touch.position);
                         ARPoint point = new ARPoint
@@ -184,6 +184,7 @@ namespace UnityEngine.XR.iOS
 
                         foreach (ARHitTestResultType resultType in resultTypes)
                         {
+                            // returns the 1st point hit casting from screenpoint to an arplane
                             if (HitTestWithResultType(point, resultType))
                             {
                                 return;
