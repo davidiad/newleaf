@@ -153,6 +153,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
     void Update()
     {
+        OnNewMapClick();
         if (mFrameUpdated)
         {
             mFrameUpdated = false;
@@ -170,6 +171,12 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
             {
                 mARKitInit = true;
                 mLabelText.text = "ARKit Initialized";
+                if (!LibPlacenote.Instance.Initialized())
+                {
+                    Debug.Log("initialized Mapping");
+
+
+                }
 
             }
 
@@ -179,11 +186,12 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
             Quaternion arkitQuat = PNUtility.MatrixOps.GetRotation(matrix);
 
             LibPlacenote.Instance.SendARFrame(mImage, arkitPosition, arkitQuat,
-                                               mARCamera.videoParams.screenOrientation);
+                                              mARCamera.videoParams.screenOrientation);
+
         }
 
-        paintPosition = Camera.main.transform.position +
-                                      Camera.main.transform.forward * 0.3f;
+        paintPosition = Camera.main.transform.position + Camera.main.transform.forward * 0.3f;
+
     }
 
     //private void LateUpdate()
@@ -208,6 +216,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
         foreach (Transform t in mListContentParent.transform)
         {
+            // TODO: check if this destroy command is a cause of the slow loading of the list
             Destroy(t.gameObject);
         }
 
@@ -337,22 +346,24 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
 
 
-    public void OnNewMapClick()
-    {
-        ConfigureSession(false);
+    public void OnNewMapClick() {
+        ConfigureSession(false);       
 
+
+        if (LibPlacenote.Instance.Initialized())
+        {
+            //mInitButtonPanel.SetActive(false);
+            GameObject.FindWithTag("MapButton").GetComponent<CanvasGroup>().alpha = 1.0f;
+            mMappingButtonPanel.SetActive(true);
+            mPlaneDetectionToggle.SetActive(true);
+            Debug.Log("Started Session");
+            LibPlacenote.Instance.StartSession();
+        }
         if (!LibPlacenote.Instance.Initialized())
         {
             Debug.Log("SDK not yet initialized");
             return;
         }
-
-        //mInitButtonPanel.SetActive(false);
-        GameObject.FindWithTag("MapButton").GetComponent<CanvasGroup>().alpha = 1.0f;
-        mMappingButtonPanel.SetActive(true);
-        mPlaneDetectionToggle.SetActive(true);
-        Debug.Log("Started Session");
-        LibPlacenote.Instance.StartSession();
     }
 
     public void OnTogglePlaneDetection()
