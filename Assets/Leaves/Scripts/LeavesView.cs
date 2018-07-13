@@ -86,12 +86,14 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
     private LibPlacenote.MapInfo mSelectedMapInfo;
 
     private bool hasLocalized; // flag to prevent continually reloading the metadata when position is lost and regained
+    private bool mappingStarted;
 
     private string mSelectedMapId
     {
         get
         {
-            return mSelectedMapInfo != null ? mSelectedMapInfo.placeId : null;
+            return 
+            mSelectedMapInfo != null ? mSelectedMapInfo.placeId : null;
         }
     }
 
@@ -104,6 +106,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
     // Use this for initialization
     void Start()
     {
+        mappingStarted = false;
         hasLocalized = false;
         Input.location.Start();
 
@@ -287,6 +290,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         // ensure that if a session is already running, it is stopped
         LibPlacenote.Instance.StopSession();
         paintManager.Reset();
+        hasLocalized = false; // reset flag that limits localization to just once
         if (!LibPlacenote.Instance.Initialized())
         {
             Debug.Log("SDK not yet initialized");
@@ -357,7 +361,11 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
             mMappingButtonPanel.SetActive(true);
             mPlaneDetectionToggle.SetActive(true);
             Debug.Log("Started Session");
-            LibPlacenote.Instance.StartSession();
+            if (!mappingStarted)
+            {
+                mappingStarted = true;
+                LibPlacenote.Instance.StartSession();
+            }
         }
         if (!LibPlacenote.Instance.Initialized())
         {
@@ -850,7 +858,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
             {
                 ClearShapes();
             }
-            //OnNewMapClick(); // start session automatically
+            OnNewMapClick(); // start session automatically
         }
     }
 
