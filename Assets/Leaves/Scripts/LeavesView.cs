@@ -87,6 +87,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
     private bool hasLocalized; // flag to prevent continually reloading the metadata when position is lost and regained
     private bool mappingStarted;
+    private string currentMapId;
 
     private string mSelectedMapId
     {
@@ -106,6 +107,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
     // Use this for initialization
     void Start()
     {
+        currentMapId = "";
         mappingStarted = false;
         hasLocalized = false;
         Input.location.Start();
@@ -312,6 +314,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
                     LibPlacenote.Instance.StartSession();
                     mLabelText.text = "Loaded ID: " + mSelectedMapId;
+                    currentMapId = mSelectedMapId;
                     //Debug.Log("VERSION?: ");
                     //Debug.Log(mSelectedMapInfo.userData["version"]["a"].ToObject<float>());
                 }
@@ -435,68 +438,102 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
         bool useLocation = Input.location.status == LocationServiceStatus.Running;
         LocationInfo locationInfo = Input.location.lastData;
-
-        mLabelText.text = "Saving...";
-        LibPlacenote.Instance.SaveMap(
-            (mapId) =>  // savedCb   upon saving the map locally
-            {
-                LibPlacenote.Instance.StopSession();
-                mLabelText.text = "Saved Map ID: " + mapId;
-                mInitButtonPanel.SetActive(true);
-                mMappingButtonPanel.SetActive(false);
-                mPlaneDetectionToggle.SetActive(false);
+        if (!currentMapId.Equals(""))
+        {
+            mLabelText.text = "Setting MetaData...";
+            SetMetaData(currentMapId);
+        }
+        else
+        {
+            mLabelText.text = "Saving...";
+            LibPlacenote.Instance.SaveMap(
+                (mapId) =>  // savedCb   upon saving the map locally
+                {
+                    LibPlacenote.Instance.StopSession();
+                    mLabelText.text = "Saved Map ID: " + mapId;
+                    mInitButtonPanel.SetActive(true);
+                    mMappingButtonPanel.SetActive(false);
+                    mPlaneDetectionToggle.SetActive(false);
 
                 //clear all existing planes
                 mPNPlaneManager.ClearPlanes();
-                mPlaneDetectionToggle.GetComponent<Toggle>().isOn = false;
+                    mPlaneDetectionToggle.GetComponent<Toggle>().isOn = false;
 
 
-                JObject metadata = new JObject();
+                    JObject metadata = new JObject();
 
-                JObject shapeList = Shapes2JSON();
-                metadata["shapeList"] = shapeList;
+                    JObject shapeList = Shapes2JSON();
+                    metadata["shapeList"] = shapeList;
 
-                JObject sv3list = Sv3s2JSON();
-                metadata["sv3list"] = sv3list;
+                    JObject sv3list = Sv3s2JSON();
+                    metadata["sv3list"] = sv3list;
 
-                JObject paintStrokeList = PaintStrokes2JSON();
-                metadata["paintStrokeList"] = paintStrokeList;
+                    JObject paintStrokeList = PaintStrokes2JSON();
+                    metadata["paintStrokeList"] = paintStrokeList;
 
 
-                if (useLocation)
-                {
+                    if (useLocation)
+                    {
+                        metadata["location"] = new JObject();
+                        metadata["location"]["latitude"] = locationInfo.latitude;
+                        metadata["location"]["longitude"] = locationInfo.longitude;
+                        metadata["location"]["altitude"] = locationInfo.altitude;
+                    }
+                    else
+                    { // default location so that JSON object is not invalid due to missing location data
                     metadata["location"] = new JObject();
-                    metadata["location"]["latitude"] = locationInfo.latitude;
-                    metadata["location"]["longitude"] = locationInfo.longitude;
-                    metadata["location"]["altitude"] = locationInfo.altitude;
-            } else { // default location so that JSON object is not invalid due to missing data
-                metadata["location"] = new JObject();
-                    metadata["location"]["latitude"] = 50.0f;
-                    metadata["location"]["longitude"] = 100.0;
-                    metadata["location"]["altitude"] = 10.0f;
-            }
-
-
-                //List<Vector3> cvs = paintManager.currVertices;
-                //for (int i = 0; i < cvs.Count; i++)
-                //{
-
-                //    Vector3 point = paintManager.currVertices[i];
-                //    Debug.Log(point.ToString("F4"));
-                //}
-                LibPlacenote.Instance.SetMetadata(mapId, metadata);
-
-            },
-            (completed, faulted, percentage) => { // progressCb  upon transfer to cloud
+                        metadata["location"]["latitude"] = 50.0f;
+                        metadata["location"]["longitude"] = 100.0;
+                        metadata["location"]["altitude"] = 10.0f;
+                    }
+                    LibPlacenote.Instance.SetMetadata(mapId, metadata);
+                    currentMapId = mapId;
+                },
+                (completed, faulted, percentage) =>
+                { // progressCb  upon transfer to cloud
                 String percentText = (percentage * 100f).ToString();
-            uploadText.text = "Map upload status– Completed: " + completed + "    Faulted: " + faulted + "   " + "\n" + percentText + "% uploaded";
-                Debug.Log("faulted?: " + faulted);
-                Debug.Log("Completed?: " + completed);
-                //if (completed) {
-                //    mLabelText.text = "Map upload complete";
-                //}
-            }
-        );
+                    uploadText.text = "Map upload status– Completed: " + completed + "    Faulted: " + faulted + "   " + "\n" + percentText + "% uploaded";
+                    Debug.Log("faulted?: " + faulted);
+                    Debug.Log("Completed?: " + completed);
+                }
+            );
+        }
+    }
+
+    private void SetMetaData(string mid) {
+        OnDropPaintStrokeClick();
+
+        bool useLocation = Input.location.status == LocationServiceStatus.Running;
+        LocationInfo locationInfo = Input.location.lastData;
+
+        JObject metadata = new JObject();
+
+        JObject shapeList = Shapes2JSON();
+        metadata["shapeList"] = shapeList;
+
+        JObject sv3list = Sv3s2JSON();
+        metadata["sv3list"] = sv3list;
+
+        JObject paintStrokeList = PaintStrokes2JSON();
+        metadata["paintStrokeList"] = paintStrokeList;
+
+
+        if (useLocation)
+        {
+            metadata["location"] = new JObject();
+            metadata["location"]["latitude"] = locationInfo.latitude;
+            metadata["location"]["longitude"] = locationInfo.longitude;
+            metadata["location"]["altitude"] = locationInfo.altitude;
+        }
+        else
+        { // default location so that JSON object is not invalid due to missing location data
+            metadata["location"] = new JObject();
+            metadata["location"]["latitude"] = 50.0f;
+            metadata["location"]["longitude"] = 100.0;
+            metadata["location"]["altitude"] = 10.0f;
+        }
+
+        LibPlacenote.Instance.SetMetadata(mid, metadata);
     }
 
     private void SaveMeshes()
