@@ -438,6 +438,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
         bool useLocation = Input.location.status == LocationServiceStatus.Running;
         LocationInfo locationInfo = Input.location.lastData;
+        // If there is a loaded map, then saving just updates the metadata
         if (!currentMapId.Equals(""))
         {
             mLabelText.text = "Setting MetaData...";
@@ -452,8 +453,8 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
                     LibPlacenote.Instance.StopSession();
                     mLabelText.text = "Saved Map ID: " + mapId;
                     mInitButtonPanel.SetActive(true);
-                    mMappingButtonPanel.SetActive(false);
-                    mPlaneDetectionToggle.SetActive(false);
+                    //mMappingButtonPanel.SetActive(false);
+                    //mPlaneDetectionToggle.SetActive(false);
 
                 //clear all existing planes
                 mPNPlaneManager.ClearPlanes();
@@ -497,6 +498,13 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
                     Debug.Log("Completed?: " + completed);
                 }
             );
+        }
+    }
+
+    public void OnClickUpdate() {
+        if (currentMapId != "")
+        {
+            SetMetaData(currentMapId);
         }
     }
 
