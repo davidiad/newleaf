@@ -356,7 +356,22 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
     public void OnNewMapClick() {
         ConfigureSession(false);       
 
+        if (LibPlacenote.Instance.Initialized())
+        {
+            if (!mappingStarted)
+            {
+                GameObject.FindWithTag("MapButton").GetComponent<CanvasGroup>().alpha = 1.0f;
+                mMappingButtonPanel.SetActive(true);
+                mPlaneDetectionToggle.SetActive(true);
+                Debug.Log("Started Session");
+                mappingStarted = true;
+                LibPlacenote.Instance.StartSession();
+            }
+        }
 
+
+
+        /*
         if (LibPlacenote.Instance.Initialized())
         {
             //mInitButtonPanel.SetActive(false);
@@ -374,7 +389,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         {
             Debug.Log("SDK not yet initialized");
             return;
-        }
+        }*/
     }
 
     public void OnTogglePlaneDetection()
