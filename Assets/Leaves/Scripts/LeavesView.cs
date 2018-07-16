@@ -67,6 +67,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
     [SerializeField] Material mShapeMaterial;
     [SerializeField] PlacenoteARGeneratePlane mPNPlaneManager;
     [SerializeField] Text uploadText;
+    GameObject mapButton;
 
     public Vector3 paintPosition;
 
@@ -126,6 +127,8 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         ARPlanePaintingStatus = mPlaneDetectionToggle.GetComponent<Toggle>().isOn;
         paintManager.ARPlanePainting = ARPlanePaintingStatus;
         paintManager.paintOnTouch = !ARPlanePaintingStatus; // TODO: make an enum to replace multiple bools
+        mapButton = GameObject.FindWithTag("MapButton");
+
     }
 
 
@@ -158,7 +161,10 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
     void Update()
     {
-        OnNewMapClick();
+        if (!mappingStarted) // start mapping automatically
+        {
+            OnNewMapClick();
+        }
         if (mFrameUpdated)
         {
             mFrameUpdated = false;
@@ -209,6 +215,18 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
     //    }
     //}
 
+    private void ActivateMapButton(bool mappingOn) {
+        Image imageComponent = mapButton.GetComponent<Image>();
+        imageComponent.fillCenter = mappingOn;
+        if (mappingOn)
+        {
+            mapButton.GetComponent<CanvasGroup>().alpha = 1.0f;
+            imageComponent.color = Color.yellow;
+        } else {
+            mapButton.GetComponent<CanvasGroup>().alpha = 0.4f;
+            imageComponent.color = Color.white;
+        }
+    }
 
     public void OnListMapClick()
     {
@@ -262,6 +280,8 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         mPlaneDetectionToggle.GetComponent<Toggle>().isOn = false;
 
         LibPlacenote.Instance.StopSession();
+        mappingStarted = false; // allow a new mapping session to begin auto. in Update
+        ActivateMapButton(false); // Should change to true in NewMapClicked
         hasLocalized = false;
 
     }
@@ -291,6 +311,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         // Since a session starts running after app launch automatically,
         // ensure that if a session is already running, it is stopped
         LibPlacenote.Instance.StopSession();
+        ActivateMapButton(false);
         paintManager.Reset();
         hasLocalized = false; // reset flag that limits localization to just once
         if (!LibPlacenote.Instance.Initialized())
@@ -365,6 +386,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
                 mPlaneDetectionToggle.SetActive(true);
                 Debug.Log("Started Session");
                 mappingStarted = true;
+                ActivateMapButton(mappingStarted);
                 LibPlacenote.Instance.StartSession();
             }
         }
@@ -511,6 +533,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
                     uploadText.text = "Map upload status– Completed: " + completed + "    Faulted: " + faulted + "   " + "\n" + percentText + "% uploaded";
                     Debug.Log("faulted?: " + faulted);
                     Debug.Log("Completed?: " + completed);
+                ActivateMapButton(false);
                 }
             );
         }
