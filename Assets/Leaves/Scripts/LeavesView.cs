@@ -90,6 +90,8 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
     private bool mappingStarted;
     private string currentMapId;
 
+    private Coroutine pulseMapButton;
+
     private string mSelectedMapId
     {
         get
@@ -202,7 +204,10 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         }
 
         paintPosition = Camera.main.transform.position + Camera.main.transform.forward * 0.3f;
-
+        if (mappingStarted)
+        {
+            pulseMapButton = StartCoroutine(PulseColor(mapButton.GetComponent<Image>()));
+        }
     }
 
     //private void LateUpdate()
@@ -222,10 +227,20 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         {
             mapButton.GetComponent<CanvasGroup>().alpha = 1.0f;
             imageComponent.color = Color.yellow;
+            //pulseMapButton = StartCoroutine(PulseColor(imageComponent));
         } else {
             mapButton.GetComponent<CanvasGroup>().alpha = 0.4f;
+            StopCoroutine(pulseMapButton);
             imageComponent.color = Color.white;
         }
+    }
+
+    private IEnumerator PulseColor(Image img)
+    {
+        float alpha = (Mathf.Sin(Time.time * 2f) + 1.9f) * 0.33f;
+        img.color = new Color(0.5f, 0.5f, 0f, alpha);
+
+        yield return null;
     }
 
     public void OnListMapClick()
@@ -373,7 +388,6 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
     }
 
 
-
     public void OnNewMapClick() {
         ConfigureSession(false);       
 
@@ -390,6 +404,8 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
                 LibPlacenote.Instance.StartSession();
             }
         }
+
+
 
 
 
