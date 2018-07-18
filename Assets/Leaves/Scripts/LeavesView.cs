@@ -238,7 +238,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
     private IEnumerator PulseColor(Image img)
     {
         float alpha = (Mathf.Sin(Time.time * 2f) + 1.9f) * 0.33f;
-        img.color = new Color(0.5f, 0.5f, 0f, alpha);
+        img.color = new Color(1.0f, 0.95f, 0.6f, alpha);
 
         yield return null;
     }

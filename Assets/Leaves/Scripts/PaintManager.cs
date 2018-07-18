@@ -12,7 +12,7 @@ public class PaintStroke : MonoBehaviour
     //public string SomethingWithText { get; set; }
     public List<Vector3> verts;// { get; set; }
     public List<Color> pointColors; // will hold colors of individual points
-    // public List<float> pointSizes // will hold size of individual points
+    //public List<float> pointSizes // will hold size of individual points
     public Color color;// { get; set; } // initial color of stroke (and default color if no point color)
 }
 
@@ -31,7 +31,6 @@ public class PaintManager : MonoBehaviour
 
     public Button onoff;
     [SerializeField] private GameObject paintTarget;
-    private Mesh mesh; // save particles in a mesh
 
     public ParticleSystem particleSystemTemplate;
 
@@ -56,18 +55,11 @@ public class PaintManager : MonoBehaviour
     public bool paintOnTouch;
     public bool ARPlanePainting;
 
-    void OnEnable()
-    {
-        //UnityARSessionNativeInterface.ARFrameUpdatedEvent += ARFrameUpdated;
-    }
-
-    void OnDestroy()
-    {
-        //UnityARSessionNativeInterface.ARFrameUpdatedEvent -= ARFrameUpdated;
-    }
+    [SerializeField] private float paintWait; // time to wait before adding next vertex when painting trail
 
     void Start()
     {
+        paintWait = 0.01f;
         brushSize = 0.005f; // in meters
         strokeThickness = 1f;
         paintOn = false;
@@ -79,7 +71,6 @@ public class PaintManager : MonoBehaviour
         currVertices = new List<Vector3>();
         paintColor = Color.blue;
         brushColorMats = GameObject.FindWithTag("BrushColor").GetComponent<Renderer>().materials;
-        mesh = new Mesh();
         PSV = PSVGO.GetComponent<LeavesView>();
         paintPosition = PSV.paintPosition;
         paintTarget = GameObject.FindWithTag("PaintTarget");
@@ -136,35 +127,6 @@ public class PaintManager : MonoBehaviour
             //paintOnComponent.meshLoading = false;
             //Destroy(this.gameObject.GetComponent(ExtrudedMeshTrail));
         }
-
-
-
-
-        /*
-        if (paintOn)
-        {
-            Paint();
-        }
-
-        if (paintOn && newPaintVertices)
-        {
-            if (currVertices.Count > 0)
-            {
-                ParticleSystem.Particle[] particles = new ParticleSystem.Particle[currVertices.Count];
-                int index = 0;
-                foreach (Vector3 vtx in currVertices)
-                {
-                    particles[index].position = vtx;
-                    particles[index].color = paintColor;
-                    particles[index].size = 0.05f;
-                    index++;
-                }
-                ps.SetParticles(particles, currVertices.Count);
-                newPaintVertices = false;
-            }
-        }
-
-*/
     }
 
     public void AdjustPaintColor() {
@@ -246,12 +208,6 @@ public class PaintManager : MonoBehaviour
         }
         paintOnComponent.meshLoading = false;
         paintOnComponent.endPainting = true; // flag to destroy mesh extrusion component
-        // previous way, does only the first one
-        //if (currVertices.Count > 0)
-        //{
-        //    GameObject newBrush = Instantiate(paintBrushPrefab, currVertices[0], Quaternion.Euler(new Vector3(0f, 90f, 0f)));
-        //    StartCoroutine(PaintMesh(newBrush));
-        //}
     }
 
     private IEnumerator PaintTrail(GameObject brush, PaintStroke paintstroke)
@@ -259,7 +215,7 @@ public class PaintManager : MonoBehaviour
         for (int i = 1; i < paintstroke.verts.Count; i++)
         {
             brush.transform.position = paintstroke.verts[i];
-            yield return new WaitForSeconds(0.01f); // allow enough time for the previous mesh section to be generated
+            yield return new WaitForSeconds(paintWait); // allow enough time for the previous mesh section to be generated
         }
         //// Add the verts of the trail renderer to PaintStrokeList
         //AddPaintStrokeToList(brush);
@@ -272,21 +228,6 @@ public class PaintManager : MonoBehaviour
             Destroy(child.gameObject);
         }
     }
-
-    //private IEnumerator PaintMesh(GameObject brush) {
-    //    //Debug.Log("In PaintMesh coroutine");
-    //    for (int i = 1; i < currVertices.Count; i++) {
-    //        //Debug.Log("i: " + i);
-    //        //Debug.Log("currVertices[i]: " + currVertices[i]);
-    //        brush.transform.position = currVertices[i];
-    //        yield return new WaitForSeconds(0.01f); // allow enough time for the previous mesh section to be generated
-    //    }
-    //    //TODO: Loop thru all groups of verts, not just 1
-    //    paintOnComponent.meshLoading = false;
-    //    paintOnComponent.endPainting = true; // flag to destroy mesh extrusion component
-    //}
-
-
 
     public void RemoveBrushFromTarget() {
         // assuming there is only one paint brush as a time (but there may be multiple paintbrushes when reloading)
@@ -333,12 +274,10 @@ public class PaintManager : MonoBehaviour
             {
                 vertList.Add(araTrail.points[i].position);
                 colorList.Add(araTrail.points[i].color); 
-                // alternately, could add the AraTrail points themselves to the Painstroke, 
+                // alternately, could add the AraTrail points themselves to the Paintstroke, 
                 // since they already hold the colors, plus other info such as discontinuous.
             }
         }
-
-
 
         // Only add the new PaintStrokes if it's newly created, not if loading from a saved map
         if (!paintOnComponent.meshLoading)
@@ -377,10 +316,6 @@ public class PaintManager : MonoBehaviour
 
     public void RandomizeColor()
     {
-        //if (ps.particleCount > 0)
-        //{
-        //    SaveParticleSystem();
-        //}
 
         paintColor = Random.ColorHSV(hueMin: 0f, hueMax: 1f, saturationMin: 0.8f, saturationMax: 1f, valueMin: 0.8f, valueMax: 1f);
 
@@ -393,18 +328,6 @@ public class PaintManager : MonoBehaviour
 
     public void Reset()
     {
-        /* for reference, previous system that used particles
-        foreach (ParticleSystem p in particleSystemList)
-        {
-            Destroy(p);
-        }
-        particleSystemList = new List<ParticleSystem>();
-
-        Destroy(ps);
-        ps = Instantiate(particleSystemTemplate);
-        currVertices = new List<Vector3>();
-        */
-
         // Discard current brush, if there is one actively painting
         DestroyBrush();
         // Discard all paintstrokes (not saving, unless user requested a save)
@@ -431,17 +354,8 @@ public class PaintManager : MonoBehaviour
         paintStrokesList.Clear();
     }
 
-    private void SaveParticleSystem()
-    {
-        particleSystemList.Add(ps);
-        ps = Instantiate(particleSystemTemplate);
-        currVertices = new List<Vector3>();
-    }
-
-
     private void Paint()
     {
-       // paintPosition = paintTarget.transform.position;
         paintPosition = PSV.paintPosition;
         if (Vector3.Distance(paintPosition, previousPosition) > 0.025f)
         {
@@ -450,12 +364,5 @@ public class PaintManager : MonoBehaviour
             newPaintVertices = true;
 
         }
-    }
-
-    private Vector3 GetCameraPosition(UnityARCamera cam)
-    {
-        Matrix4x4 matrix = new Matrix4x4();
-        matrix.SetColumn(3, cam.worldTransform.column3);
-        return UnityARMatrixOps.GetPosition(matrix);
     }
 }
