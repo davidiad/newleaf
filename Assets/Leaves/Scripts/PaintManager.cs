@@ -164,6 +164,7 @@ public class PaintManager : MonoBehaviour
             if (currentBrush)
             {
                 currentBrush.GetComponent<AraTrail>().initialThickness = brushSize;
+
             }
         }
     }
@@ -214,7 +215,9 @@ public class PaintManager : MonoBehaviour
     {
         for (int i = 1; i < paintstroke.verts.Count; i++)
         {
+            
             brush.transform.position = paintstroke.verts[i];
+
             yield return new WaitForSeconds(paintWait); // allow enough time for the previous mesh section to be generated
         }
         //// Add the verts of the trail renderer to PaintStrokeList
@@ -250,6 +253,7 @@ public class PaintManager : MonoBehaviour
     }
 
     private void AddPaintStrokeToList (GameObject brush) {
+        // 3rd party Ara Trails replaces Unity Trail Renderer
         List<Vector3> vertList = new List<Vector3>();
         List<Color> colorList = new List<Color>();
         // TrailRenderer.GetPositions adds its positions to an existing arrays, and returns the # of vertices
@@ -285,6 +289,7 @@ public class PaintManager : MonoBehaviour
             PaintStroke paintStroke = brush.AddComponent<PaintStroke>();
             paintStroke.color = paintColor;
             paintStroke.verts = vertList;
+            paintStroke.pointColors = colorList;
             paintStrokesList.Add(paintStroke);
         }
     }

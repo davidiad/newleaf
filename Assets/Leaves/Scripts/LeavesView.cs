@@ -27,6 +27,7 @@ public class ShapeInfo
 public class PaintStrokeInfo
 {
     public SerializableVector3[] verts;
+    public SerializableVector4[] pointColors;
     public SerializableVector4 initialColor; // initial color of stroke. Color implicitly converts to Vector4.
 }
 
@@ -210,16 +211,6 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         }
     }
 
-    //private void LateUpdate()
-    //{
-    //    if (mARKitInit)
-    //    {
-    //        mLabelText.text = "Auto start Mapping";
-    //        // automatically start mapping for Placenote map
-    //        OnNewMapClick();
-    //    }
-    //}
-
     private void ActivateMapButton(bool mappingOn) {
         Image imageComponent = mapButton.GetComponent<Image>();
         imageComponent.fillCenter = mappingOn;
@@ -235,6 +226,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         }
     }
 
+    // Make a color pulsate
     private IEnumerator PulseColor(Image img)
     {
         float alpha = (Mathf.Sin(Time.time * 2f) + 1.9f) * 0.33f;
@@ -675,8 +667,13 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
                 // Add the verts
                 int vertCount = ps.verts.Count;
+                //todo: combine in 1 line?
                 SerializableVector3[] psiverts = new SerializableVector3[vertCount];
                 psi.verts = psiverts;
+
+                // Add the colors
+                SerializableVector4[] psicolors = new SerializableVector4[vertCount];
+                psi.pointColors = psicolors;
                 
                 if (vertCount > 0)
                 {
@@ -687,6 +684,8 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
                         //psi.verts[j] = new SerializableVector3(ps.verts[j].x, ps.verts[j].y, ps.verts[j].z);
 
                         psi.verts[j] = ps.verts[j]; // auto-conversion sv3 and Vector3
+                        Vector4 vector4color = ps.pointColors[j]; // implicit conversion of Color to Vector4
+                        psi.pointColors[j] = vector4color; // implicit conversion of Vector4 to SerialiazableVector4  
                     }
                     Debug.Log("7-OnDropPaintStrokeClick");
                     paintStrokeInfoList.Add(psi);
@@ -753,6 +752,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         {
             psiArray[i] = new PaintStrokeInfo();
             psiArray[i].verts = paintStrokeInfoList[i].verts;
+            psiArray[i].pointColors = paintStrokeInfoList[i].pointColors;
             psiArray[i].initialColor = paintStrokeInfoList[i].initialColor;
         }
 
