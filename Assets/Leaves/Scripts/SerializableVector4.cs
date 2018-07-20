@@ -5,7 +5,7 @@ using System.Collections;
 /// <summary>
 /// Since unity doesn't flag the Vector4 as serializable, we
 /// need to create our own version. This one will automatically convert
-/// between Vector4 and SerializableVector4
+/// between Vector4 or Color and SerializableVector4
 /// Can be used to hold Rotations, or Colors
 /// </summary>
 [System.Serializable]
@@ -73,5 +73,15 @@ public struct SerializableVector4
     public static implicit operator SerializableVector4(Vector4 rValue)
     {
         return new SerializableVector4(rValue.x, rValue.y, rValue.z, rValue.w);
+    }
+
+    /// <summary>
+    /// Automatic conversion from SerializableVector4 to Color
+    /// </summary>
+    /// <param name="rValue"></param>
+    /// <returns></returns>
+    public static implicit operator Color(SerializableVector4 rValue)
+    {
+        return new Color(rValue.x, rValue.y, rValue.z, rValue.w);
     }
 }

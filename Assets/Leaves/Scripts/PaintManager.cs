@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.XR.iOS;
 using UnityEngine.UI;
 using Ara; // 3rd party Trail Renderer
+using System;
 
 // TODO:(?) Should this be a struct? (or Scriptable object?)
 public class PaintStroke : MonoBehaviour
@@ -56,6 +57,11 @@ public class PaintManager : MonoBehaviour
     public bool ARPlanePainting;
 
     [SerializeField] private float paintWait; // time to wait before adding next vertex when painting trail
+
+    //void Awake()
+    //{
+    //    Environment.SetEnvironmentVariable("MONO_REFLECTION_SERIALIZER", "yes");
+    //}
 
     void Start()
     {
@@ -189,7 +195,7 @@ public class PaintManager : MonoBehaviour
         GameObject newBrush = Instantiate(paintBrushPrefab, new Vector3(0f, 0f, 0f), Quaternion.Euler(new Vector3(0f,0f,0f)));
         newBrush.transform.parent = paintTarget.gameObject.transform; // attach the object that acts as a brush to the paintTarget
         newBrush.transform.localPosition = new Vector3(0f, 0f, 0f);
-        newBrush.GetComponent<TrailRenderer>().Clear(); // remove trail from 1st frame with odd, unwanted line (comes from Trail rendering before first point is established)
+        //newBrush.GetComponent<TrailRenderer>().Clear(); // remove trail from 1st frame with odd, unwanted line (comes from Trail rendering before first point is established)
 
         newBrush.GetComponent<AraTrail>().initialColor = paintColor;
     } 
@@ -203,20 +209,24 @@ public class PaintManager : MonoBehaviour
             {
                 // position the new paintbrush at the first point of the vertex list
                 GameObject newBrush = Instantiate(paintBrushPrefab, paintstroke.verts[0], Quaternion.Euler(new Vector3(0f, 90f, 0f)));
-                newBrush.GetComponent<AraTrail>().initialColor = paintstroke.color;
-                StartCoroutine(PaintTrail(newBrush, paintstroke));
+                AraTrail araTrail = newBrush.GetComponent<AraTrail>();
+                araTrail.initialColor = paintstroke.color;
+                StartCoroutine(PaintTrail(newBrush, paintstroke, araTrail));
             }
         }
         paintOnComponent.meshLoading = false;
         paintOnComponent.endPainting = true; // flag to destroy mesh extrusion component
     }
 
-    private IEnumerator PaintTrail(GameObject brush, PaintStroke paintstroke)
+    private IEnumerator PaintTrail(GameObject brush, PaintStroke paintstroke, AraTrail araTrail)
     {
         for (int i = 1; i < paintstroke.verts.Count; i++)
         {
-            
+            // can't set point color directly, so set the initialColor, which is then used to create the pointColor for the next point
+            araTrail.initialColor = paintstroke.pointColors[i]; 
             brush.transform.position = paintstroke.verts[i];
+            //araTrail.points[i].color = paintstroke.pointColors[i];
+
 
             yield return new WaitForSeconds(paintWait); // allow enough time for the previous mesh section to be generated
         }
@@ -253,22 +263,24 @@ public class PaintManager : MonoBehaviour
     }
 
     private void AddPaintStrokeToList (GameObject brush) {
+        
         // 3rd party Ara Trails replaces Unity Trail Renderer
         List<Vector3> vertList = new List<Vector3>();
         List<Color> colorList = new List<Color>();
         // TrailRenderer.GetPositions adds its positions to an existing arrays, and returns the # of vertices
         // Get the vertices of the trail renderer(s)
-        Vector3[] positions = new Vector3[1000]; // assuming there'll never be > 1000
+        //Vector3[] positions = new Vector3[1000]; // assuming there'll never be > 1000
         // Note: // Trail Renderer may be turned off in favor of Ara Trail Renderer
-        int numPos = brush.GetComponent<TrailRenderer>().GetPositions(positions);
-        if (numPos > 0) 
-        {
-            for (int i = 0; i < numPos; i++)
-            {
-                vertList.Add(positions[i]);
-            }
-        } else {
+        //int numPos = brush.GetComponent<TrailRenderer>().GetPositions(positions);
+        //if (numPos > 0) 
+        //{
+        //    for (int i = 0; i < numPos; i++)
+        //    {
+        //        vertList.Add(positions[i]);
+        //    }
+        //} else {
             // Ara Trail version
+
             AraTrail araTrail = brush.GetComponent<AraTrail>();
             araTrail.initialColor = paintColor;
             araTrail.initialThickness = brushSize;
@@ -277,11 +289,11 @@ public class PaintManager : MonoBehaviour
             for (int i = 0; i < numPosAra; i++)
             {
                 vertList.Add(araTrail.points[i].position);
-                colorList.Add(araTrail.points[i].color); 
+                colorList.Add(araTrail.points[i].color);
                 // alternately, could add the AraTrail points themselves to the Paintstroke, 
                 // since they already hold the colors, plus other info such as discontinuous.
             }
-        }
+        //}
 
         // Only add the new PaintStrokes if it's newly created, not if loading from a saved map
         if (!paintOnComponent.meshLoading)
@@ -322,7 +334,7 @@ public class PaintManager : MonoBehaviour
     public void RandomizeColor()
     {
 
-        paintColor = Random.ColorHSV(hueMin: 0f, hueMax: 1f, saturationMin: 0.8f, saturationMax: 1f, valueMin: 0.8f, valueMax: 1f);
+        paintColor = UnityEngine.Random.ColorHSV(hueMin: 0f, hueMax: 1f, saturationMin: 0.8f, saturationMax: 1f, valueMin: 0.8f, valueMax: 1f);
 
         GameObject currentBrush = GameObject.FindWithTag("PaintBrush");
         if (currentBrush)

@@ -27,7 +27,7 @@ public class ShapeInfo
 public class PaintStrokeInfo
 {
     public SerializableVector3[] verts;
-    public SerializableVector4[] pointColors;
+    public SerializableVector3[] pointColors; // alpha is always 1, and using V3 avoids deserialization problems with V4
     public SerializableVector4 initialColor; // initial color of stroke. Color implicitly converts to Vector4.
 }
 
@@ -108,7 +108,10 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
     bool ARPlanePaintingStatus; 
 
-    // Use this for initialization
+    //void Awake() {
+    //    Environment.SetEnvironmentVariable("MONO_REFLECTION_SERIALIZER", "yes");
+    //}
+
     void Start()
     {
         currentMapId = "";
@@ -672,20 +675,23 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
                 psi.verts = psiverts;
 
                 // Add the colors
-                SerializableVector4[] psicolors = new SerializableVector4[vertCount];
+                SerializableVector3[] psicolors = new SerializableVector3[vertCount];
                 psi.pointColors = psicolors;
+                Debug.Log("psi.pointColors length: " + psi.pointColors.Length);
+
                 
                 if (vertCount > 0)
                 {
                     Debug.Log("5-OnDropPaintStrokeClick");
-                    for (int j = 0; j < ps.verts.Count; j++)
+                    for (int j = 0; j < vertCount; j++)
                     {
-                        //Debug.Log("6-OnDropPaintStrokeClick and ps.verts.Count is: " + ps.verts.Count);
+                        Debug.Log("6-OnDropPaintStrokeClick and ps.verts.Count is: " + ps.verts.Count);
                         //psi.verts[j] = new SerializableVector3(ps.verts[j].x, ps.verts[j].y, ps.verts[j].z);
 
                         psi.verts[j] = ps.verts[j]; // auto-conversion sv3 and Vector3
-                        Vector4 vector4color = ps.pointColors[j]; // implicit conversion of Color to Vector4
-                        psi.pointColors[j] = vector4color; // implicit conversion of Vector4 to SerialiazableVector4  
+                        Debug.Log("6.5-OnDropPaintStrokeClick");
+                        //Vector4 vector4color = ps.pointColors[j]; // implicit conversion of Color to Vector4
+                        psi.pointColors[j] = new Vector3(ps.pointColors[j].r, ps.pointColors[j].b, ps.pointColors[j].g); 
                     }
                     Debug.Log("7-OnDropPaintStrokeClick");
                     paintStrokeInfoList.Add(psi);
@@ -728,6 +734,9 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
     private JObject PaintStrokes2JSON()
     {
+        Debug.Log("About to make a test SV4");
+        SerializableVector4 testSV4 = new SerializableVector4(1f, 1f, 1f, 1f);
+        Debug.Log("Made an SV4");
         // Create a new PaintStrokeList with values copied from paintStrokesInfoList(a List of PaintStrokeInfo)
         // Despite the name, PaintStrokeList contains an array (not a List) of PaintStrokeInfo
         // Need this array to convert to a JObject
@@ -868,7 +877,10 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
         if (mapMetadata is JObject && mapMetadata["paintStrokeList"] is JObject)
         {
+            Debug.Log("A-LoadPaintStrokesJSON");
+            // this next line breaks when deserializing a list of vector4's
             PaintStrokeList paintStrokes = mapMetadata["paintStrokeList"].ToObject<PaintStrokeList>();
+            Debug.Log("B-LoadPaintStrokesJSON");
             if (paintStrokes.strokes == null)
             {
                 Debug.Log("no PaintStrokes were added");
@@ -881,22 +893,26 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
                 paintStrokeInfoList.Add(paintInfo);
                 PaintStroke paintstroke = PaintStrokeFromInfo(paintInfo);
                 paintStrokeObjList.Add(paintstroke); // should be used by PaintManager to recreate painting
+                Debug.Log("C-LoadPaintStrokesJSON");
             }
+            Debug.Log("D-LoadPaintStrokesJSON");
             paintManager.paintStrokesList = paintStrokeObjList; // not really objects, rather components
+            Debug.Log("E-LoadPaintStrokesJSON");
             paintManager.RecreatePaintedStrokes();
+            Debug.Log("F-LoadPaintStrokesJSON");
         }
     }
 
-    private void TestPaintStrokeInfo() {
-        PaintStrokeInfo psi = new PaintStrokeInfo();
-        psi.verts = new SerializableVector3[3];
-        psi.verts[0] = new SerializableVector3(1, 2, 3);
-        psi.verts[1] = new SerializableVector3(10, 2, 3);
-        psi.verts[2] = new SerializableVector3(1, 20, 3);
-        PaintStroke ps = PaintStrokeFromInfo(psi);
-        Debug.Log("ps: ?????????:");
-        Debug.Log(ps);
-    }
+    //private void TestPaintStrokeInfo() {
+    //    PaintStrokeInfo psi = new PaintStrokeInfo();
+    //    psi.verts = new SerializableVector3[3];
+    //    psi.verts[0] = new SerializableVector3(1, 2, 3);
+    //    psi.verts[1] = new SerializableVector3(10, 2, 3);
+    //    psi.verts[2] = new SerializableVector3(1, 20, 3);
+    //    PaintStroke ps = PaintStrokeFromInfo(psi);
+    //    Debug.Log("ps: ?????????:");
+    //    Debug.Log(ps);
+    //}
 
     private PaintStroke PaintStrokeFromInfo(PaintStrokeInfo info)
     {
@@ -908,10 +924,21 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         paintStroke.color = new Color(info.initialColor.x, info.initialColor.y, info.initialColor.z, info.initialColor.w);
         List<Vector3> v = new List<Vector3>();
         paintStroke.verts = v;
+        List<Color> c = new List<Color>();
+        paintStroke.pointColors = c;
+
         for (int i = 0; i < info.verts.Length; i++)
         {
             //paintStroke.verts[i] = info.verts[i];  // implicit conversion of SV3 to Vector3
             paintStroke.verts.Add(info.verts[i]);
+            //Vector4 vector2color = info.pointColors[i]; // implicit conversion of SV4 to Vector4
+            // explicit conversion of SV4 to Vector4
+            //Vector4 vector2color = new Vector4(info.pointColors[i].w, info.pointColors[i].x, info.pointColors[i].y, info.pointColors[i].z);
+            //paintStroke.pointColors.Add(info.pointColors[i]); // implicit conversion of Vector4 to Color
+            Color ptColor = new Color(info.pointColors[i].x, info.pointColors[i].y, info.pointColors[i].z, 1f);
+            paintStroke.pointColors.Add(ptColor);
+
+
         }
 
         return paintStroke;
