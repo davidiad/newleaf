@@ -28,6 +28,7 @@ public class PaintStrokeInfo
 {
     public SerializableVector3[] verts;
     public SerializableVector3[] pointColors; // alpha is always 1, and using V3 avoids deserialization problems with V4
+    public float[] pointSizes;
     public SerializableVector4 initialColor; // initial color of stroke. Color implicitly converts to Vector4.
 }
 
@@ -674,10 +675,13 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
                 SerializableVector3[] psiverts = new SerializableVector3[vertCount];
                 psi.verts = psiverts;
 
-                // Add the colors
+                // Add the colors per point
                 SerializableVector3[] psicolors = new SerializableVector3[vertCount];
                 psi.pointColors = psicolors;
                 Debug.Log("psi.pointColors length: " + psi.pointColors.Length);
+
+                // Add the size per point
+                psi.pointSizes = new float[vertCount]; 
 
                 
                 if (vertCount > 0)
@@ -691,7 +695,8 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
                         psi.verts[j] = ps.verts[j]; // auto-conversion sv3 and Vector3
                         Debug.Log("6.5-OnDropPaintStrokeClick");
                         //Vector4 vector4color = ps.pointColors[j]; // implicit conversion of Color to Vector4
-                        psi.pointColors[j] = new Vector3(ps.pointColors[j].r, ps.pointColors[j].b, ps.pointColors[j].g); 
+                        psi.pointColors[j] = new Vector3(ps.pointColors[j].r, ps.pointColors[j].b, ps.pointColors[j].g);
+                        psi.pointSizes[j] = ps.pointSizes[j];
                     }
                     Debug.Log("7-OnDropPaintStrokeClick");
                     paintStrokeInfoList.Add(psi);
@@ -762,6 +767,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
             psiArray[i] = new PaintStrokeInfo();
             psiArray[i].verts = paintStrokeInfoList[i].verts;
             psiArray[i].pointColors = paintStrokeInfoList[i].pointColors;
+            psiArray[i].pointSizes = paintStrokeInfoList[i].pointSizes;
             psiArray[i].initialColor = paintStrokeInfoList[i].initialColor;
         }
 
@@ -926,6 +932,8 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         paintStroke.verts = v;
         List<Color> c = new List<Color>();
         paintStroke.pointColors = c;
+        // List<float> s = new List<float>();
+        paintStroke.pointSizes = new List<float>();
 
         for (int i = 0; i < info.verts.Length; i++)
         {
@@ -937,7 +945,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
             //paintStroke.pointColors.Add(info.pointColors[i]); // implicit conversion of Vector4 to Color
             Color ptColor = new Color(info.pointColors[i].x, info.pointColors[i].y, info.pointColors[i].z, 1f);
             paintStroke.pointColors.Add(ptColor);
-
+            paintStroke.pointSizes.Add(info.pointSizes[i]);
 
         }
 
