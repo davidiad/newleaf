@@ -13,7 +13,7 @@ public class PaintStroke : MonoBehaviour
     //public string SomethingWithText { get; set; }
     public List<Vector3> verts;// { get; set; }
     public List<Color> pointColors; // will hold colors of individual points
-    //public List<float> pointSizes // will hold size of individual points
+    public List<float> pointSizes; // will hold size of individual points
     public Color color;// { get; set; } // initial color of stroke (and default color if no point color)
 }
 
@@ -223,10 +223,10 @@ public class PaintManager : MonoBehaviour
         for (int i = 1; i < paintstroke.verts.Count; i++)
         {
             // can't set point color directly, so set the initialColor, which is then used to create the pointColor for the next point
-            araTrail.initialColor = paintstroke.pointColors[i]; 
+            araTrail.initialColor = paintstroke.pointColors[i];
+            // set the initialThickness, which is then used to create the size of the next point
+            araTrail.initialThickness = paintstroke.pointSizes[i]; 
             brush.transform.position = paintstroke.verts[i];
-            //araTrail.points[i].color = paintstroke.pointColors[i];
-
 
             yield return new WaitForSeconds(paintWait); // allow enough time for the previous mesh section to be generated
         }
@@ -267,6 +267,7 @@ public class PaintManager : MonoBehaviour
         // 3rd party Ara Trails replaces Unity Trail Renderer
         List<Vector3> vertList = new List<Vector3>();
         List<Color> colorList = new List<Color>();
+        List<float> sizeList = new List<float>();
         // TrailRenderer.GetPositions adds its positions to an existing arrays, and returns the # of vertices
         // Get the vertices of the trail renderer(s)
         //Vector3[] positions = new Vector3[1000]; // assuming there'll never be > 1000
@@ -290,6 +291,7 @@ public class PaintManager : MonoBehaviour
             {
                 vertList.Add(araTrail.points[i].position);
                 colorList.Add(araTrail.points[i].color);
+                sizeList.Add(araTrail.points[i].thickness);
                 // alternately, could add the AraTrail points themselves to the Paintstroke, 
                 // since they already hold the colors, plus other info such as discontinuous.
             }
@@ -302,6 +304,7 @@ public class PaintManager : MonoBehaviour
             paintStroke.color = paintColor;
             paintStroke.verts = vertList;
             paintStroke.pointColors = colorList;
+            paintStroke.pointSizes = sizeList;
             paintStrokesList.Add(paintStroke);
         }
     }
