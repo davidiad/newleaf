@@ -468,13 +468,13 @@ MonoBehaviour:
   velocitySmoothing: 0.75
   damping: 0.75
   materials:
-  - {fileID: 2100000, guid: 748bfbeea4d204e3bb32543f2d3afdf6, type: 2}
+  - {fileID: 2100000, guid: 1871e9682e15c488c880dcee620c7d4f, type: 2}
   castShadows: 0
   receiveShadows: 0
   useLightProbes: 0
   textureMode: 1
-  uvFactor: 0.01
-  tileAnchor: 0
+  uvFactor: 100
+  tileAnchor: 0.218
 --- !u!198 &198025165707391226
 ParticleSystem:
   m_ObjectHideFlags: 1
