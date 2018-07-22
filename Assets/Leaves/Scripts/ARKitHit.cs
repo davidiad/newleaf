@@ -17,8 +17,12 @@ namespace UnityEngine.XR.iOS
         [SerializeField]private bool planePainting = false;
         private TransformValues localPlaneTransformValues;
 
+        private float previousRadius; // needed to smooth brush size adjustments 
+        private float maxAllowedSizeChange;
+
         private void Start()
         {
+            maxAllowedSizeChange = 1.0f;
             paintOn = GameObject.FindWithTag("PaintOn").GetComponent<PaintOn>();
             paintManager = GameObject.FindWithTag("PaintManager").GetComponent<PaintManager>();
             paintTarget = GameObject.FindWithTag("PaintTarget");
@@ -76,8 +80,6 @@ namespace UnityEngine.XR.iOS
 
         private void PaintPlaneOff() 
         {
-            Debug.Log("444444444");
-            Debug.Log("PP OFF````~~~~~~~~~~");
             // reset the brush
             paintManager.RemoveBrushFromTarget();
             paintTarget.transform.SetParent(Camera.main.transform);
@@ -147,18 +149,30 @@ namespace UnityEngine.XR.iOS
             if (Input.touchCount > 0 && m_HitTransform != null)
             {
                 var touch = Input.GetTouch(0);
-
+                if (touch.phase == TouchPhase.Began) {
+                    previousRadius = touch.radius;
+                }
                 if (touch.phase == TouchPhase.Began || touch.phase == TouchPhase.Moved)
                 {
                     // Control size of brush with touch
                     Debug.Log("Touch Radius: " + touch.radius);
+
+                    // limit max allowed change from previous frame to keep size transitions smooth
+                    float allowedRadius = touch.radius;
+                    if ((touch.radius - previousRadius) > maxAllowedSizeChange) {
+                        allowedRadius = previousRadius + maxAllowedSizeChange;
+                    } else if ((touch.radius - previousRadius) < (-1f * maxAllowedSizeChange)) {
+                        allowedRadius = previousRadius - maxAllowedSizeChange;
+                    }
+                    previousRadius = allowedRadius; // reset in prep for next frame
                     // radius usually in range of 20 to 40, as low as 10, as high as 200
                     // attempt to bring brush size to range of 1/4 cm to 10 cm
-                    float adjustedRadius = touch.radius * 0.002f;
+                    float adjustedRadius = allowedRadius * 0.002f;
                     // if Apple pencil is being used, use the amount of pressure instead
                     if (touch.type == TouchType.Stylus) { adjustedRadius = touch.pressure * 0.04f; }
                     paintManager.brushSize = adjustedRadius * adjustedRadius;
                     Debug.Log("brushSize: " + adjustedRadius);
+
                     paintManager.AdjustBrushSize();
 
             // This section is need for painting on AR planes, but interferes with painting on Camera plane (hence the if statement)
