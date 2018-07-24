@@ -695,7 +695,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
                         psi.verts[j] = ps.verts[j]; // auto-conversion sv3 and Vector3
                         Debug.Log("6.5-OnDropPaintStrokeClick");
                         //Vector4 vector4color = ps.pointColors[j]; // implicit conversion of Color to Vector4
-                        psi.pointColors[j] = new Vector3(ps.pointColors[j].r, ps.pointColors[j].b, ps.pointColors[j].g);
+                        psi.pointColors[j] = new Vector3(ps.pointColors[j].r, ps.pointColors[j].g, ps.pointColors[j].b);
                         psi.pointSizes[j] = ps.pointSizes[j];
                     }
                     Debug.Log("7-OnDropPaintStrokeClick");
