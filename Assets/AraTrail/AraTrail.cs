@@ -540,7 +540,7 @@ namespace Ara{
         }
     
         /** 
-         * Calculates the lenght of a trail segment.
+         * Calculates the length of a trail segment.
          */
         public float GetLenght(List<Point> input){
     

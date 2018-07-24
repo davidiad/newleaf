@@ -190,14 +190,13 @@ public class PaintManager : MonoBehaviour
     // Add a mesh (or trailrender) painting brush to the paint target
     public void AddBrushToTarget()
     {
-        // instantiate a brush
-        // parent it to the paint target
+        // instantiate a brush and parent it to the paint target
         GameObject newBrush = Instantiate(paintBrushPrefab, new Vector3(0f, 0f, 0f), Quaternion.Euler(new Vector3(0f,0f,0f)));
         newBrush.transform.parent = paintTarget.gameObject.transform; // attach the object that acts as a brush to the paintTarget
         newBrush.transform.localPosition = new Vector3(0f, 0f, 0f);
         //newBrush.GetComponent<TrailRenderer>().Clear(); // remove trail from 1st frame with odd, unwanted line (comes from Trail rendering before first point is established)
-
         newBrush.GetComponent<AraTrail>().initialColor = paintColor;
+        newBrush.GetComponent<AraTrail>().initialThickness = brushSize;
     } 
 
     public void RecreatePaintedStrokes() {
@@ -205,14 +204,14 @@ public class PaintManager : MonoBehaviour
         // The paint stroke info that was saved with the map should already have been put into paintStrokesList
         foreach (PaintStroke paintstroke in paintStrokesList)
         {
-            if (paintstroke.verts.Count > 2) // no point in drawing a single vert
-            {
+            //if (paintstroke.verts.Count > 2) // no point in drawing a single vert
+           // {
                 // position the new paintbrush at the first point of the vertex list
                 GameObject newBrush = Instantiate(paintBrushPrefab, paintstroke.verts[0], Quaternion.Euler(new Vector3(0f, 90f, 0f)));
                 AraTrail araTrail = newBrush.GetComponent<AraTrail>();
                 araTrail.initialColor = paintstroke.color;
                 StartCoroutine(PaintTrail(newBrush, paintstroke, araTrail));
-            }
+            //}
         }
         paintOnComponent.meshLoading = false;
         paintOnComponent.endPainting = true; // flag to destroy mesh extrusion component

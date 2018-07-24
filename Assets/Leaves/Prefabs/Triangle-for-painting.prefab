@@ -358,7 +358,7 @@ MonoBehaviour:
   alignment: 0
   thickness: 1
   smoothness: 3
-  highQualityCorners: 0
+  highQualityCorners: 1
   cornerRoundness: 9
   thicknessOverLenght:
     serializedVersion: 2
@@ -473,8 +473,8 @@ MonoBehaviour:
   receiveShadows: 0
   useLightProbes: 0
   textureMode: 1
-  uvFactor: 100
-  tileAnchor: 0.218
+  uvFactor: 45
+  tileAnchor: 0
 --- !u!198 &198025165707391226
 ParticleSystem:
   m_ObjectHideFlags: 1
