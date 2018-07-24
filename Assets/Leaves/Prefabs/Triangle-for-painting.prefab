@@ -359,7 +359,7 @@ MonoBehaviour:
   thickness: 1
   smoothness: 3
   highQualityCorners: 1
-  cornerRoundness: 9
+  cornerRoundness: 7
   thicknessOverLenght:
     serializedVersion: 2
     m_Curve:

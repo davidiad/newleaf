@@ -515,8 +515,8 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
                     JObject shapeList = Shapes2JSON();
                     metadata["shapeList"] = shapeList;
 
-                    JObject sv3list = Sv3s2JSON();
-                    metadata["sv3list"] = sv3list;
+                    //JObject sv3list = Sv3s2JSON();
+                    //metadata["sv3list"] = sv3list;
 
                     JObject paintStrokeList = PaintStrokes2JSON();
                     metadata["paintStrokeList"] = paintStrokeList;
@@ -569,8 +569,8 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         JObject shapeList = Shapes2JSON();
         metadata["shapeList"] = shapeList;
 
-        JObject sv3list = Sv3s2JSON();
-        metadata["sv3list"] = sv3list;
+        //JObject sv3list = Sv3s2JSON();
+        //metadata["sv3list"] = sv3list;
 
         JObject paintStrokeList = PaintStrokes2JSON();
         metadata["paintStrokeList"] = paintStrokeList;
@@ -739,9 +739,6 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
     private JObject PaintStrokes2JSON()
     {
-        Debug.Log("About to make a test SV4");
-        SerializableVector4 testSV4 = new SerializableVector4(1f, 1f, 1f, 1f);
-        Debug.Log("Made an SV4");
         // Create a new PaintStrokeList with values copied from paintStrokesInfoList(a List of PaintStrokeInfo)
         // Despite the name, PaintStrokeList contains an array (not a List) of PaintStrokeInfo
         // Need this array to convert to a JObject
@@ -970,7 +967,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
             {
                 mLabelText.text = "Localized";
                 LoadShapesJSON(mSelectedMapInfo.userData);
-                LoadSv3ListJSON(mSelectedMapInfo.userData);
+                //LoadSv3ListJSON(mSelectedMapInfo.userData);
                 LoadPaintStrokesJSON(mSelectedMapInfo.userData);
                 Debug.Log("metadata:");
                 Debug.Log(mSelectedMapInfo.userData);
