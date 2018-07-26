@@ -197,7 +197,8 @@ public class PaintManager : MonoBehaviour
         //newBrush.GetComponent<TrailRenderer>().Clear(); // remove trail from 1st frame with odd, unwanted line (comes from Trail rendering before first point is established)
         newBrush.GetComponent<AraTrail>().initialColor = paintColor;
         newBrush.GetComponent<AraTrail>().initialThickness = brushSize;
-    } 
+    }
+
 
     public void RecreatePaintedStrokes() {
         paintOnComponent.meshLoading = true;
