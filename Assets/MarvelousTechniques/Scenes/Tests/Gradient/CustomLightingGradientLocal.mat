@@ -1,0 +1,84 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: CustomLightingGradientLocal
+  m_Shader: {fileID: 4800000, guid: 31f5ef81e1c5045c08fccaba0451f912, type: 3}
+  m_ShaderKeywords: GRADIENT_LOCAL_SPACE USE_GRADIENT
+  m_LightmapFlags: 5
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: 2000
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _LayoutTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _LightRampTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _Alpha: 0
+    - _AmbientPower: 0
+    - _DstBlend: 0
+    - _FogAnimationFreq: 0.1
+    - _FogAnimationHeight: 0.1
+    - _FogDensity: 1
+    - _FogEnd: 50
+    - _FogHeight: 0.1
+    - _FogStart: 0
+    - _FogYStartPos: 0
+    - _FrontLight: 0.7
+    - _GradientHeight: 0.6
+    - _GradientLocal: 1
+    - _GradientStartY: 0
+    - _LayoutTexturePower: 0
+    - _LightMaxDistance: 10
+    - _LightProbePower: 0.5
+    - _LightmapPower: 1
+    - _MainTexPower: 1
+    - _RightLight: 0.9
+    - _RimPower: 1
+    - _ShadowPower: 0
+    - _Shininess: 0
+    - _Specular: 0.01
+    - _SrcBlend: 1
+    - _TopLight: 1
+    - _UseDirLight: 0
+    - _UseFogDistance: 0
+    - _UseLightMap: 0
+    - _ZWrite: 1
+    - _additiveBlend: 0
+    m_Colors:
+    - _AmbientColor: {r: 0.5, g: 0.1, b: 0.2, a: 0}
+    - _FogColor: {r: 1, g: 1, b: 1, a: 1}
+    - _FrontColor: {r: 0.40441176, g: 0.8088235, b: 0.5927679, a: 0}
+    - _FrontColorBottom: {r: 1, g: 0.72794116, b: 0.72794116, a: 0}
+    - _LightDirF: {r: 0, g: 0, b: -1, a: 1}
+    - _LightDirR: {r: 1, g: 0, b: 0, a: 1}
+    - _LightDirT: {r: 0, g: 1, b: 0, a: 1}
+    - _LightPos: {r: 0, g: 0, b: 0, a: 1}
+    - _LightTint: {r: 1, g: 1, b: 1, a: 0}
+    - _LightmapColor: {r: 0, g: 0, b: 0, a: 0}
+    - _MainColor: {r: 1, g: 0.5514706, b: 0.5514706, a: 0}
+    - _MainColorBottom: {r: 1, g: 0.73, b: 0.117, a: 0}
+    - _RightColor: {r: 0.63235295, g: 0.615355, b: 0.37197232, a: 0}
+    - _RightColorBottom: {r: 1, g: 0.7294118, b: 0.7294118, a: 0}
+    - _RimColor: {r: 0.57012326, g: 0.6985294, b: 0.6299289, a: 0}
+    - _RimColorBottom: {r: 1, g: 0.7294118, b: 0.7294118, a: 0}
+    - _SpecColorc: {r: 1, g: 1, b: 1, a: 0}
+    - _TopColor: {r: 0.78676474, g: 0.35288712, b: 0.61321366, a: 0}
+    - _TopColorBottom: {r: 1, g: 0.7294118, b: 0.7294118, a: 0}

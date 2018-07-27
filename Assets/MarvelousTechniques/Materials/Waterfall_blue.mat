@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: Waterfall_blue
+  m_Shader: {fileID: 4800000, guid: ce2d0b2cb01524513932fcf57a229c88, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 5
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: 5563dfd3a80c1473e8596016b91b48da, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: -0.62}
+    m_Floats:
+    - _AmbientPower: 1.03
+    - _Glossiness: 0.5
+    - _HighlightFade: 0.37
+    - _HighlightLength: 0.26
+    - _Metallic: 0
+    - _USpeed: 13.7
+    - _VSpeed: 42
+    - _WaveFrequency: 0.71
+    - _WaveLength: 2.06
+    - _WaveMagnitude: 0.05
+    m_Colors:
+    - _AmbientColor: {r: 0.07028548, g: 0.47794116, b: 0.4442042, a: 0}
+    - _Color: {r: 0.63754326, g: 0.9277353, b: 0.9852941, a: 1}
+    - _FrontColor: {r: 0.2861159, g: 0.9264706, b: 0.89997303, a: 0}
+    - _HighlightColor: {r: 0.9852941, g: 0.65203285, b: 0.65203285, a: 1}
+    - _LightTint: {r: 1, g: 1, b: 1, a: 0}
+    - _RightColor: {r: 0.2794118, g: 1, b: 0.9711765, a: 0}
+    - _RimColor: {r: 1, g: 1, b: 1, a: 0}
+    - _TopColor: {r: 0.5229239, g: 0.9117647, b: 0.9117647, a: 0}
+    - _frontColor: {r: 0.35499567, g: 0.7205882, b: 0.7205882, a: 0}
+    - _rightColor: {r: 1, g: 1, b: 1, a: 0}
+    - _topColor: {r: 0.55060554, g: 0.91334563, b: 0.9852941, a: 0}

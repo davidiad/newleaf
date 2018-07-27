@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: LavaOcean
+  m_Shader: {fileID: 4800000, guid: 0938bb59fd371473eb0af7990ec8fe53, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 5
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: 3000
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _ColorMap:
+        m_Texture: {fileID: 2800000, guid: 885d913134398480f8ea820d7975e769, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ColorMap2:
+        m_Texture: {fileID: 2800000, guid: 885d913134398480f8ea820d7975e769, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ColourRamp0:
+        m_Texture: {fileID: 2800000, guid: e3365fed1a2f04c07a3606796b99b03b, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DepthTex:
+        m_Texture: {fileID: 2800000, guid: 9a07b9f6514354cf2ac8c596d34d5136, type: 3}
+        m_Scale: {x: 1, y: 0.94}
+        m_Offset: {x: 0, y: 0}
+    - _FoamMap:
+        m_Texture: {fileID: 2800000, guid: 6caf05b4e13574ce086f393fdf527ffa, type: 3}
+        m_Scale: {x: 0.11, y: 0.09}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _AmbientPower: 0
+    - _Density: 0.1
+    - _FoamLevel: 2.8
+    - _FoamPower: 0.9
+    - _FoamSpeed: 0.13
+    - _FoamThreshold: 73.36
+    - _Frequency: 2.52
+    - _InvWavelength: 3.42
+    - _Magnitude: 1.39
+    - _Speed: 1.49
+    - _WaveHeight: 0.46
+    m_Colors:
+    - _AmbientColor: {r: 0.5, g: 0.1, b: 0.2, a: 0}
+    - _FoamColor: {r: 1, g: 1, b: 1, a: 1}
+    - _FoamColour: {r: 0.9558824, g: 0.82936853, b: 0.89262545, a: 0}
+    - _FoamPower: {r: 1, g: 1, b: 1, a: 0}
+    - _FogColour: {r: 1, g: 1, b: 1, a: 1}
+    - _LightDir: {r: 3.28, g: -2.47, b: 9.06, a: 89.56}
+    - _LightTint: {r: 1, g: 1, b: 1, a: 0}
+    - _Plane: {r: 0, g: 1, b: 0, a: 0}
+    - _RimColor: {r: 0, g: 0, b: 0, a: 0}
+    - _frontColor: {r: 1, g: 0.73, b: 0.117, a: 0}
+    - _rightColor: {r: 0, g: 0, b: 0, a: 0}
+    - _topColor: {r: 0.05, g: 0.275, b: 0.275, a: 0}

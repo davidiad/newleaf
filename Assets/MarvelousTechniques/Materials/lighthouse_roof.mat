@@ -1,0 +1,99 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: lighthouse_roof
+  m_Shader: {fileID: 4800000, guid: 8e1bdfc809e384f0ea56f59ec32eb660, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 5
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _LayoutTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: 7f354098c1cd842b5b38156e04273eb5, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OcclusionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ParallaxMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _AmbientPower: 0.03
+    - _BumpScale: 1
+    - _Cutoff: 0.5
+    - _Density: -4.29
+    - _DetailNormalMapScale: 1
+    - _DstBlend: 0
+    - _EmissionScaleUI: 0
+    - _Glossiness: 0.5
+    - _LayoutTexturePower: 0
+    - _LightmapPower: 0.72
+    - _Metallic: 0
+    - _Mode: 0
+    - _OcclusionStrength: 1
+    - _Parallax: 0.02
+    - _RimPower: 0.82
+    - _ShadowPower: 0.72
+    - _SrcBlend: 1
+    - _UVSec: 0
+    - _UseFog: 0
+    - _UseLightMap: 1
+    - _ZWrite: 1
+    m_Colors:
+    - _AmbientColor: {r: 1, g: 1, b: 1, a: 0}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _EmissionColorUI: {r: 1, g: 1, b: 1, a: 1}
+    - _FogColour: {r: 0.13333334, g: 0.3647059, b: 0.37647063, a: 1}
+    - _FrontColor: {r: 0.8602941, g: 0.7780601, b: 0.7780601, a: 0}
+    - _LightTint: {r: 1, g: 1, b: 1, a: 0}
+    - _LightmapColor: {r: 0.7118836, g: 0.72794116, b: 0.71598107, a: 0}
+    - _Plane: {r: 0, g: -1, b: 0, a: 0.6}
+    - _RightColor: {r: 0.9633874, g: 1, b: 0.8602941, a: 0}
+    - _RimColor: {r: 0.38035253, g: 0.6910161, b: 0.77205884, a: 0}
+    - _ShadowColor: {r: 0.06468948, g: 0.16176468, b: 0.0463884, a: 0}
+    - _TopColor: {r: 0.8014706, g: 0.8014706, b: 0.8014706, a: 0}
+    - _frontColor: {r: 0.5808823, g: 0.36069492, b: 0.30325472, a: 0}
+    - _rightColor: {r: 0.8308824, g: 0.625437, b: 0.5498486, a: 0}
+    - _topColor: {r: 1, g: 1, b: 1, a: 1}
