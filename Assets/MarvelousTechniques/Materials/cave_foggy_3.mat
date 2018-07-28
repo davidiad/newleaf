@@ -116,7 +116,7 @@ Material:
     - _LightDirF: {r: 0, g: 0, b: -1, a: 1}
     - _LightDirR: {r: 1, g: 0, b: 0, a: 1}
     - _LightDirT: {r: 0, g: 1, b: 0, a: 1}
-    - _LightPos: {r: 0.03, g: 1.45, b: 1.3245132, a: 0}
+    - _LightPos: {r: 0.03, g: 1.45, b: -0.4682603, a: 0}
     - _LightTint: {r: 1, g: 1, b: 1, a: 0}
     - _LightmapColor: {r: 0, g: 0.8014706, b: 0.03869175, a: 0}
     - _MainColor: {r: 0.27508652, g: 0.3897059, b: 0.3280486, a: 0}

@@ -8,7 +8,7 @@ Material:
   m_PrefabInternal: {fileID: 0}
   m_Name: DistanceLightGradient
   m_Shader: {fileID: 4800000, guid: 31f5ef81e1c5045c08fccaba0451f912, type: 3}
-  m_ShaderKeywords: USE_GRADIENT
+  m_ShaderKeywords: LIGHTING_FULL USE_DIST_FOG USE_DIST_LIGHT USE_FOG USE_GRADIENT
   m_LightmapFlags: 5
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -64,15 +64,15 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _Alpha: 0
-    - _AmbientPower: 0
+    - _AmbientPower: 0.1
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _FogAnimationFreq: 0.1
     - _FogAnimationHeight: 0.1
-    - _FogDensity: 1
-    - _FogEnd: 50
+    - _FogDensity: 0.2
+    - _FogEnd: 10
     - _FogHeight: 0.1
     - _FogStart: 0
     - _FogYStartPos: 0
@@ -82,7 +82,7 @@ Material:
     - _GradientLocal: 0
     - _GradientStartY: 1
     - _LayoutTexturePower: 0
-    - _LightMaxDistance: 10
+    - _LightMaxDistance: 1
     - _LightProbePower: 0.5
     - _LightmapPower: 1
     - _MainTexPower: 1
@@ -100,14 +100,16 @@ Material:
     - _UVSec: 0
     - _UseDirLight: 0
     - _UseFogDistance: 0
+    - _UseFogStaticStart: 0
     - _UseLightMap: 0
     - _ZWrite: 1
     - _additiveBlend: 0
     m_Colors:
-    - _AmbientColor: {r: 0.5, g: 0.1, b: 0.2, a: 0}
+    - _AmbientColor: {r: 0.5, g: 0.1, b: 0.2, a: 0.21632923}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _FogColor: {r: 1, g: 1, b: 1, a: 1}
+    - _FogColor: {r: 0.53668225, g: 0.70840305, b: 0.85351765, a: 0.071990535}
+    - _FogStaticStartPos: {r: 0, g: 0, b: 0, a: 1}
     - _FrontColor: {r: 0.7, g: 0.7, b: 0.7, a: 0}
     - _FrontColorBottom: {r: 0.9191176, g: 0.72988755, b: 0.72988755, a: 0}
     - _LightDirF: {r: 0, g: 0, b: -1, a: 1}

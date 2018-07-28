@@ -43,7 +43,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Gradient:
-        m_Texture: {fileID: 2800000, guid: af49781848fa349ab9d47bc0d32aeb28, type: 3}
+        m_Texture: {fileID: 2800000, guid: c3323d8a6395d43d883c6c47a4e924d1, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:

@@ -468,7 +468,7 @@ MonoBehaviour:
   velocitySmoothing: 0.75
   damping: 0.75
   materials:
-  - {fileID: 2100000, guid: 2f9502fb9bc124b3dbaed728c2b0426c, type: 2}
+  - {fileID: 2100000, guid: 793352b8815f843d3b17c5f0f6667c6a, type: 2}
   castShadows: 0
   receiveShadows: 0
   useLightProbes: 0
