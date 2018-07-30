@@ -632,8 +632,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 487.5, y: 0}
-  m_SizeDelta: {x: 975, y: 0}
+  m_AnchoredPosition: {x: 511.5, y: 0}
+  m_SizeDelta: {x: 1023, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &60268926
 MonoBehaviour:
@@ -985,7 +985,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 10, y: -242.8}
+  m_AnchoredPosition: {x: 240, y: -10}
   m_SizeDelta: {x: 230, y: 60}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &122325165
@@ -3456,7 +3456,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Cancel
+  m_Text: "Close\x03"
 --- !u!222 &434213005
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3623,7 +3623,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff860d4cd15e44f608fc7ad252eada15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mMapSelectedPanel: {fileID: 1293431579}
   mInitButtonPanel: {fileID: 1372635045}
   mMappingButtonPanel: {fileID: 1103582064}
   mMapListPanel: {fileID: 792639092}
@@ -4955,8 +4954,8 @@ GameObject:
   m_Component:
   - component: {fileID: 792639093}
   m_Layer: 5
-  m_Name: MapListPanel
-  m_TagString: Untagged
+  m_Name: Map Loader
+  m_TagString: MapLoader
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4973,14 +4972,15 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1440246517}
+  - {fileID: 1293431580}
   m_Father: {fileID: 1840788902}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -48, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_SizeDelta: {x: -40, y: -600}
+  m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &804950319 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 1511599544469802, guid: defd373916afa467497f16b15e3654ee,
@@ -5498,7 +5498,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 10, y: -157.2}
+  m_AnchoredPosition: {x: 0, y: -10}
   m_SizeDelta: {x: 230, y: 60}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &910142081
@@ -6486,8 +6486,6 @@ RectTransform:
   - {fileID: 1868687350}
   - {fileID: 686397932}
   - {fileID: 785126206}
-  - {fileID: 1293431580}
-  - {fileID: 1697274989}
   m_Father: {fileID: 1840788902}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -6777,7 +6775,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1293431580}
   m_Layer: 5
-  m_Name: MapSelectedPanel
+  m_Name: MapSelectedButtons
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6796,14 +6794,15 @@ RectTransform:
   m_Children:
   - {fileID: 910142080}
   - {fileID: 122325164}
-  m_Father: {fileID: 1144839458}
-  m_RootOrder: 6
+  - {fileID: 1697274989}
+  m_Father: {fileID: 792639093}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 300, y: 400}
-  m_Pivot: {x: 0, y: 1}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -80}
+  m_SizeDelta: {x: 300, y: 80}
+  m_Pivot: {x: 0, y: 0}
 --- !u!1 &1299737921
 GameObject:
   m_ObjectHideFlags: 0
@@ -7630,8 +7629,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 290.35004}
-  m_SizeDelta: {x: -40, y: -894.1}
+  m_AnchoredPosition: {x: 0, y: -75}
+  m_SizeDelta: {x: 0, y: -150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1440246518
 MonoBehaviour:
@@ -8764,14 +8763,14 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 434213003}
-  m_Father: {fileID: 1144839458}
-  m_RootOrder: 7
+  m_Father: {fileID: 1293431580}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 48.8, y: 356}
-  m_SizeDelta: {x: 160, y: 60}
-  m_Pivot: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 480, y: -10}
+  m_SizeDelta: {x: 230, y: 60}
+  m_Pivot: {x: 0, y: 1}
 --- !u!114 &1697274990
 MonoBehaviour:
   m_ObjectHideFlags: 0

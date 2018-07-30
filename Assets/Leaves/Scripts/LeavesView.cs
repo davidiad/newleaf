@@ -57,7 +57,8 @@ public class ShapeList
 public class LeavesView : MonoBehaviour, PlacenoteListener
 {
     // Getting refs to buttons in the UI
-    [SerializeField] GameObject mMapSelectedPanel;
+    //[SerializeField] GameObject mMapSelectedPanel; // replacing with find with tag
+    GameObject mMapLoader;
     [SerializeField] GameObject mInitButtonPanel;
     [SerializeField] GameObject mMappingButtonPanel;
     [SerializeField] GameObject mMapListPanel;
@@ -116,6 +117,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
     void Start()
     {
+        InitUI();
         currentMapId = "";
         mappingStarted = false;
         hasLocalized = false;
@@ -137,6 +139,10 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         paintManager.paintOnTouch = !ARPlanePaintingStatus; // TODO: make an enum to replace multiple bools
         mapButton = GameObject.FindWithTag("MapButton");
 
+    }
+
+    private void InitUI() {
+        mMapLoader = GameObject.FindWithTag("MapLoader");
     }
 
 
@@ -274,7 +280,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
     public void OnCancelClick()
     {
-        mMapSelectedPanel.SetActive(false);
+        mMapLoader.SetActive(false);
         mMapListPanel.SetActive(false);
         mInitButtonPanel.SetActive(true);
     }
@@ -313,7 +319,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
     void OnMapSelected(LibPlacenote.MapInfo mapInfo)
     {
         mSelectedMapInfo = mapInfo;
-        mMapSelectedPanel.SetActive(true);
+        mMapLoader.SetActive(true);
     }
 
 
@@ -339,7 +345,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
             {
                 if (completed)
                 {
-                    mMapSelectedPanel.SetActive(false);
+                    mMapLoader.SetActive(false);
                     mMapListPanel.SetActive(false);
                     mInitButtonPanel.SetActive(false);
                     mExitButton.SetActive(true);
@@ -373,7 +379,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         {
             if (deleted)
             {
-                mMapSelectedPanel.SetActive(false);
+                mMapLoader.SetActive(false);
                 mLabelText.text = "Deleted ID: " + mSelectedMapId;
                 OnListMapClick();
             }
