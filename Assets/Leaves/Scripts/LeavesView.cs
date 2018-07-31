@@ -59,10 +59,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
     // Getting refs to buttons in the UI
     //[SerializeField] GameObject mMapSelectedPanel; // replacing with find with tag
     GameObject mMapLoader;
-    [SerializeField] GameObject mInitButtonPanel;
-    [SerializeField] GameObject mMappingButtonPanel;
-    [SerializeField] GameObject mMapListPanel;
-    [SerializeField] GameObject mExitButton;
+    GameObject mExitButton;
     [SerializeField] GameObject mListElement;
     [SerializeField] RectTransform mListContentParent;
     [SerializeField] ToggleGroup mToggleGroup;
@@ -123,8 +120,6 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         hasLocalized = false;
         Input.location.Start();
 
-        mMapListPanel.SetActive(false);
-
         mSession = UnityARSessionNativeInterface.GetARSessionNativeInterface();
         UnityARSessionNativeInterface.ARFrameUpdatedEvent += ARFrameUpdated;
         StartARKit();
@@ -143,6 +138,8 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
     private void InitUI() {
         mMapLoader = GameObject.FindWithTag("MapLoader");
+        mMapLoader.SetActive(false); // needs to be active at Start, so the reference to it can be found
+        mExitButton = GameObject.FindWithTag("ExitMapButton");
     }
 
 
@@ -261,8 +258,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
             Destroy(t.gameObject);
         }
 
-        mMapListPanel.SetActive(true);
-        mInitButtonPanel.SetActive(false);
+        mMapLoader.SetActive(true);
         LibPlacenote.Instance.ListMaps((mapList) =>
         {
             // render the map list!
@@ -281,15 +277,12 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
     public void OnCancelClick()
     {
         mMapLoader.SetActive(false);
-        mMapListPanel.SetActive(false);
-        mInitButtonPanel.SetActive(true);
     }
 
 
     public void OnExitClick()
     {
         paintManager.Reset();
-        mInitButtonPanel.SetActive(true);
         mExitButton.SetActive(false);
         mPlaneDetectionToggle.SetActive(false);
 
@@ -346,8 +339,6 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
                 if (completed)
                 {
                     mMapLoader.SetActive(false);
-                    mMapListPanel.SetActive(false);
-                    mInitButtonPanel.SetActive(false);
                     mExitButton.SetActive(true);
                     mPlaneDetectionToggle.SetActive(true);
 
@@ -399,7 +390,6 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
             if (!mappingStarted)
             {
                 GameObject.FindWithTag("MapButton").GetComponent<CanvasGroup>().alpha = 1.0f;
-                mMappingButtonPanel.SetActive(true);
                 mPlaneDetectionToggle.SetActive(true);
                 Debug.Log("Started Session");
                 mappingStarted = true;
@@ -508,9 +498,6 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
                 {
                     LibPlacenote.Instance.StopSession();
                     mLabelText.text = "Saved Map ID: " + mapId;
-                    mInitButtonPanel.SetActive(true);
-                    //mMappingButtonPanel.SetActive(false);
-                    //mPlaneDetectionToggle.SetActive(false);
 
                 //clear all existing planes
                 mPNPlaneManager.ClearPlanes();
