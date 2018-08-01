@@ -1272,7 +1272,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         LocationInfo locationInfo = Input.location.lastData;
         Debug.Log(locationInfo);
 
-        float radiusSearch = mRadiusSlider.value * mMaxRadiusSearch;
+        float radiusSearch = mRadiusSlider.value;// * mMaxRadiusSearch;
         //mRadiusLabel.text = "Distance Filter: " + (radiusSearch / 1000.0).ToString("F2") + " km";
 
         LibPlacenote.Instance.SearchMaps(locationInfo.latitude, locationInfo.longitude, radiusSearch,

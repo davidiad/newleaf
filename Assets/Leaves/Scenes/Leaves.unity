@@ -7968,7 +7968,7 @@ GameObject:
   - component: {fileID: 1503738077}
   - component: {fileID: 1503738076}
   m_Layer: 5
-  m_Name: Stroke Thickness
+  m_Name: Radius
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8024,7 +8024,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: Overall Stroke Thickness
+  m_Text: "Search Radius\t"
 --- !u!222 &1503738077
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -9605,9 +9605,9 @@ MonoBehaviour:
   m_HandleRect: {fileID: 506243289}
   m_Direction: 0
   m_MinValue: 1
-  m_MaxValue: 50000
+  m_MaxValue: 100
   m_WholeNumbers: 0
-  m_Value: 3452
+  m_Value: 49.7
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
