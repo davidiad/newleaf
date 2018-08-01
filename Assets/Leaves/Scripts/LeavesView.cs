@@ -978,8 +978,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
     }
 
 }
-
-
+// Update to Placenote 1.6.2
 /*
 using System.Collections;
 using System.Collections.Generic;
@@ -992,73 +991,7 @@ using System.IO;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 
-/// <summary>
-/// Since unity doesn't flag the Vector3 as serializable, we
-/// need to create our own version. This one will automatically convert
-/// between Vector3 and SerializableVector3
-/// </summary>
-[System.Serializable]
-public struct SerializableVector3
-{
-    /// <summary>
-    /// x component
-    /// </summary>
-    public float x;
-
-    /// <summary>
-    /// y component
-    /// </summary>
-    public float y;
-
-    /// <summary>
-    /// z component
-    /// </summary>
-    public float z;
-
-    /// <summary>
-    /// Constructor
-    /// </summary>
-    /// <param name="rX"></param>
-    /// <param name="rY"></param>
-    /// <param name="rZ"></param>
-    public SerializableVector3(float rX, float rY, float rZ)
-    {
-        x = rX;
-        y = rY;
-        z = rZ;
-    }
-
-    /// <summary>
-    /// Returns a string representation of the object
-    /// </summary>
-    /// <returns></returns>
-    public override string ToString()
-    {
-        return String.Format("[{0}, {1}, {2}]", x, y, z);
-    }
-
-    /// <summary>
-    /// Automatic conversion from SerializableVector3 to Vector3
-    /// </summary>
-    /// <param name="rValue"></param>
-    /// <returns></returns>
-    public static implicit operator Vector3(SerializableVector3 rValue)
-    {
-        return new Vector3(rValue.x, rValue.y, rValue.z);
-    }
-
-    /// <summary>
-    /// Automatic conversion from Vector3 to SerializableVector3
-    /// </summary>
-    /// <param name="rValue"></param>
-    /// <returns></returns>
-    public static implicit operator SerializableVector3(Vector3 rValue)
-    {
-        return new SerializableVector3(rValue.x, rValue.y, rValue.z);
-    }
-}
-
-[System.Serializable]
+[Serializable]
 public class ShapeInfo
 {
     public float px;
@@ -1071,8 +1004,8 @@ public class ShapeInfo
     public int shapeType;
 }
 
-[System.Serializable]
 // analogous to SV3List, but could add other attributes, such as color
+[Serializable]
 public class PaintStrokeInfo
 {
     public SerializableVector3[] verts;
@@ -1081,21 +1014,21 @@ public class PaintStrokeInfo
     public SerializableVector4 initialColor; // initial color of stroke. Color implicitly converts to Vector4.
 }
 
-[System.Serializable]
+[Serializable]
 public class PaintStrokeList
 {
     public PaintStrokeInfo[] strokes;
 }
 
 
-[System.Serializable]
+[Serializable]
 public class SV3List
 {
     public SerializableVector3[] sv3s;
 }
 
 
-[System.Serializable]
+[Serializable]
 public class ShapeList
 {
     public ShapeInfo[] shapes;
@@ -1105,11 +1038,12 @@ public class ShapeList
 public class LeavesView : MonoBehaviour, PlacenoteListener
 {
     // Getting refs to buttons in the UI
-    [SerializeField] GameObject mMapSelectedPanel;
-    [SerializeField] GameObject mInitButtonPanel;
-    [SerializeField] GameObject mMappingButtonPanel;
+    // Getting refs to buttons in the UI
+    //[SerializeField] GameObject mMapSelectedPanel; // replacing with find with tag
+    GameObject mMapLoader;
+    GameObject mExitButton;
     [SerializeField] GameObject mMapListPanel;
-    [SerializeField] GameObject mExitButton;
+//    [SerializeField] GameObject mExitButton;
     [SerializeField] GameObject mListElement;
     [SerializeField] RectTransform mListContentParent;
     [SerializeField] ToggleGroup mToggleGroup;
@@ -1169,6 +1103,12 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
     bool ARPlanePaintingStatus;
 
+    private void InitUI() {
+        mMapLoader = GameObject.FindWithTag("MapLoader");
+        mMapLoader.SetActive(false); // needs to be active at Start, so the reference to it can be found
+        mExitButton = GameObject.FindWithTag("ExitMapButton");
+    }
+    
     void Awake()
     {
         Environment.SetEnvironmentVariable("MONO_REFLECTION_SERIALIZER", "yes");
@@ -1176,13 +1116,14 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
     void Start()
     {
+        InitUI();
         currentMapId = "";
         mappingStarted = false;
         hasLocalized = false;
 
         Input.location.Start();
 
-        mMapListPanel.SetActive(false);
+        mMapLoader.SetActive(false);
 
         mSession = UnityARSessionNativeInterface.GetARSessionNativeInterface();
         UnityARSessionNativeInterface.ARFrameUpdatedEvent += ARFrameUpdated;
@@ -1197,7 +1138,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         paintManager.ARPlanePainting = ARPlanePaintingStatus;
         paintManager.paintOnTouch = !ARPlanePaintingStatus; // TODO: make an enum to replace multiple bools
         mapButton = GameObject.FindWithTag("MapButton");
-        mRadiusSlider = GameObject.FindWithTag("ResetSlider").GetComponent<Slider>();
+        mRadiusSlider = GameObject.FindWithTag("RadiusSlider").GetComponent<Slider>();
         ResetSlider();
     }
 
@@ -1314,51 +1255,26 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
             return;
         }
 
-        foreach (Transform t in mListContentParent.transform)
-        {
-            // TODO: check if this destroy command is a cause of the slow loading of the list
-            Destroy(t.gameObject);
-        }
+        //foreach (Transform t in mListContentParent.transform)
+        //{
+        //    // TODO: check if this destroy command is a cause of the slow loading of the list
+        //    Destroy(t.gameObject);
+        //}
+        mMapLoader.SetActive(true);
+        //mMapListPanel.SetActive(true);
 
-        mMapListPanel.SetActive(true);
+//        mInitButtonPanel.SetActive(false); // added in 1.62
 
-        mInitButtonPanel.SetActive(false); // added in 1.62
-
-        mRadiusSlider.gameObject.SetActive(true);
+//        mRadiusSlider.gameObject.SetActive(true);
 
         LibPlacenote.Instance.ListMaps((mapList) =>
         {
+            Debug.Log("MAPID INFO'S HOW MANY: " + mapList[0].metadata.ToString()); 
             // render the map list!
             foreach (LibPlacenote.MapInfo mapId in mapList)
             {
-                if (mapId.metadata.userdata != null)
-                {
-                    Debug.Log(mapId.metadata.userdata.ToString(Formatting.None));
-                }
-                AddMapToList(mapId);
-            }
-        });
-    }
-
-    // Radius stuff - new with PN 1.62
-    public void OnRadiusSelect()
-    {
-        Debug.Log("Map search:" + mRadiusSlider.value.ToString("F2"));
-        LocationInfo locationInfo = Input.location.lastData;
-
-
-        float radiusSearch = mRadiusSlider.value * mMaxRadiusSearch;
-        mRadiusLabel.text = "Distance Filter: " + (radiusSearch / 1000.0).ToString("F2") + " km";
-
-        LibPlacenote.Instance.SearchMaps(locationInfo.latitude, locationInfo.longitude, radiusSearch,
-            (mapList) =>
-            {
-                foreach (Transform t in mListContentParent.transform)
-                {
-                    Destroy(t.gameObject);
-                }
-                // render the map list!
-                foreach (LibPlacenote.MapInfo mapId in mapList)
+                
+                if (mapId.metadata != null) // extra if, can be removed, prevent editor warning
                 {
                     if (mapId.metadata.userdata != null)
                     {
@@ -1366,12 +1282,48 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
                     }
                     AddMapToList(mapId);
                 }
+            }
+        });
+    }
+
+    // Radius stuff - new with PN 1.62
+    public void OnRadiusSelect()
+    {
+        //Debug.Log("Map search:" + mRadiusSlider.value.ToString("F2"));
+        LocationInfo locationInfo = Input.location.lastData;
+        Debug.Log(locationInfo);
+
+        float radiusSearch = mRadiusSlider.value * mMaxRadiusSearch;
+        //mRadiusLabel.text = "Distance Filter: " + (radiusSearch / 1000.0).ToString("F2") + " km";
+
+        LibPlacenote.Instance.SearchMaps(locationInfo.latitude, locationInfo.longitude, radiusSearch,
+            (mapList) =>
+            {
+                Debug.Log("MAPID INFO'S HOW much: " + mapList[0].metadata.ToString()); 
+                
+                foreach (Transform t in mListContentParent.transform)
+                {
+                    Destroy(t.gameObject);
+                }
+                // render the map list!
+                foreach (LibPlacenote.MapInfo mapId in mapList)
+                {
+                    Debug.Log(mapId);
+                    if (mapId.metadata != null) // extra if statement just prevents warning in Editor
+                    {
+                        if (mapId.metadata.userdata != null)
+                        {
+                            Debug.Log(mapId.metadata.userdata.ToString(Formatting.None));
+                        }
+                        AddMapToList(mapId);
+                    }
+                }
             });
     }
 
     public void ResetSlider()
     {
-        mRadiusSlider.value = 1.0f;
+        mRadiusSlider.value = 20.0f;
         //mRadiusLabel.text = "Distance Filter: Off";
     }
     // ////   // ////
@@ -1379,9 +1331,10 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
     public void OnCancelClick()
     {
-        mMapSelectedPanel.SetActive(false);
-        mMapListPanel.SetActive(false);
-        mInitButtonPanel.SetActive(true);
+        mMapLoader.SetActive(false);
+//        mMapSelectedPanel.SetActive(false);
+        //mMapListPanel.SetActive(false);
+//        mInitButtonPanel.SetActive(true);
         ResetSlider();
     }
 
@@ -1389,7 +1342,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
     public void OnExitClick()
     {
         paintManager.Reset();
-        mInitButtonPanel.SetActive(true);
+//        mInitButtonPanel.SetActive(true);
         mExitButton.SetActive(false);
         mPlaneDetectionToggle.SetActive(false);
 
@@ -1419,7 +1372,8 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
     void OnMapSelected(LibPlacenote.MapInfo mapInfo)
     {
         mSelectedMapInfo = mapInfo;
-        mMapSelectedPanel.SetActive(true);
+        //mMapSelectedPanel.SetActive(true);
+        mMapLoader.SetActive(true);
         mRadiusSlider.gameObject.SetActive(false);
     }
 
@@ -1439,8 +1393,8 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
             ToastManager.ShowToast("SDK not yet initialized", 2f);
             return;
         }
-
-        ResetSlider();
+        Debug.Log("LOADING A MAP");
+        //ResetSlider();
         hasLocalized = false;
         mLabelText.text = "Loading Map ID: " + mSelectedMapId;
         LibPlacenote.Instance.LoadMap(mSelectedMapId,
@@ -1448,11 +1402,11 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
             {
                 if (completed)
                 {
-                    mMapSelectedPanel.SetActive(false);
-                    mMapListPanel.SetActive(false);
-                    mInitButtonPanel.SetActive(false);
-                    mExitButton.SetActive(true);
-                    mPlaneDetectionToggle.SetActive(true);
+                    mMapLoader.SetActive(false);
+                    //mMapListPanel.SetActive(false);
+                    //mInitButtonPanel.SetActive(false);
+                    //mExitButton.SetActive(true);
+                    //mPlaneDetectionToggle.SetActive(true);
 
                     LibPlacenote.Instance.StartSession();
                     mLabelText.text = "Loaded ID: " + mSelectedMapId;
@@ -1507,7 +1461,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         {
             if (deleted)
             {
-                mMapSelectedPanel.SetActive(false);
+                //mMapSelectedPanel.SetActive(false);
                 mLabelText.text = "Deleted ID: " + mSelectedMapId;
                 OnListMapClick();
             }
@@ -1528,7 +1482,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
             if (!mappingStarted)
             {
                 GameObject.FindWithTag("MapButton").GetComponent<CanvasGroup>().alpha = 1.0f;
-                mMappingButtonPanel.SetActive(true);
+                //mMappingButtonPanel.SetActive(true);
                 mPlaneDetectionToggle.SetActive(true);
                 Debug.Log("Started Session");
                 mappingStarted = true;
@@ -1635,7 +1589,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
                 {
                     LibPlacenote.Instance.StopSession();
                     mLabelText.text = "Saved Map ID: " + mapId;
-                    mInitButtonPanel.SetActive(true);
+                    //mInitButtonPanel.SetActive(true);
                     //mMappingButtonPanel.SetActive(false);
                     //mPlaneDetectionToggle.SetActive(false);
 
@@ -1693,6 +1647,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
     {
         if (currentMapId != "")
         {
+            Debug.Log(currentMapId);
             SetMetaData(currentMapId);
         }
     }
@@ -2128,5 +2083,6 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         }
     }
 
-}*/
+}
+*/
 
