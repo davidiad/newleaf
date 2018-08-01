@@ -15,9 +15,12 @@ public class FeaturesVisualizer : MonoBehaviour, PlacenoteListener
 	void Awake ()
 	{
 		sInstance = this;
+	}
 
-		// This is required for OnPose and OnStatusChange to be triggered
-		LibPlacenote.Instance.RegisterListener (this);
+	void Start ()
+	{
+        // This is required for OnPose and OnStatusChange to be triggered
+        LibPlacenote.Instance.RegisterListener (this);
 	}
 
 	void Update ()
@@ -38,7 +41,7 @@ public class FeaturesVisualizer : MonoBehaviour, PlacenoteListener
 			);
 			return;
 		}
-		sInstance.InvokeRepeating ("DrawMap", 0f, 0.5f);
+		sInstance.InvokeRepeating ("DrawMap", 0f, 0.1f);
 	}
 
 	/// <summary>

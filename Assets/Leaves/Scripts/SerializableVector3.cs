@@ -8,7 +8,7 @@ using System.Collections;
 /// between Vector3 and SerializableVector3
 /// </summary>
 [System.Serializable]
-public struct SerializableVector3
+public class SerializableVector3
 {
     /// <summary>
     /// x component

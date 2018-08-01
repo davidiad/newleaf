@@ -20,6 +20,7 @@ TagManager:
   - CamPaintingPlane
   - MapLoader
   - ExitMapButton
+  - RadiusSlider
   layers:
   - Default
   - TransparentFX
