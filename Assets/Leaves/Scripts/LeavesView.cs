@@ -1017,7 +1017,6 @@ public class ShapeList
 public class LeavesView : MonoBehaviour, PlacenoteListener
 {
     // Getting refs to buttons in the UI
-    // Getting refs to buttons in the UI
     //[SerializeField] GameObject mMapSelectedPanel; // replacing with find with tag
     GameObject mMapLoader;
     GameObject mExitButton;
@@ -1032,7 +1031,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
     [SerializeField] PlacenoteARGeneratePlane mPNPlaneManager;
     [SerializeField] Text uploadText;
     GameObject mapButton;
-
+    public GameObject modelPrefab;
 
 
     public Vector3 paintPosition;
@@ -1705,15 +1704,12 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         newGO.transform.position = new Vector3(0.2f, 0.2f, 0.2f);
 
         //myScript.name = es3File.Load<string>("myName");
-
-
     }
 
 
     public void OnDropShapeClick()
     {
-        Vector3 shapePosition = Camera.main.transform.position +
-                                      Camera.main.transform.forward * 0.3f;
+        Vector3 shapePosition = Camera.main.transform.position + Camera.main.transform.forward * 0.3f + new Vector3(0f,0f,0.5f);
         Quaternion shapeRotation = Camera.main.transform.rotation;
         Debug.Log("Drop Shape @ Pos: " + shapePosition + ", Rot: " + shapeRotation);
         System.Random rnd = new System.Random();
@@ -1730,7 +1726,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         shapeInfo.shapeType = type.GetHashCode();
         shapeInfoList.Add(shapeInfo);
 
-        GameObject shape = ShapeFromInfo(shapeInfo);
+        GameObject shape = ModelFromInfo(shapeInfo);
         shapeObjList.Add(shape);
     }
 
@@ -1797,6 +1793,17 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         shape.GetComponent<MeshRenderer>().material = mShapeMaterial;
 
         return shape;
+    }
+
+    // Add a custom 3D model to the map
+    private GameObject ModelFromInfo(ShapeInfo info) 
+    {
+        Vector3 pos = new Vector3(info.px, info.py, info.pz);
+        Quaternion rot = new Quaternion(info.qx, info.qy, info.qz, info.qw);
+        Vector3 localScale = new Vector3(0.05f, 0.05f, 0.05f);
+        GameObject model = Instantiate(modelPrefab, pos, rot);
+
+        return model;
     }
 
     private void ClearShapes()
@@ -1939,7 +1946,8 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
             foreach (var shapeInfo in shapeList.shapes)
             {
                 shapeInfoList.Add(shapeInfo);
-                GameObject shape = ShapeFromInfo(shapeInfo);
+                //GameObject shape = ShapeFromInfo(shapeInfo);
+                GameObject shape = ModelFromInfo(shapeInfo);
                 shapeObjList.Add(shape);
             }
         }
