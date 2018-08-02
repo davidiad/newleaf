@@ -1709,7 +1709,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
     public void OnDropShapeClick()
     {
-        Vector3 shapePosition = Camera.main.transform.position + Camera.main.transform.forward * 0.3f + new Vector3(0f,0f,0.5f);
+        Vector3 shapePosition = Camera.main.transform.position + Camera.main.transform.forward * 1.3f;// + new Vector3(0f,0f,0.5f);
         Quaternion shapeRotation = Camera.main.transform.rotation;
         Debug.Log("Drop Shape @ Pos: " + shapePosition + ", Rot: " + shapeRotation);
         System.Random rnd = new System.Random();
