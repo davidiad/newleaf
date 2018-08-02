@@ -1,5 +1,6 @@
-﻿// Pre update to PN 162
- using System.Collections;
+﻿/*
+// Pre update to PN 162
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
@@ -398,29 +399,6 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
             }
         }
 
-
-
-
-
-        /*
-        if (LibPlacenote.Instance.Initialized())
-        {
-            //mInitButtonPanel.SetActive(false);
-            GameObject.FindWithTag("MapButton").GetComponent<CanvasGroup>().alpha = 1.0f;
-            mMappingButtonPanel.SetActive(true);
-            mPlaneDetectionToggle.SetActive(true);
-            Debug.Log("Started Session");
-            if (!mappingStarted)
-            {
-                mappingStarted = true;
-                LibPlacenote.Instance.StartSession();
-            }
-        }
-        if (!LibPlacenote.Instance.Initialized())
-        {
-            Debug.Log("SDK not yet initialized");
-            return;
-        }*/
     }
 
     public void OnTogglePlaneDetection()
@@ -978,8 +956,9 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
     }
 
 }
+*/
 // Update to Placenote 1.6.2
-/*
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -1293,13 +1272,13 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         LocationInfo locationInfo = Input.location.lastData;
         Debug.Log(locationInfo);
 
-        float radiusSearch = mRadiusSlider.value * mMaxRadiusSearch;
+        float radiusSearch = mRadiusSlider.value;// * mMaxRadiusSearch;
         //mRadiusLabel.text = "Distance Filter: " + (radiusSearch / 1000.0).ToString("F2") + " km";
 
         LibPlacenote.Instance.SearchMaps(locationInfo.latitude, locationInfo.longitude, radiusSearch,
             (mapList) =>
             {
-                Debug.Log("MAPID INFO'S HOW much: " + mapList[0].metadata.ToString()); 
+//                Debug.Log("MAPID INFO'S HOW much: " + mapList[0].metadata.ToString()); 
                 
                 foreach (Transform t in mListContentParent.transform)
                 {
@@ -2084,5 +2063,5 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
     }
 
 }
-*/
+
 
