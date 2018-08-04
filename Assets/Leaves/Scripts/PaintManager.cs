@@ -220,7 +220,7 @@ public class PaintManager : MonoBehaviour
 
     private IEnumerator PaintTrail(GameObject brush, PaintStroke paintstroke, AraTrail araTrail)
     {
-        for (int i = 1; i < paintstroke.verts.Count; i++)
+        for (int i = 0; i < paintstroke.verts.Count; i++)
         {
             // can't set point color directly, so set the initialColor, which is then used to create the pointColor for the next point
             araTrail.initialColor = paintstroke.pointColors[i];
