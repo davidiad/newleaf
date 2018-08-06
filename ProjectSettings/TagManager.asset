@@ -21,6 +21,7 @@ TagManager:
   - MapLoader
   - ExitMapButton
   - RadiusSlider
+  - ColorJoystick
   layers:
   - Default
   - TransparentFX
