@@ -25,6 +25,8 @@ public class ColorJoystickTouchController : MonoBehaviour
     public float scaleFactor = 2.0f; // amount to scale up joystick when touched
     private Vector3 scaleVector;
 
+    private PaintManager paintManager;
+
     void Start()
     {
         //if (singleJoystickBackgroundImage.GetComponent<ColorJoystick>() == null)
@@ -38,6 +40,7 @@ public class ColorJoystickTouchController : MonoBehaviour
         //}
         joystick = GameObject.FindWithTag("ColorJoystick");
         colorJoystick = joystick.GetComponent<ColorJoystick>();
+        paintManager = GameObject.FindWithTag("PaintManager").GetComponent<PaintManager>();
         scaleVector = new Vector3(scaleFactor, scaleFactor, scaleFactor);
 
         if (colorJoystick == null)
@@ -118,6 +121,10 @@ public class ColorJoystickTouchController : MonoBehaviour
                             }
                         }
                 }
+
+                //if (myTouches[i].phase == TouchPhase.Moved || myTouches[i].phase == TouchPhase.Stationary) {
+                //    paintManager.UpdateSV();
+                //}
                 
 
                 // if this touch has ended (finger is up and now off of the screen), for this particular touch 

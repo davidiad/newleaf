@@ -42,6 +42,8 @@ public class PaintManager : MonoBehaviour
     private Vector3 previousPosition;
     public float strokeThickness; // multiplier, sets overall thickness of trail
     private float colorDarken = 0.65f; // amount to darken the outer rings of the cursor
+    public ColorJoystick colorJoystick;
+    private Vector3 colorInput;
 
     public List<PaintStroke> paintStrokesList;
     public List<ParticleSystem> particleSystemList; // Stores all particle systems
@@ -90,11 +92,18 @@ public class PaintManager : MonoBehaviour
         AdjustPaintColor(); // set the color to what the color slider is set to
         paintButtonGroup = onoff.GetComponent<CanvasGroup>();
         paintButtonGroup.alpha = 0.4f;
+        colorJoystick = GameObject.FindWithTag("ColorJoystick").GetComponent<ColorJoystick>();
 
     }
  
     void Update()
     {
+        colorInput = colorJoystick.GetInputDirection();
+        if (colorInput != Vector3.zero)
+        {
+            UpdateSV();
+        }
+
         currVertices = paintOnComponent.currentVertices; //TODO: update only when needed, not every frame
 
         bool endPainting = paintOnComponent.endPainting;
@@ -135,18 +144,37 @@ public class PaintManager : MonoBehaviour
         }
     }
 
+
     public void AdjustPaintColor() {
         if (paintSlider)
         {
             Gradient paintGradient = paintSlider.GetComponent<PaintGradient>().gradient;
             paintColor = paintGradient.Evaluate(paintSlider.value);
-            GameObject currentBrush = GameObject.FindWithTag("PaintBrush");
-            if (currentBrush)
-            {
-                currentBrush.GetComponent<AraTrail>().initialColor = paintColor;
-            }
+
             UpdateBrushColor();
         }
+    }
+
+    private Color AdjustSV (Color color) {
+        
+        float H, S, V;
+        Color.RGBToHSV(paintColor, out H, out S, out V);
+        Vector3 input = colorJoystick.GetInputDirection();
+        S += input.y * 0.03f;
+        V += input.x * 0.03f;
+        if (S < -1f) { S = -1f; };
+        if (S >  1f) { S =  1f; };
+        if (V < -1f) { V = -1f; };
+        if (V >  1f) { V =  1f; };
+        Debug.Log("Outputs: " + S + ", " + V);
+       
+        return Color.HSVToRGB(H, S, V);
+
+    }
+
+    public void UpdateSV() {
+        paintColor = AdjustSV(paintColor);
+        UpdateBrushColor();
     }
 
     private void UpdateBrushColor()
@@ -155,6 +183,11 @@ public class PaintManager : MonoBehaviour
         // the outer, edge color -- adjust it to be darker
         brushColorMats[0].color = new Color(paintColor.r * colorDarken, paintColor.g * colorDarken, paintColor.b * colorDarken);
         brushColorMats[1].color = paintColor; // the inner color
+        GameObject currentBrush = GameObject.FindWithTag("PaintBrush");
+        if (currentBrush)
+        {
+            currentBrush.GetComponent<AraTrail>().initialColor = paintColor;
+        }
     }
 
     public void AdjustTargetDistance() {
