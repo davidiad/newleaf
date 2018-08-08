@@ -44,6 +44,9 @@ public class PaintManager : MonoBehaviour
     private float colorDarken = 0.65f; // amount to darken the outer rings of the cursor
     public ColorJoystick colorJoystick;
     private Vector3 colorInput;
+    private float hue;
+    public float joystickSensitivity = 0.0125f;
+
 
     public List<PaintStroke> paintStrokesList;
     public List<ParticleSystem> particleSystemList; // Stores all particle systems
@@ -93,6 +96,7 @@ public class PaintManager : MonoBehaviour
         paintButtonGroup = onoff.GetComponent<CanvasGroup>();
         paintButtonGroup.alpha = 0.4f;
         colorJoystick = GameObject.FindWithTag("ColorJoystick").GetComponent<ColorJoystick>();
+        SetHue();
 
     }
  
@@ -144,6 +148,13 @@ public class PaintManager : MonoBehaviour
         }
     }
 
+    // to keep hue constant when setting S and V
+    private void SetHue() {
+        float H, S, V;
+        Color.RGBToHSV(paintColor, out H, out S, out V);
+        hue = H;
+    }
+
 
     public void AdjustPaintColor() {
         if (paintSlider)
@@ -152,6 +163,7 @@ public class PaintManager : MonoBehaviour
             paintColor = paintGradient.Evaluate(paintSlider.value);
 
             UpdateBrushColor();
+            SetHue();
         }
     }
 
@@ -160,15 +172,15 @@ public class PaintManager : MonoBehaviour
         float H, S, V;
         Color.RGBToHSV(paintColor, out H, out S, out V);
         Vector3 input = colorJoystick.GetInputDirection();
-        S += input.y * 0.03f;
-        V += input.x * 0.03f;
+        S += input.y * joystickSensitivity;
+        V += input.x * joystickSensitivity;
         if (S < -1f) { S = -1f; };
         if (S >  1f) { S =  1f; };
         if (V < -1f) { V = -1f; };
         if (V >  1f) { V =  1f; };
-        Debug.Log("Outputs: " + S + ", " + V);
+        //Debug.Log("Outputs: " + S + ", " + V);
        
-        return Color.HSVToRGB(H, S, V);
+        return Color.HSVToRGB(hue, S, V); // hue only changes when color slider is used
 
     }
 
