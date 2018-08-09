@@ -110,7 +110,7 @@ namespace UnityEngine.XR.iOS
                     //we're going to get the position from the contact point
                     m_HitTransform.position = hit.point;
 
-                    Debug.Log(string.Format("x:{0:0.######} y:{1:0.######} z:{2:0.######}", m_HitTransform.position.x, m_HitTransform.position.y, m_HitTransform.position.z));
+                    //Debug.Log(string.Format("x:{0:0.######} y:{1:0.######} z:{2:0.######}", m_HitTransform.position.x, m_HitTransform.position.y, m_HitTransform.position.z));
 
                     //and the rotation from the transform of the plane collider
                     m_HitTransform.rotation = hit.transform.rotation;

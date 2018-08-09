@@ -10,6 +10,7 @@ if this joystick is set to stay in a fixed position
 
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using System.Collections;
 
 public class ColorJoystickTouchController : MonoBehaviour
@@ -84,7 +85,10 @@ public class ColorJoystickTouchController : MonoBehaviour
                 // if this touch just started (finger is down for the first time), for this particular touch 
                 if (myTouches[i].phase == TouchPhase.Began)
                 {
-                    joystick.transform.localScale = scaleVector;
+                    if (EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId))
+                    {
+                        joystick.transform.localScale = scaleVector;
+                    }
                         singleSideFingerID = myTouches[i].fingerId; // stores the unique id for this touch that happened on the left-side half of the screen
 
                         // if the single joystick will drag with any touch (single joystick is not set to stay in a fixed position)

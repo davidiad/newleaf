@@ -70,7 +70,7 @@ public class PaintManager : MonoBehaviour
 
     void Start()
     {
-        paintWait = 0.01f;
+        paintWait = 0.01f; // factor to control speed of re-drawing saved paintstrokes
         brushSize = 0.005f; // in meters
         strokeThickness = 1f;
         paintOn = false;
@@ -172,16 +172,22 @@ public class PaintManager : MonoBehaviour
         float H, S, V;
         Color.RGBToHSV(paintColor, out H, out S, out V);
         Vector3 input = colorJoystick.GetInputDirection();
-        S += input.y * joystickSensitivity;
-        V += input.x * joystickSensitivity;
-        if (S < -1f) { S = -1f; };
+        //if (Mathf.Abs(S) < 1)
+        //{
+            S += input.y * joystickSensitivity;
+        //}
+        //if (Mathf.Abs(V) < 1)
+        //{
+            V += input.x * joystickSensitivity;
+        //}
+        if (S <  0f) { S =  0f; };
         if (S >  1f) { S =  1f; };
-        if (V < -1f) { V = -1f; };
+        if (V <  0f) { V =  0f; };
         if (V >  1f) { V =  1f; };
-        //Debug.Log("Outputs: " + S + ", " + V);
+        Debug.Log("Hue: " + hue + "    " + "S: " +  S + "    " + "V: " + V);
        
         return Color.HSVToRGB(hue, S, V); // hue only changes when color slider is used
-
+       
     }
 
     public void UpdateSV() {
