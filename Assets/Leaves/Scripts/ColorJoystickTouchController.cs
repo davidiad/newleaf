@@ -27,6 +27,8 @@ public class ColorJoystickTouchController : MonoBehaviour
     private Vector3 scaleVector;
 
     private PaintManager paintManager;
+    private Vector3 initialPosition;
+    private float shift;
 
     void Start()
     {
@@ -63,6 +65,8 @@ public class ColorJoystickTouchController : MonoBehaviour
             singleJoystickHandleImage = colorJoystick.transform.GetChild(0).GetComponent<Image>(); // gets the handle (knob) image of the single joystick
             singleJoystickHandleImage.enabled = singleJoyStickAlwaysVisible; // sets single joystick handle (knob) image to be always visible or not
         }
+        initialPosition = joystick.transform.localPosition;
+        shift = (200f * scaleFactor) * 0.5f - 100f; // assuming button width = 200
     }
 
     void FixedUpdate()
@@ -85,11 +89,16 @@ public class ColorJoystickTouchController : MonoBehaviour
                 // if this touch just started (finger is down for the first time), for this particular touch 
                 if (myTouches[i].phase == TouchPhase.Began)
                 {
-                    if (EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId))
-                    {
-                        joystick.transform.localScale = scaleVector;
-                    }
-                        singleSideFingerID = myTouches[i].fingerId; // stores the unique id for this touch that happened on the left-side half of the screen
+                    //if (EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId))
+                    //{
+                        //if (EventSystem.current.currentSelectedGameObject.CompareTag("ColorJoystick"))
+                        //{
+                            ScaleUp();
+                        //} else {
+                        //    Debug.Log(EventSystem.current.currentSelectedGameObject.tag);
+                        //} 
+                    //}
+                    singleSideFingerID = myTouches[i].fingerId; // stores the unique id for this touch that happened on the left-side half of the screen
 
                         // if the single joystick will drag with any touch (single joystick is not set to stay in a fixed position)
                         if (colorJoystick.joystickStaysInFixedPosition == false)
@@ -134,7 +143,7 @@ public class ColorJoystickTouchController : MonoBehaviour
                 // if this touch has ended (finger is up and now off of the screen), for this particular touch 
                 if (myTouches[i].phase == TouchPhase.Ended)
                 {
-                    joystick.transform.localScale = Vector3.one;
+                    ScaleBack();
                     // if this touch is the touch that began on the left half of the screen
                     if (myTouches[i].fingerId == singleSideFingerID)
                     {
@@ -146,4 +155,17 @@ public class ColorJoystickTouchController : MonoBehaviour
             }
         }
     }
+
+    private void ScaleBack()
+    {
+        joystick.transform.localScale = Vector3.one;
+        joystick.transform.localPosition = initialPosition;
+    }
+
+    private void ScaleUp()
+    {
+        joystick.transform.localScale = scaleVector;
+        joystick.transform.localPosition = new Vector3(initialPosition.x + shift, initialPosition.y - shift, 0f);
+    }
+
 }

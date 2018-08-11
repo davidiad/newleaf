@@ -95,8 +95,8 @@ public class PaintManager : MonoBehaviour
         AdjustPaintColor(); // set the color to what the color slider is set to
         paintButtonGroup = onoff.GetComponent<CanvasGroup>();
         paintButtonGroup.alpha = 0.4f;
-        colorJoystick = GameObject.FindWithTag("ColorJoystick").GetComponent<ColorJoystick>();
-        SetHue();
+        //colorJoystick = GameObject.FindWithTag("ColorJoystick").GetComponent<ColorJoystick>();
+        SetHue(paintColor);
 
     }
  
@@ -149,9 +149,9 @@ public class PaintManager : MonoBehaviour
     }
 
     // to keep hue constant when setting S and V
-    private void SetHue() {
+    private void SetHue(Color color) {
         float H, S, V;
-        Color.RGBToHSV(paintColor, out H, out S, out V);
+        Color.RGBToHSV(color, out H, out S, out V);
         hue = H;
     }
 
@@ -160,21 +160,20 @@ public class PaintManager : MonoBehaviour
         if (paintSlider)
         {
             Gradient paintGradient = paintSlider.GetComponent<PaintGradient>().gradient;
-            paintColor = paintGradient.Evaluate(paintSlider.value);
-
-            UpdateBrushColor();
-            SetHue();
+            Color tempColor = paintGradient.Evaluate(paintSlider.value);
+            SetHue(tempColor); // get the hue from the gradient slider
+            UpdateSV(); // Update paintColor with new hue, and previous S and V
         }
     }
 
-    private Color AdjustSV (Color color) {
+    private Color AdjustSV () {
         
         float H, S, V;
         Color.RGBToHSV(paintColor, out H, out S, out V);
         Vector3 input = colorJoystick.GetInputDirection();
         //if (Mathf.Abs(S) < 1)
         //{
-            S += input.y * joystickSensitivity;
+            S -= input.y * joystickSensitivity;
         //}
         //if (Mathf.Abs(V) < 1)
         //{
@@ -191,7 +190,7 @@ public class PaintManager : MonoBehaviour
     }
 
     public void UpdateSV() {
-        paintColor = AdjustSV(paintColor);
+        paintColor = AdjustSV(); // adjusts S and V without changing hue (hue shifts when it shouldn't otherwise)
         UpdateBrushColor();
     }
 
