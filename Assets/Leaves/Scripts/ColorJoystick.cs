@@ -30,6 +30,9 @@ public class ColorJoystick : MonoBehaviour, IDragHandler, IPointerUpHandler, IPo
     private Vector3[] fourCornersArray = new Vector3[4]; // used to get the bottom right corner of the image in order to ensure that the pivot of the joystick's background image is always at the bottom right corner of the image (the pivot must always be placed on the bottom right corner of the joystick's background image in order to the script to work)
     private Vector2 bgImageStartPosition; // used to temporarily store the starting position of the joystick's background image (where it was placed on the canvas in the editor before play was pressed) in order to set the image back to this same position after setting the pivot to the bottom right corner of the image
 
+    private ColorJoystickController joystickController;
+    private Vector3 initialPosition;
+
     private void Start()
     {
         if (GetComponent<Image>() == null)
@@ -60,6 +63,9 @@ public class ColorJoystick : MonoBehaviour, IDragHandler, IPointerUpHandler, IPo
             //bgImage.rectTransform.anchorMax = new Vector2(0, 0); // sets the max anchors to the lower left corner of the canvas
             //bgImage.rectTransform.position = bgImageStartPosition; // sets the background image of this joystick back to the same position it was on the canvas before play was pressed
         }
+        //joystickController = GameObject.FindWithTag("ColorJoystickController").GetComponent<ColorJoystickTouchController>();
+        initialPosition = transform.localPosition;
+
      }
 
     // this event happens when there is a drag on screen
@@ -142,11 +148,23 @@ public class ColorJoystick : MonoBehaviour, IDragHandler, IPointerUpHandler, IPo
     {
         inputVector = Vector3.zero; // resets the inputVector so that output will no longer affect movement of the game object (example, a player character or any desired game object)
         joystickKnobImage.rectTransform.anchoredPosition = Vector3.zero; // resets the handle ("knob") of this joystick back to the center
+    
     }
 
     // ouputs the direction vector, use this public function from another script to control movement of a game object (such as a player character or any desired game object)
     public Vector3 GetInputDirection()
     {
         return new Vector3(inputVector.x, inputVector.y, 0);
+    }
+
+    private void OnMouseUp()
+    {
+        ScaleBack();
+    }
+
+    private void ScaleBack()
+    {
+        transform.localScale = Vector3.one;
+        transform.localPosition = initialPosition;
     }
 }

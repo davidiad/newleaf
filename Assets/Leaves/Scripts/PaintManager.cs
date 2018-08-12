@@ -183,7 +183,7 @@ public class PaintManager : MonoBehaviour
         if (S >  1f) { S =  1f; };
         if (V <  0f) { V =  0f; };
         if (V >  1f) { V =  1f; };
-        Debug.Log("Hue: " + hue + "    " + "S: " +  S + "    " + "V: " + V);
+//        Debug.Log("Hue: " + hue + "    " + "S: " +  S + "    " + "V: " + V);
        
         return Color.HSVToRGB(hue, S, V); // hue only changes when color slider is used
        

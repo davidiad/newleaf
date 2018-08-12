@@ -15,6 +15,7 @@ using System.Collections;
 
 public class ColorJoystickTouchController : MonoBehaviour
 {
+    public bool isJoystickTouched;
     public Image singleJoystickBackgroundImage; // background image of the single joystick (the joystick's handle (knob) is a child of this image and moves along with it)
     public bool singleJoyStickAlwaysVisible = true; // value from single joystick that determines if the single joystick should be always visible or not
 
@@ -32,6 +33,7 @@ public class ColorJoystickTouchController : MonoBehaviour
 
     void Start()
     {
+        isJoystickTouched = false;
         //if (singleJoystickBackgroundImage.GetComponent<ColorJoystick>() == null)
         //{
         //    Debug.LogError("There is no joystick attached to this script.");
@@ -89,15 +91,10 @@ public class ColorJoystickTouchController : MonoBehaviour
                 // if this touch just started (finger is down for the first time), for this particular touch 
                 if (myTouches[i].phase == TouchPhase.Began)
                 {
-                    //if (EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId))
-                    //{
-                        //if (EventSystem.current.currentSelectedGameObject.CompareTag("ColorJoystick"))
-                        //{
-                            ScaleUp();
-                        //} else {
-                        //    Debug.Log(EventSystem.current.currentSelectedGameObject.tag);
-                        //} 
-                    //}
+                    if (isJoystickTouched)
+                    {
+                        ScaleUp();
+                    }
                     singleSideFingerID = myTouches[i].fingerId; // stores the unique id for this touch that happened on the left-side half of the screen
 
                         // if the single joystick will drag with any touch (single joystick is not set to stay in a fixed position)
@@ -156,13 +153,14 @@ public class ColorJoystickTouchController : MonoBehaviour
         }
     }
 
-    private void ScaleBack()
+    public void ScaleBack()
     {
         joystick.transform.localScale = Vector3.one;
         joystick.transform.localPosition = initialPosition;
+        isJoystickTouched = false;
     }
 
-    private void ScaleUp()
+    public void ScaleUp()
     {
         joystick.transform.localScale = scaleVector;
         joystick.transform.localPosition = new Vector3(initialPosition.x + shift, initialPosition.y - shift, 0f);

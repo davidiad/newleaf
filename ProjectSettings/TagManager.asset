@@ -22,6 +22,7 @@ TagManager:
   - ExitMapButton
   - RadiusSlider
   - ColorJoystick
+  - ColorJoystickController
   layers:
   - Default
   - TransparentFX
