@@ -57,8 +57,9 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
     //[SerializeField] GameObject mMapSelectedPanel; // replacing with find with tag
     GameObject mMapLoader;
     GameObject mExitButton;
-    [SerializeField] GameObject mMapListPanel;
-    [SerializeField] GameObject mListElement;
+    //[SerializeField] GameObject mMapListPanel;
+    //[SerializeField] GameObject mListElement;
+    GameObject mListElement;
     [SerializeField] RectTransform mListContentParent;
     [SerializeField] ToggleGroup mToggleGroup;
     [SerializeField] GameObject mPlaneDetectionToggle;
@@ -118,6 +119,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         mMapLoader = GameObject.FindWithTag("MapLoader");
         mMapLoader.SetActive(false); // needs to be active at Start, so the reference to it can be found
         mExitButton = GameObject.FindWithTag("ExitMapButton");
+        mListElement = GameObject.FindWithTag("MapInfoElement");
     }
     
     //void Awake()

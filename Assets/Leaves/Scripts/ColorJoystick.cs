@@ -48,7 +48,7 @@ public class ColorJoystick : MonoBehaviour, IDragHandler, IPointerUpHandler, IPo
         if (GetComponent<Image>() != null && transform.GetChild(0).GetComponent<Image>() !=null)
         {
             bgImage = GetComponent<Image>(); // gets the background image of this joystick
-            joystickKnobImage = transform.GetChild(0).GetComponent<Image>(); // gets the joystick "knob" imae (the handle of the joystick), the joystick knob game object must be a child of this game object and have an image component 
+            joystickKnobImage = transform.GetChild(0).GetComponent<Image>(); // gets the joystick "knob" image (the handle of the joystick), the joystick knob game object must be a child of this game object and have an image component 
 
 
             bgImage.rectTransform.SetAsLastSibling(); // ensures that this joystick will always render on top of other UI elements

@@ -598,7 +598,7 @@ GameObject:
   - component: {fileID: 60268926}
   m_Layer: 5
   m_Name: MapInfoElement
-  m_TagString: Untagged
+  m_TagString: MapInfoElement
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3426,9 +3426,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff860d4cd15e44f608fc7ad252eada15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mMapListPanel: {fileID: 0}
-  mListElement: {fileID: 1170995837258984, guid: a3ef81b9c1147467396e3a086b211961,
-    type: 2}
   mListContentParent: {fileID: 1541832749}
   mToggleGroup: {fileID: 1541832746}
   mPlaneDetectionToggle: {fileID: 2036299907}

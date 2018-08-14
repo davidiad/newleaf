@@ -23,6 +23,7 @@ TagManager:
   - RadiusSlider
   - ColorJoystick
   - ColorJoystickController
+  - MapInfoElement
   layers:
   - Default
   - TransparentFX
