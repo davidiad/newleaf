@@ -24,6 +24,10 @@ TagManager:
   - ColorJoystick
   - ColorJoystickController
   - MapInfoElement
+  - ListContentParent
+  - PlaneDetectionToggle
+  - LabelText
+  - UploadText
   layers:
   - Default
   - TransparentFX

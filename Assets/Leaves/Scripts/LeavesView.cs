@@ -55,18 +55,21 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 {
     // Getting refs to buttons in the UI
     //[SerializeField] GameObject mMapSelectedPanel; // replacing with find with tag
-    GameObject mMapLoader;
-    GameObject mExitButton;
+    private GameObject mMapLoader;
+    private GameObject mExitButton;
     //[SerializeField] GameObject mMapListPanel;
     //[SerializeField] GameObject mListElement;
-    GameObject mListElement;
-    [SerializeField] RectTransform mListContentParent;
-    [SerializeField] ToggleGroup mToggleGroup;
-    [SerializeField] GameObject mPlaneDetectionToggle;
-    [SerializeField] Text mLabelText;
+    private GameObject mListElement;
+    //[SerializeField] RectTransform mListContentParent;
+    private RectTransform mListContentParent;
+    //[SerializeField] ToggleGroup mToggleGroup;
+    private ToggleGroup mToggleGroup; // Toggle Group for the Toggles in each list element menu item
+    //[SerializeField] GameObject mPlaneDetectionToggle;
+    private GameObject mPlaneDetectionToggle;
+    private Text mLabelText;
+    private Text uploadText;
     [SerializeField] Material mShapeMaterial;
     [SerializeField] PlacenoteARGeneratePlane mPNPlaneManager;
-    [SerializeField] Text uploadText;
     GameObject mapButton;
     public GameObject modelPrefab;
 
@@ -117,15 +120,17 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
     private void InitUI() {
         mMapLoader = GameObject.FindWithTag("MapLoader");
-        mMapLoader.SetActive(false); // needs to be active at Start, so the reference to it can be found
         mExitButton = GameObject.FindWithTag("ExitMapButton");
         mListElement = GameObject.FindWithTag("MapInfoElement");
+        GameObject ListParent = GameObject.FindWithTag("ListContentParent");
+        mListContentParent = ListParent.GetComponent<RectTransform>();
+        mToggleGroup = ListParent.GetComponent<ToggleGroup>();
+        mPlaneDetectionToggle = GameObject.FindWithTag("PlaneDetectionToggle");
+        mLabelText = GameObject.FindWithTag("LabelText").GetComponent<Text>();
+        uploadText = GameObject.FindWithTag("UploadText").GetComponent<Text>();
+
+        mMapLoader.SetActive(false); // needs to be active at Start, so the reference to it can be found
     }
-    
-    //void Awake()
-    //{
-    //    Environment.SetEnvironmentVariable("MONO_REFLECTION_SERIALIZER", "yes");
-    //}
 
     void Start()
     {

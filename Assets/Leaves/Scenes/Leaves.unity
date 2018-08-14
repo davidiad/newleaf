@@ -3426,17 +3426,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff860d4cd15e44f608fc7ad252eada15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mListContentParent: {fileID: 1541832749}
-  mToggleGroup: {fileID: 1541832746}
-  mPlaneDetectionToggle: {fileID: 2036299907}
-  mLabelText: {fileID: 849938698}
   mShapeMaterial: {fileID: 2100000, guid: b9df93c7d0cb44561989035cfdbef13d, type: 2}
   mPNPlaneManager: {fileID: 664246220}
-  uploadText: {fileID: 812216507}
   modelPrefab: {fileID: 1324487324745486, guid: 77b3c53c2b3154d6aa96ecf11da1604e,
     type: 2}
   paintPosition: {x: 0, y: 0, z: 0}
-  mMaxRadiusSearch: 0
+  mMaxRadiusSearch: 8000
   mRadiusLabel: {fileID: 0}
 --- !u!114 &531300836
 MonoBehaviour:
@@ -4566,8 +4561,8 @@ GameObject:
   - component: {fileID: 812216508}
   - component: {fileID: 812216507}
   m_Layer: 5
-  m_Name: Upload Text
-  m_TagString: Untagged
+  m_Name: UploadText
+  m_TagString: UploadText
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4733,7 +4728,7 @@ GameObject:
   - component: {fileID: 849938698}
   m_Layer: 5
   m_Name: LabelText
-  m_TagString: Untagged
+  m_TagString: LabelText
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -7624,7 +7619,7 @@ GameObject:
   - component: {fileID: 1541832746}
   m_Layer: 5
   m_Name: Content
-  m_TagString: Untagged
+  m_TagString: ListContentParent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -8899,6 +8894,34 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1868687349}
+--- !u!1 &1868838727
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1868838728}
+  m_Layer: 0
+  m_Name: LeavesManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1868838728
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1868838727}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 59, y: 254, z: -1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 15
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1872576785
 GameObject:
   m_ObjectHideFlags: 0
@@ -9101,9 +9124,9 @@ MonoBehaviour:
   m_HandleRect: {fileID: 506243289}
   m_Direction: 0
   m_MinValue: 1
-  m_MaxValue: 100
+  m_MaxValue: 10000
   m_WholeNumbers: 0
-  m_Value: 49.7
+  m_Value: 10000
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
@@ -9382,7 +9405,7 @@ GameObject:
   - component: {fileID: 2036299908}
   m_Layer: 5
   m_Name: PlaneDetectionToggle
-  m_TagString: Untagged
+  m_TagString: PlaneDetectionToggle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -9699,7 +9722,7 @@ GameObject:
   - component: {fileID: 2106115509}
   - component: {fileID: 2106115508}
   m_Layer: 5
-  m_Name: LabelPanel
+  m_Name: StatusPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
