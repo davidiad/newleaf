@@ -6,7 +6,7 @@ public class TransformValues : MonoBehaviour {
     //TODO: Use a scriptable object instead of MonoBehavior
     public Vector3 pos = Vector3.zero; //current position
     public Quaternion rot = Quaternion.identity; //current rotation
-    public Vector3 scale = new Vector3(1, 1, 1); //current scale
+    public Vector3 scale = Vector3.one; //current scale
 
     public void TransferValues(Transform trans)
     {

@@ -887,44 +887,44 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         return JObject.FromObject(psList);
     }
 
-    private JObject Sv3s2JSON()
-    {
-        SV3List sV3List = new SV3List();
-        //if (paintManager.currVertices.Count > 0)
-        // for now, saving just the first PaintStroke
-        int vertCount = paintManager.paintStrokesList[0].verts.Count;
-        Debug.Log("vertCount" + vertCount);
-        if (vertCount > 0)
-        {
-            sV3List.sv3s = new SerializableVector3[vertCount];
-        }
-        for (int i = 0; i < vertCount; i++)
-        {
-            sV3List.sv3s[i] = paintManager.paintStrokesList[0].verts[i];
-        }
+    //private JObject Sv3s2JSON()
+    //{
+    //    SV3List sV3List = new SV3List();
+    //    //if (paintManager.currVertices.Count > 0)
+    //    // for now, saving just the first PaintStroke
+    //    int vertCount = paintManager.paintStrokesList[0].verts.Count;
+    //    Debug.Log("vertCount" + vertCount);
+    //    if (vertCount > 0)
+    //    {
+    //        sV3List.sv3s = new SerializableVector3[vertCount];
+    //    }
+    //    for (int i = 0; i < vertCount; i++)
+    //    {
+    //        sV3List.sv3s[i] = paintManager.paintStrokesList[0].verts[i];
+    //    }
 
-        //for (int i = 0; i < paintManager.paintStrokesList.Count; i++)
-        //{
-        //    int count = 
-        //    for (int j = 0; i < paintManager.paintStrokesList[i].verts.Count; j++)
-        //    {
-        //        sV3List.sv3s[i] = paintManager.paintStrokesList[i].verts[j];
+    //    //for (int i = 0; i < paintManager.paintStrokesList.Count; i++)
+    //    //{
+    //    //    int count = 
+    //    //    for (int j = 0; i < paintManager.paintStrokesList[i].verts.Count; j++)
+    //    //    {
+    //    //        sV3List.sv3s[i] = paintManager.paintStrokesList[i].verts[j];
 
-        //    }
-        //    //sV3List.sv3s[i] = paintManager.currVertices[i];
-        //}
-        //sV3List.sv3s = new SerializableVector3[4];
-        //sV3List.sv3s[0] = new SerializableVector3(1, 2, 3);
-        //sV3List.sv3s[1] = new SerializableVector3(10, 2, 3);
-        //sV3List.sv3s[2] = new SerializableVector3(1, 20, 3);
-        //sV3List.sv3s[3] = new SerializableVector3(1, 2, 30);
+    //    //    }
+    //    //    //sV3List.sv3s[i] = paintManager.currVertices[i];
+    //    //}
+    //    //sV3List.sv3s = new SerializableVector3[4];
+    //    //sV3List.sv3s[0] = new SerializableVector3(1, 2, 3);
+    //    //sV3List.sv3s[1] = new SerializableVector3(10, 2, 3);
+    //    //sV3List.sv3s[2] = new SerializableVector3(1, 20, 3);
+    //    //sV3List.sv3s[3] = new SerializableVector3(1, 2, 30);
 
-        Debug.Log("XXXXXX: " + sV3List.sv3s.Length);
-        JObject jo = JObject.FromObject(sV3List);
-        Debug.Log("XXXXXX: " + jo);
+    //    Debug.Log("XXXXXX: " + sV3List.sv3s.Length);
+    //    JObject jo = JObject.FromObject(sV3List);
+    //    Debug.Log("XXXXXX: " + jo);
 
-        return JObject.FromObject(sV3List);
-    }
+    //    return JObject.FromObject(sV3List);
+    //}
 
 
     private JObject Shapes2JSON()
@@ -940,32 +940,32 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
     }
 
 
-    private void LoadSv3ListJSON(JToken mapMetadata)
-    {
-        if (paintManager)
-        {
-            //if (paintManager.currVertices)
-            //{
-            paintManager.currVertices.Clear();
-            //}
-        }
-        if (mapMetadata is JObject && mapMetadata["sv3list"] is JObject)
-        {
-            SV3List sv3list = mapMetadata["sv3list"].ToObject<SV3List>();
-            if (sv3list.sv3s == null)
-            {
-                Debug.Log("no sv3s dropped");
-                return;
-            }
+    //private void LoadSv3ListJSON(JToken mapMetadata)
+    //{
+    //    if (paintManager)
+    //    {
+    //        //if (paintManager.currVertices)
+    //        //{
+    //        paintManager.currVertices.Clear();
+    //        //}
+    //    }
+    //    if (mapMetadata is JObject && mapMetadata["sv3list"] is JObject)
+    //    {
+    //        SV3List sv3list = mapMetadata["sv3list"].ToObject<SV3List>();
+    //        if (sv3list.sv3s == null)
+    //        {
+    //            Debug.Log("no sv3s dropped");
+    //            return;
+    //        }
 
-            foreach (SerializableVector3 sv3 in sv3list.sv3s)
-            {
-                Vector3 vector = sv3;
-                Debug.Log("YYYYY " + sv3);
-                paintManager.currVertices.Add(vector);
-            }
-        }
-    }
+    //        foreach (SerializableVector3 sv3 in sv3list.sv3s)
+    //        {
+    //            Vector3 vector = sv3;
+    //            Debug.Log("YYYYY " + sv3);
+    //            paintManager.currVertices.Add(vector);
+    //        }
+    //    }
+    //}
 
 
     private void LoadShapesJSON(JToken mapMetadata)

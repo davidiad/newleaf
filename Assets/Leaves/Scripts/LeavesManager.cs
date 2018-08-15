@@ -7,7 +7,6 @@ using System;
 using UnityEngine.UI;
 using UnityEngine.XR.iOS;
 using System.Runtime.InteropServices;
-using System.IO;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 
@@ -25,6 +24,12 @@ public class ShapeInfo
 }
 
 [Serializable]
+public class ShapeList
+{
+    public ShapeInfo[] shapes;
+}
+
+[Serializable]
 public class PaintStrokeInfo
 {
     public SerializableVector3[] verts;
@@ -39,26 +44,13 @@ public class PaintStrokeList
     public PaintStrokeInfo[] strokes;
 }
 
-[Serializable]
-public class SV3List
-{
-    public SerializableVector3[] sv3s;
-}
-
-[Serializable]
-public class ShapeList
-{
-    public ShapeInfo[] shapes;
-}
-
 public class LeavesManager : MonoBehaviour, PlacenoteListener
 {
     public GameObject modelPrefab;
     public Vector3 paintPosition;
     [SerializeField] Material mShapeMaterial;
 
-    // Getting refs to buttons in the UI
-    //[SerializeField] GameObject mMapSelectedPanel; // replacing with find with tag
+    // Get refs to buttons in the UI
     private GameObject mMapLoader;
     private GameObject mExitButton;
     private GameObject mListElement;
@@ -85,8 +77,6 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
     //New stuff with PN 1.62
     private Slider mRadiusSlider;
     private float defaultDistance = 8000f;
-    //[SerializeField] float mMaxRadiusSearch;
-    //[SerializeField] Text mRadiusLabel;
     private LibPlacenote.MapMetadataSettable mCurrMapDetails;
     private bool mReportDebug = false;
     private string mSaveMapId = null;
@@ -108,30 +98,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
         }
     }
 
-    private BoxCollider mBoxColliderDummy;
-    private SphereCollider mSphereColliderDummy;
-    private CapsuleCollider mCapColliderDummy;
-
     bool ARPlanePaintingStatus;
-
-    private void InitUI()
-    {
-        mMapLoader = GameObject.FindWithTag("MapLoader");
-        mExitButton = GameObject.FindWithTag("ExitMapButton");
-        mListElement = GameObject.FindWithTag("MapInfoElement");
-
-        GameObject ListParent = GameObject.FindWithTag("ListContentParent");
-        mListContentParent = ListParent.GetComponent<RectTransform>();
-        mToggleGroup = ListParent.GetComponent<ToggleGroup>();
-
-        mPlaneDetectionToggle = GameObject.FindWithTag("PlaneDetectionToggle");
-        mLabelText = GameObject.FindWithTag("LabelText").GetComponent<Text>();
-        uploadText = GameObject.FindWithTag("UploadText").GetComponent<Text>();
-        mapButton = GameObject.FindWithTag("MapButton");
-        mRadiusSlider = GameObject.FindWithTag("RadiusSlider").GetComponent<Slider>();
-        ResetSlider();
-        mMapLoader.SetActive(false); // needs to be active at Start, so the reference to it can be found
-    }
 
     void Start()
     {
@@ -157,6 +124,25 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
         paintManager.ARPlanePainting = ARPlanePaintingStatus;
         paintManager.paintOnTouch = !ARPlanePaintingStatus; // TODO: make an enum to replace multiple bools
 
+    }
+
+    private void InitUI()
+    {
+        mMapLoader = GameObject.FindWithTag("MapLoader");
+        mExitButton = GameObject.FindWithTag("ExitMapButton");
+        mListElement = GameObject.FindWithTag("MapInfoElement");
+
+        GameObject ListParent = GameObject.FindWithTag("ListContentParent");
+        mListContentParent = ListParent.GetComponent<RectTransform>();
+        mToggleGroup = ListParent.GetComponent<ToggleGroup>();
+
+        mPlaneDetectionToggle = GameObject.FindWithTag("PlaneDetectionToggle");
+        mLabelText = GameObject.FindWithTag("LabelText").GetComponent<Text>();
+        uploadText = GameObject.FindWithTag("UploadText").GetComponent<Text>();
+        mapButton = GameObject.FindWithTag("MapButton");
+        mRadiusSlider = GameObject.FindWithTag("RadiusSlider").GetComponent<Slider>();
+        ResetSlider();
+        mMapLoader.SetActive(false); // needs to be active at Start, so the reference to it can be found
     }
 
     // force Ahead Of Time compiling of List<SerializableVector3> with this unused method
@@ -607,9 +593,6 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
                 {
                     LibPlacenote.Instance.StopSession();
                     mLabelText.text = "Saved Map ID: " + mapId;
-                    //mInitButtonPanel.SetActive(true);
-                    //mMappingButtonPanel.SetActive(false);
-                    //mPlaneDetectionToggle.SetActive(false);
 
                     //clear all existing planes
                     mPNPlaneManager.ClearPlanes();
@@ -684,14 +667,9 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
         mLabelText.text = "Saved Map Name: " + metadata.name;
         JObject userdata = new JObject();
         metadata.userdata = userdata;
-        //JObject metadata = new JObject();
-        //
 
         JObject shapeList = Shapes2JSON();
         userdata["shapeList"] = shapeList;
-
-        //JObject sv3list = Sv3s2JSON();
-        //metadata["sv3list"] = sv3list;
 
         JObject paintStrokeList = PaintStrokes2JSON();
         userdata["paintStrokeList"] = paintStrokeList;
@@ -714,38 +692,6 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
 
         LibPlacenote.Instance.SetMetadata(mid, metadata);
     }
-
-    private void SaveMeshes()
-    {
-        // TODO: Add the current PaintBrush as well
-        GameObject[] meshes = GameObject.FindGameObjectsWithTag("Mesh");
-        Mesh meshToSave = meshes[0].GetComponent<MeshFilter>().sharedMesh; // assumimg 1 exists for now
-        ES3File es3File = new ES3File("testingMeshSave.es3");
-        Debug.Log("meshToSave");
-        Debug.Log(meshToSave);
-        es3File.Save<Mesh>("Mesh", meshToSave);
-        es3File.Sync();
-        // Save your data to the ES3File.
-        //es3File.Save<Transform>("myTransform", this.transform);
-        //es3File.Save<string>("myName", myScript.name);
-
-        // Get the ES3File as a string.
-        string fileAsString = es3File.LoadRawString();
-        Debug.Log(fileAsString.Length);
-        Debug.Log(Application.persistentDataPath);
-        ES3File es3fileLoading = new ES3File((new ES3Settings()).encoding.GetBytes(fileAsString), false);
-
-        // Load the data from the ES3File.
-        Mesh newMesh = new Mesh();
-        es3fileLoading.LoadInto<Mesh>("Mesh", newMesh);
-        GameObject newGO = new GameObject("newGO");
-        newGO.AddComponent<MeshFilter>();
-        newGO.GetComponent<MeshFilter>().sharedMesh = newMesh;
-        newGO.transform.position = new Vector3(0.2f, 0.2f, 0.2f);
-
-        //myScript.name = es3File.Load<string>("myName");
-    }
-
 
     public void OnDropShapeClick()
     {
@@ -889,45 +835,6 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
         return JObject.FromObject(psList);
     }
 
-    private JObject Sv3s2JSON()
-    {
-        SV3List sV3List = new SV3List();
-        //if (paintManager.currVertices.Count > 0)
-        // for now, saving just the first PaintStroke
-        int vertCount = paintManager.paintStrokesList[0].verts.Count;
-        Debug.Log("vertCount" + vertCount);
-        if (vertCount > 0)
-        {
-            sV3List.sv3s = new SerializableVector3[vertCount];
-        }
-        for (int i = 0; i < vertCount; i++)
-        {
-            sV3List.sv3s[i] = paintManager.paintStrokesList[0].verts[i];
-        }
-
-        //for (int i = 0; i < paintManager.paintStrokesList.Count; i++)
-        //{
-        //    int count = 
-        //    for (int j = 0; i < paintManager.paintStrokesList[i].verts.Count; j++)
-        //    {
-        //        sV3List.sv3s[i] = paintManager.paintStrokesList[i].verts[j];
-
-        //    }
-        //    //sV3List.sv3s[i] = paintManager.currVertices[i];
-        //}
-        //sV3List.sv3s = new SerializableVector3[4];
-        //sV3List.sv3s[0] = new SerializableVector3(1, 2, 3);
-        //sV3List.sv3s[1] = new SerializableVector3(10, 2, 3);
-        //sV3List.sv3s[2] = new SerializableVector3(1, 20, 3);
-        //sV3List.sv3s[3] = new SerializableVector3(1, 2, 30);
-
-        Debug.Log("XXXXXX: " + sV3List.sv3s.Length);
-        JObject jo = JObject.FromObject(sV3List);
-        Debug.Log("XXXXXX: " + jo);
-
-        return JObject.FromObject(sV3List);
-    }
-
 
     private JObject Shapes2JSON()
     {
@@ -940,35 +847,6 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
 
         return JObject.FromObject(shapeList);
     }
-
-
-    private void LoadSv3ListJSON(JToken mapMetadata)
-    {
-        if (paintManager)
-        {
-            //if (paintManager.currVertices)
-            //{
-            paintManager.currVertices.Clear();
-            //}
-        }
-        if (mapMetadata is JObject && mapMetadata["sv3list"] is JObject)
-        {
-            SV3List sv3list = mapMetadata["sv3list"].ToObject<SV3List>();
-            if (sv3list.sv3s == null)
-            {
-                Debug.Log("no sv3s dropped");
-                return;
-            }
-
-            foreach (SerializableVector3 sv3 in sv3list.sv3s)
-            {
-                Vector3 vector = sv3;
-                Debug.Log("YYYYY " + sv3);
-                paintManager.currVertices.Add(vector);
-            }
-        }
-    }
-
 
     private void LoadShapesJSON(JToken mapMetadata)
     {
@@ -1025,17 +903,6 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
         }
     }
 
-    //private void TestPaintStrokeInfo() {
-    //    PaintStrokeInfo psi = new PaintStrokeInfo();
-    //    psi.verts = new SerializableVector3[3];
-    //    psi.verts[0] = new SerializableVector3(1, 2, 3);
-    //    psi.verts[1] = new SerializableVector3(10, 2, 3);
-    //    psi.verts[2] = new SerializableVector3(1, 20, 3);
-    //    PaintStroke ps = PaintStrokeFromInfo(psi);
-    //    Debug.Log("ps: ?????????:");
-    //    Debug.Log(ps);
-    //}
-
     private PaintStroke PaintStrokeFromInfo(PaintStrokeInfo info)
     {
         //TODO: Won't work with 'new' because PaintStroke is a monobehavior. Probably better if PaintStroke is not a monobehavior
@@ -1086,7 +953,6 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
             {
                 mLabelText.text = "Localized";
                 LoadShapesJSON(mSelectedMapInfo.metadata.userdata);
-                //LoadSv3ListJSON(mSelectedMapInfo.userData);
                 LoadPaintStrokesJSON(mSelectedMapInfo.metadata.userdata);
                 hasLocalized = true;
             }

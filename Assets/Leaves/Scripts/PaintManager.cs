@@ -1,72 +1,59 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.XR.iOS;
 using UnityEngine.UI;
 using Ara; // 3rd party Trail Renderer
-using System;
 
-// TODO:(?) Should this be a struct? (or Scriptable object?)
-public class PaintStroke : MonoBehaviour
-{
-    //public int ID { get; set; }
-    //public string SomethingWithText { get; set; }
-    public List<Vector3> verts;// { get; set; }
-    public List<Color> pointColors; // will hold colors of individual points
-    public List<float> pointSizes; // will hold size of individual points
-    public Color color;// { get; set; } // initial color of stroke (and default color if no point color)
-}
+//// TODO:(?) Should this be a struct? (or Scriptable object?)
+//public class PaintStroke : MonoBehaviour
+//{
+//    //public int ID { get; set; }
+//    //public string SomethingWithText { get; set; }
+//    public List<Vector3> verts;// { get; set; }
+//    public List<Color> pointColors; // will hold colors of individual points
+//    public List<float> pointSizes; // will hold size of individual points
+//    public Color color;// { get; set; } // initial color of stroke (and default color if no point color)
+//}
 
 public class PaintManager : MonoBehaviour
 {
-    public GameObject PSVGO;
     public Vector3 paintPosition;
-    private LeavesView PSV;
     public GameObject paintOnObject;
+    public float brushSize;
+    public Button onoff;
+    public float strokeThickness; // multiplier, sets overall thickness of trail
+    public ColorJoystick colorJoystick;
+    public float joystickSensitivity = 0.0125f;
+    public List<PaintStroke> paintStrokesList;
+    //public List<ParticleSystem> particleSystemList; // Stores all particle systems
+    public List<Vector3> currVertices; // Stores current paint target positions to paint
+    //public ParticleSystem ps; // Stores current particle system
+    public GameObject paintBrushPrefab;
+
+    [SerializeField] private GameObject paintTarget;
+    [SerializeField] Camera mainCam;
+    [SerializeField] private float paintWait; // time to wait before adding next vertex when painting trail
+
+    private LeavesManager leavesManager;
     private PaintOn paintOnComponent;
     private GameObject targetSliderGO;
     private Slider targetSlider;
     private Slider paintSlider;
     private Slider brushSizeSlider;
-    public float brushSize;
-
-    public Button onoff;
-    [SerializeField] private GameObject paintTarget;
-
-    public ParticleSystem particleSystemTemplate;
-
     private bool newPaintVertices;
     private bool paintOn;
     private Color paintColor;
     private Material[] brushColorMats;
     private Vector3 previousPosition;
-    public float strokeThickness; // multiplier, sets overall thickness of trail
     private float colorDarken = 0.65f; // amount to darken the outer rings of the cursor
-    public ColorJoystick colorJoystick;
     private Vector3 colorInput;
     private float hue;
-    public float joystickSensitivity = 0.0125f;
 
-
-    public List<PaintStroke> paintStrokesList;
-    public List<ParticleSystem> particleSystemList; // Stores all particle systems
-    public List<Vector3> currVertices; // Stores current paint target positions to paint
-
-    public ParticleSystem ps; // Stores current particle system
-    public GameObject paintBrushPrefab;
     private GameObject paintBrush;
     private CanvasGroup paintButtonGroup;
-    [SerializeField] Camera mainCam;
 
     public bool paintOnTouch;
     public bool ARPlanePainting;
-
-    [SerializeField] private float paintWait; // time to wait before adding next vertex when painting trail
-
-    //void Awake()
-    //{
-    //    Environment.SetEnvironmentVariable("MONO_REFLECTION_SERIALIZER", "yes");
-    //}
 
     void Start()
     {
@@ -76,14 +63,12 @@ public class PaintManager : MonoBehaviour
         paintOn = false;
         paintOnTouch = true;
         newPaintVertices = false;
-        particleSystemList = new List<ParticleSystem>();
         paintStrokesList = new List<PaintStroke>();
-        ps = Instantiate(particleSystemTemplate);
         currVertices = new List<Vector3>();
         paintColor = Color.blue;
         brushColorMats = GameObject.FindWithTag("BrushColor").GetComponent<Renderer>().materials;
-        PSV = PSVGO.GetComponent<LeavesView>();
-        paintPosition = PSV.paintPosition;
+        leavesManager = GameObject.FindWithTag("LeavesManager").GetComponent<LeavesManager>();
+        paintPosition = leavesManager.paintPosition;
         paintTarget = GameObject.FindWithTag("PaintTarget");
         paintSlider = GameObject.FindWithTag("PaintSlider").GetComponent<Slider>();
         brushSizeSlider = GameObject.FindWithTag("SizeSlider").GetComponent<Slider>();
@@ -95,7 +80,6 @@ public class PaintManager : MonoBehaviour
         AdjustPaintColor(); // set the color to what the color slider is set to
         paintButtonGroup = onoff.GetComponent<CanvasGroup>();
         paintButtonGroup.alpha = 0.4f;
-        //colorJoystick = GameObject.FindWithTag("ColorJoystick").GetComponent<ColorJoystick>();
         SetHue(paintColor);
 
     }
@@ -171,22 +155,16 @@ public class PaintManager : MonoBehaviour
         float H, S, V;
         Color.RGBToHSV(paintColor, out H, out S, out V);
         Vector3 input = colorJoystick.GetInputDirection();
-        //if (Mathf.Abs(S) < 1)
-        //{
-            S -= input.y * joystickSensitivity;
-        //}
-        //if (Mathf.Abs(V) < 1)
-        //{
-            V += input.x * joystickSensitivity;
-        //}
+
+        S -= input.y * joystickSensitivity;
+        V += input.x * joystickSensitivity;
+
         if (S <  0f) { S =  0f; };
         if (S >  1f) { S =  1f; };
         if (V <  0f) { V =  0f; };
         if (V >  1f) { V =  1f; };
-//        Debug.Log("Hue: " + hue + "    " + "S: " +  S + "    " + "V: " + V);
        
         return Color.HSVToRGB(hue, S, V); // hue only changes when color slider is used
-       
     }
 
     public void UpdateSV() {
@@ -220,7 +198,6 @@ public class PaintManager : MonoBehaviour
             if (currentBrush)
             {
                 currentBrush.GetComponent<AraTrail>().initialThickness = brushSize;
-
             }
         }
     }
@@ -280,8 +257,6 @@ public class PaintManager : MonoBehaviour
 
             yield return new WaitForSeconds(paintWait); // allow enough time for the previous mesh section to be generated
         }
-        //// Add the verts of the trail renderer to PaintStrokeList
-        //AddPaintStrokeToList(brush);
         // Now that the PaintStroke has been saved, unparent it from the target so it's positioned in worldspace
         brush.tag = "PaintStroke";
         brush.transform.parent = null;
@@ -386,7 +361,6 @@ public class PaintManager : MonoBehaviour
 
     public void RandomizeColor()
     {
-
         paintColor = UnityEngine.Random.ColorHSV(hueMin: 0f, hueMax: 1f, saturationMin: 0.8f, saturationMax: 1f, valueMin: 0.8f, valueMax: 1f);
 
         GameObject currentBrush = GameObject.FindWithTag("PaintBrush");
@@ -424,15 +398,15 @@ public class PaintManager : MonoBehaviour
         paintStrokesList.Clear();
     }
 
-    private void Paint()
-    {
-        paintPosition = PSV.paintPosition;
-        if (Vector3.Distance(paintPosition, previousPosition) > 0.025f)
-        {
-            if (paintOn) currVertices.Add(paintPosition);
-            previousPosition = paintPosition;
-            newPaintVertices = true;
+    //private void Paint()
+    //{
+    //    paintPosition = leavesManager.paintPosition;
+    //    if (Vector3.Distance(paintPosition, previousPosition) > 0.025f)
+    //    {
+    //        if (paintOn) currVertices.Add(paintPosition);
+    //        previousPosition = paintPosition;
+    //        newPaintVertices = true;
 
-        }
-    }
+    //    }
+    //}
 }

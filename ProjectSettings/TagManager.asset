@@ -29,6 +29,7 @@ TagManager:
   - LabelText
   - UploadText
   - PNPlaneManager
+  - LeavesManager
   layers:
   - Default
   - TransparentFX
