@@ -11,47 +11,47 @@ using System.IO;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 
-//[Serializable]
-//public class ShapeInfo
-//{
-//    public float px;
-//    public float py;
-//    public float pz;
-//    public float qx;
-//    public float qy;
-//    public float qz;
-//    public float qw;
-//    public int shapeType;
-//}
+[Serializable]
+public class ShapeInfo
+{
+    public float px;
+    public float py;
+    public float pz;
+    public float qx;
+    public float qy;
+    public float qz;
+    public float qw;
+    public int shapeType;
+}
 
-//[Serializable]
-//public class PaintStrokeInfo
-//{
-//    public SerializableVector3[] verts;
-//    public SerializableVector3[] pointColors; // alpha is always 1, and using V3 avoids deserialization problems with V4
-//    public float[] pointSizes;
-//    public SerializableVector4 initialColor; // initial color of stroke. Color implicitly converts to Vector4.
-//}
+[Serializable]
+public class PaintStrokeInfo
+{
+    public SerializableVector3[] verts;
+    public SerializableVector3[] pointColors; // alpha is always 1, and using V3 avoids deserialization problems with V4
+    public float[] pointSizes;
+    public SerializableVector4 initialColor; // initial color of stroke. Color implicitly converts to Vector4.
+}
 
-//[Serializable]
-//public class PaintStrokeList
-//{
-//    public PaintStrokeInfo[] strokes;
-//}
+[Serializable]
+public class PaintStrokeList
+{
+    public PaintStrokeInfo[] strokes;
+}
 
-//[Serializable]
-//public class SV3List
-//{
-//    public SerializableVector3[] sv3s;
-//}
+[Serializable]
+public class SV3List
+{
+    public SerializableVector3[] sv3s;
+}
 
-//[Serializable]
-//public class ShapeList
-//{
-//    public ShapeInfo[] shapes;
-//}
+[Serializable]
+public class ShapeList
+{
+    public ShapeInfo[] shapes;
+}
 
-public class LeavesView : MonoBehaviour, PlacenoteListener
+public class LeavesManager : MonoBehaviour, PlacenoteListener
 {
     public GameObject modelPrefab;
     public Vector3 paintPosition;
@@ -114,7 +114,8 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
     bool ARPlanePaintingStatus;
 
-    private void InitUI() {
+    private void InitUI()
+    {
         mMapLoader = GameObject.FindWithTag("MapLoader");
         mExitButton = GameObject.FindWithTag("ExitMapButton");
         mListElement = GameObject.FindWithTag("MapInfoElement");
@@ -161,7 +162,8 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
     // force Ahead Of Time compiling of List<SerializableVector3> with this unused method
     // Fixes error in deserializing List of SerializableVector3
     // (alternative fix -- could define SerializableVector3 as class instead of struct)
-    private void dummyMethod() {
+    private void dummyMethod()
+    {
         List<SerializableVector3> forceAOT = new List<SerializableVector3>();
     }
 
@@ -284,9 +286,9 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         mMapLoader.SetActive(true);
         //mMapListPanel.SetActive(true);
 
-//        mInitButtonPanel.SetActive(false); // added in 1.62
+        //        mInitButtonPanel.SetActive(false); // added in 1.62
 
-//        mRadiusSlider.gameObject.SetActive(true);
+        //        mRadiusSlider.gameObject.SetActive(true);
 
         LibPlacenote.Instance.ListMaps((mapList) =>
         {
@@ -294,7 +296,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
             // render the map list!
             foreach (LibPlacenote.MapInfo mapId in mapList)
             {
-                
+
                 if (mapId.metadata != null) // extra if, can be removed, prevent editor warning
                 {
                     if (mapId.metadata.userdata != null)
@@ -309,7 +311,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
     // Radius stuff - new with PN 1.62
     public void OnRadiusSelect()
-    { 
+    {
         LocationInfo locationInfo = Input.location.lastData;
         Debug.Log(locationInfo);
 
@@ -319,8 +321,8 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         LibPlacenote.Instance.SearchMaps(locationInfo.latitude, locationInfo.longitude, radiusSearch,
             (mapList) =>
             {
-//                Debug.Log("MAPID INFO'S HOW much: " + mapList[0].metadata.ToString()); 
-                
+                //                Debug.Log("MAPID INFO'S HOW much: " + mapList[0].metadata.ToString()); 
+
                 foreach (Transform t in mListContentParent.transform)
                 {
                     Destroy(t.gameObject);
@@ -358,7 +360,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
     public void OnExitClick()
     {
         paintManager.Reset();
-//        mInitButtonPanel.SetActive(true);
+        //        mInitButtonPanel.SetActive(true);
         mExitButton.SetActive(false);
         mPlaneDetectionToggle.SetActive(false);
 
@@ -834,7 +836,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
     }
 
     // Add a custom 3D model to the map
-    private GameObject ModelFromInfo(ShapeInfo info) 
+    private GameObject ModelFromInfo(ShapeInfo info)
     {
         Vector3 pos = new Vector3(info.px, info.py, info.pz);
         Quaternion rot = new Quaternion(info.qx, info.qy, info.qz, info.qw);
