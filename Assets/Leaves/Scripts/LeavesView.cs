@@ -158,6 +158,13 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
     }
 
+    // force Ahead Of Time compiling of List<SerializableVector3> with this unused method
+    // Fixes error in deserializing List of SerializableVector3
+    // (alternative fix -- could define SerializableVector3 as class instead of struct)
+    private void dummyMethod() {
+        List<SerializableVector3> forceAOT = new List<SerializableVector3>();
+    }
+
     private void ARFrameUpdated(UnityARCamera camera)
     {
         mFrameUpdated = true;
