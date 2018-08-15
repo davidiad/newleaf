@@ -28,6 +28,7 @@ TagManager:
   - PlaneDetectionToggle
   - LabelText
   - UploadText
+  - PNPlaneManager
   layers:
   - Default
   - TransparentFX

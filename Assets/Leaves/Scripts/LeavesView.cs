@@ -53,27 +53,22 @@ public class ShapeList
 
 public class LeavesView : MonoBehaviour, PlacenoteListener
 {
+    public GameObject modelPrefab;
+    public Vector3 paintPosition;
+    [SerializeField] Material mShapeMaterial;
+
     // Getting refs to buttons in the UI
     //[SerializeField] GameObject mMapSelectedPanel; // replacing with find with tag
     private GameObject mMapLoader;
     private GameObject mExitButton;
-    //[SerializeField] GameObject mMapListPanel;
-    //[SerializeField] GameObject mListElement;
     private GameObject mListElement;
-    //[SerializeField] RectTransform mListContentParent;
     private RectTransform mListContentParent;
-    //[SerializeField] ToggleGroup mToggleGroup;
     private ToggleGroup mToggleGroup; // Toggle Group for the Toggles in each list element menu item
-    //[SerializeField] GameObject mPlaneDetectionToggle;
     private GameObject mPlaneDetectionToggle;
     private Text mLabelText;
     private Text uploadText;
-    [SerializeField] Material mShapeMaterial;
-    [SerializeField] PlacenoteARGeneratePlane mPNPlaneManager;
-    GameObject mapButton;
-    public GameObject modelPrefab;
-
-    public Vector3 paintPosition;
+    private GameObject mapButton;
+    private PlacenoteARGeneratePlane mPNPlaneManager;
 
     private UnityARSessionNativeInterface mSession;
     private bool mFrameUpdated = false;
@@ -89,8 +84,9 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
     //New stuff with PN 1.62
     private Slider mRadiusSlider;
-    [SerializeField] float mMaxRadiusSearch;
-    [SerializeField] Text mRadiusLabel;
+    private float defaultDistance = 8000f;
+    //[SerializeField] float mMaxRadiusSearch;
+    //[SerializeField] Text mRadiusLabel;
     private LibPlacenote.MapMetadataSettable mCurrMapDetails;
     private bool mReportDebug = false;
     private string mSaveMapId = null;
@@ -122,13 +118,17 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         mMapLoader = GameObject.FindWithTag("MapLoader");
         mExitButton = GameObject.FindWithTag("ExitMapButton");
         mListElement = GameObject.FindWithTag("MapInfoElement");
+
         GameObject ListParent = GameObject.FindWithTag("ListContentParent");
         mListContentParent = ListParent.GetComponent<RectTransform>();
         mToggleGroup = ListParent.GetComponent<ToggleGroup>();
+
         mPlaneDetectionToggle = GameObject.FindWithTag("PlaneDetectionToggle");
         mLabelText = GameObject.FindWithTag("LabelText").GetComponent<Text>();
         uploadText = GameObject.FindWithTag("UploadText").GetComponent<Text>();
-
+        mapButton = GameObject.FindWithTag("MapButton");
+        mRadiusSlider = GameObject.FindWithTag("RadiusSlider").GetComponent<Slider>();
+        ResetSlider();
         mMapLoader.SetActive(false); // needs to be active at Start, so the reference to it can be found
     }
 
@@ -138,10 +138,11 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         currentMapId = "";
         mappingStarted = false;
         hasLocalized = false;
+        mPNPlaneManager = GameObject.FindWithTag("PNPlaneManager").GetComponent<PlacenoteARGeneratePlane>();
 
         Input.location.Start();
 
-        mMapLoader.SetActive(false);
+        //mMapLoader.SetActive(false);
 
         mSession = UnityARSessionNativeInterface.GetARSessionNativeInterface();
         UnityARSessionNativeInterface.ARFrameUpdatedEvent += ARFrameUpdated;
@@ -154,9 +155,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
         ARPlanePaintingStatus = mPlaneDetectionToggle.GetComponent<Toggle>().isOn;
         paintManager.ARPlanePainting = ARPlanePaintingStatus;
         paintManager.paintOnTouch = !ARPlanePaintingStatus; // TODO: make an enum to replace multiple bools
-        mapButton = GameObject.FindWithTag("MapButton");
-        mRadiusSlider = GameObject.FindWithTag("RadiusSlider").GetComponent<Slider>();
-        ResetSlider();
+
     }
 
     private void ARFrameUpdated(UnityARCamera camera)
@@ -284,7 +283,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
         LibPlacenote.Instance.ListMaps((mapList) =>
         {
-            Debug.Log("MAPID INFO'S HOW MANY: " + mapList[0].metadata.ToString()); 
+            //Debug.Log("MAPID INFO'S HOW MANY: " + mapList[0].metadata.ToString()); 
             // render the map list!
             foreach (LibPlacenote.MapInfo mapId in mapList)
             {
@@ -303,8 +302,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
     // Radius stuff - new with PN 1.62
     public void OnRadiusSelect()
-    {
-        //Debug.Log("Map search:" + mRadiusSlider.value.ToString("F2"));
+    { 
         LocationInfo locationInfo = Input.location.lastData;
         Debug.Log(locationInfo);
 
@@ -338,7 +336,7 @@ public class LeavesView : MonoBehaviour, PlacenoteListener
 
     public void ResetSlider()
     {
-        mRadiusSlider.value = 20.0f;
+        mRadiusSlider.value = defaultDistance;
         //mRadiusLabel.text = "Distance Filter: Off";
     }
 
