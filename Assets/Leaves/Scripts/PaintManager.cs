@@ -4,31 +4,20 @@ using UnityEngine;
 using UnityEngine.UI;
 using Ara; // 3rd party Trail Renderer
 
-//// TODO:(?) Should this be a struct? (or Scriptable object?)
-//public class PaintStroke : MonoBehaviour
-//{
-//    //public int ID { get; set; }
-//    //public string SomethingWithText { get; set; }
-//    public List<Vector3> verts;// { get; set; }
-//    public List<Color> pointColors; // will hold colors of individual points
-//    public List<float> pointSizes; // will hold size of individual points
-//    public Color color;// { get; set; } // initial color of stroke (and default color if no point color)
-//}
-
 public class PaintManager : MonoBehaviour
 {
-    public Vector3 paintPosition;
-    public GameObject paintOnObject;
-    public float brushSize;
-    public Button onoff;
-    public float strokeThickness; // multiplier, sets overall thickness of trail
-    public ColorJoystick colorJoystick;
-    public float joystickSensitivity = 0.0125f;
-    public List<PaintStroke> paintStrokesList;
-    //public List<ParticleSystem> particleSystemList; // Stores all particle systems
-    public List<Vector3> currVertices; // Stores current paint target positions to paint
-    //public ParticleSystem ps; // Stores current particle system
     public GameObject paintBrushPrefab;
+    public GameObject paintOnObject;
+    public Button onoff;
+    public ColorJoystick colorJoystick;
+    public Vector3 paintPosition;
+    public float brushSize;
+    public float strokeThickness; // multiplier, sets overall thickness of trail
+    public float joystickSensitivity = 0.0125f;
+    public bool paintOnTouch;
+    public bool ARPlanePainting;
+    public List<PaintStroke> paintStrokesList;
+    public List<Vector3> currVertices; // Stores current paint target positions to paint
 
     [SerializeField] private GameObject paintTarget;
     [SerializeField] Camera mainCam;
@@ -51,9 +40,6 @@ public class PaintManager : MonoBehaviour
 
     private GameObject paintBrush;
     private CanvasGroup paintButtonGroup;
-
-    public bool paintOnTouch;
-    public bool ARPlanePainting;
 
     void Start()
     {
@@ -81,7 +67,6 @@ public class PaintManager : MonoBehaviour
         paintButtonGroup = onoff.GetComponent<CanvasGroup>();
         paintButtonGroup.alpha = 0.4f;
         SetHue(paintColor);
-
     }
  
     void Update()
@@ -186,8 +171,7 @@ public class PaintManager : MonoBehaviour
     }
 
     public void AdjustTargetDistance() {
-        if (paintTarget)
-        {
+        if (paintTarget) {
             paintTarget.transform.localPosition = new Vector3(0f, 0f, targetSlider.value);
         }
     }
@@ -232,14 +216,12 @@ public class PaintManager : MonoBehaviour
         // The paint stroke info that was saved with the map should already have been put into paintStrokesList
         foreach (PaintStroke paintstroke in paintStrokesList)
         {
-            //if (paintstroke.verts.Count > 2) // no point in drawing a single vert
-           // {
-                // position the new paintbrush at the first point of the vertex list
-                GameObject newBrush = Instantiate(paintBrushPrefab, paintstroke.verts[0], Quaternion.Euler(new Vector3(0f, 90f, 0f)));
-                AraTrail araTrail = newBrush.GetComponent<AraTrail>();
-                araTrail.initialColor = paintstroke.color;
-                StartCoroutine(PaintTrail(newBrush, paintstroke, araTrail));
-            //}
+            // position the new paintbrush at the first point of the vertex list
+            GameObject newBrush = Instantiate(paintBrushPrefab, paintstroke.verts[0], Quaternion.Euler(new Vector3(0f, 90f, 0f)));
+            AraTrail araTrail = newBrush.GetComponent<AraTrail>();
+            araTrail.initialColor = paintstroke.color;
+            StartCoroutine(PaintTrail(newBrush, paintstroke, araTrail));
+
         }
         paintOnComponent.meshLoading = false;
         paintOnComponent.endPainting = true; // flag to destroy mesh extrusion component
@@ -397,16 +379,4 @@ public class PaintManager : MonoBehaviour
         }
         paintStrokesList.Clear();
     }
-
-    //private void Paint()
-    //{
-    //    paintPosition = leavesManager.paintPosition;
-    //    if (Vector3.Distance(paintPosition, previousPosition) > 0.025f)
-    //    {
-    //        if (paintOn) currVertices.Add(paintPosition);
-    //        previousPosition = paintPosition;
-    //        newPaintVertices = true;
-
-    //    }
-    //}
 }

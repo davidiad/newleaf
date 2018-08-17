@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // This Class is used as a way to communicate between Javascript and C# scripts.
-// After ExtrudedMeshTrail.js is rewritten in C#, it won't be need.
+// After ExtrudedMeshTrail.js is rewritten in C#, it won't be needed.
 // Meanwhile, don't move this script from the folder it's in, or the project may not work
 
 public class PaintOn : MonoBehaviour {
