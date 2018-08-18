@@ -17,20 +17,22 @@ public class ModelInfo
 }
 
 [Serializable]
-public class ModelInfoArray // change  name, because not a List
+public class ModelInfoArray // changed  name from ModelList, because not a List (analagous to ShapeList)
 {
     public ModelInfo[] modelInfos;
 }
 
 public class SerializableModel : ScriptableObject {
 
+    public String jsonKey = "models";
     public GameObject[] prefabs; // models to choose from
     //TODO: load the prefabs
     private List<ModelInfo> modelInfoList = new List<ModelInfo>(); // need to pass in
     private List<GameObject> modelObjList = new List<GameObject>();
 
+
     // convert array of model info to json
-    private JObject ToJSON()
+    public JObject ToJSON()
     {
         ModelInfoArray modelInfoArray = new ModelInfoArray();
         modelInfoArray.modelInfos = new ModelInfo[modelInfoList.Count];
@@ -40,17 +42,6 @@ public class SerializableModel : ScriptableObject {
         }
 
         return JObject.FromObject(modelInfoArray);
-    }
-
-    // get a custom 3D model
-    private GameObject ModelFromInfo(ModelInfo info)
-    {
-        Vector3 pos = new Vector3(info.px, info.py, info.pz);
-        Quaternion rot = new Quaternion(info.qx, info.qy, info.qz, info.qw);
-        Vector3 localScale = new Vector3(0.05f, 0.05f, 0.05f);
-        GameObject model = Instantiate(prefabs[info.modelIndex], pos, rot);
-
-        return model;
     }
 
     public void OnAddToScene(ModelInfo info)
@@ -77,6 +68,51 @@ public class SerializableModel : ScriptableObject {
 
         // add the game object to object list
         modelObjList.Add(model);
+    }
+
+    // get a custom 3D model
+    private GameObject ModelFromInfo(ModelInfo info)
+    {
+        Vector3 pos = new Vector3(info.px, info.py, info.pz);
+        Quaternion rot = new Quaternion(info.qx, info.qy, info.qz, info.qw);
+        Vector3 localScale = new Vector3(0.05f, 0.05f, 0.05f);
+        GameObject model = Instantiate(prefabs[info.modelIndex], pos, rot);
+
+        return model;
+    }
+
+    // reconstitute the JSON
+    public void LoadFromJSON(JToken mapMetadata)
+    {
+        ClearModels();
+
+        if (mapMetadata is JObject && mapMetadata[jsonKey] is JObject)
+        {
+            ModelInfoArray modelInfoArray = mapMetadata[jsonKey].ToObject<ModelInfoArray>();
+            if (modelInfoArray.modelInfos == null)
+            {
+                Debug.Log("No models");
+                return;
+            }
+
+            // populate the object and info Lists
+            foreach (var info in modelInfoArray.modelInfos)
+            {
+                modelInfoList.Add(info);
+                GameObject model = ModelFromInfo(info);
+                modelObjList.Add(model);
+            }
+        }
+    }
+
+    public void ClearModels()
+    {
+        foreach (var obj in modelObjList)
+        {
+            Destroy(obj);
+        }
+        modelObjList.Clear();
+        modelInfoList.Clear();
     }
 
 }
