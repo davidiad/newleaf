@@ -22,48 +22,96 @@ using Newtonsoft.Json.Linq;
 //    public ModelInfo[] modelInfos;
 //}
 
-    public class SerializePaintStrokes : ScriptableObject
+[Serializable]
+public class PaintStrokeInfo
+{
+    public SerializableVector3[] verts;
+    public SerializableVector3[] pointColors; // alpha is always 1, and using V3 avoids deserialization problems with V4
+    public float[] pointSizes;
+    public SerializableVector4 initialColor; // initial color of stroke. Color implicitly converts to Vector4.
+}
+
+[Serializable]
+public class PaintStrokeList // TODO: rename to PaintStrokeInfoArray
+{
+    public PaintStrokeInfo[] strokes; // TODO: rename to paintStrokeInfos
+}
+
+
+
+public class SerializePaintStrokes : ScriptableObject
 {
 
     // vars are public to allow accessing from LeavesManager
     public String jsonKey;
-    public List<ModelInfo> infoList;
-    public List<GameObject> objList;
+    public List<PaintStrokeInfo> infoList;
+    public List<PaintStroke> objList;
+
+    private PaintManager paintManager;
 
     public void Init()
     {
-        infoList = new List<ModelInfo>();
-        objList = new List<GameObject>();
+        infoList = new List<PaintStrokeInfo>();
+        objList = new List<PaintStroke>();
         jsonKey = "paintstrokes";
+
+        paintManager = GameObject.FindWithTag("PaintManager").GetComponent<PaintManager>();
     }
 
-    public void OnAddToScene()
+    public void OnAddToScene()// called when SaveMap is clicked. Add all the paint strokes to the lists at once
     {
-        ModelInfo info = new ModelInfo();
+        Debug.Log("1-OnDropPaintStrokeClick");
+        objList = paintManager.paintStrokesList;
+        Debug.Log("2-OnDropPaintStrokeClick");
+        // for each PaintStroke, convert to a PaintStrokeInfo, and add to paintStrokesInfoList
+        if (objList.Count > 0)
+        {
+            Debug.Log("3-OnDropPaintStrokeClick");
+            foreach (var ps in objList) // TODO: convert to for loop (?)
+            {
+                // Add the intialColor of the paintstroke
+                Vector4 c = ps.color; // implicit conversion of Color to Vector4
+                Debug.Log("4-OnDropPaintStrokeClick: " + c.x + " | " + c.y + " | " + c.z + " | " + c.w);
+                PaintStrokeInfo psi = new PaintStrokeInfo();
+                psi.initialColor = c; // implicit conversion of Vector4 to SerialiazableVector4  
 
-        // get the object transform info to use
-        Vector3 pos = Camera.main.transform.position + Camera.main.transform.forward * 1.3f;
-        Quaternion rot = Camera.main.transform.rotation;
+                // Add the verts
+                int vertCount = ps.verts.Count;
+                //todo: combine in 1 line?
+                SerializableVector3[] psiverts = new SerializableVector3[vertCount];
+                psi.verts = psiverts;
 
-        // put the transform info into model info object
-        info.px = pos.x;
-        info.py = pos.y;
-        info.pz = pos.z;
-        info.qx = rot.x;
-        info.qy = rot.y;
-        info.qz = rot.z;
-        info.qw = rot.w;
-        info.modelIndex = 0; // Default to 0 (just one model) for now
+                // Add the colors per point
+                SerializableVector3[] psicolors = new SerializableVector3[vertCount];
+                psi.pointColors = psicolors;
+                Debug.Log("psi.pointColors length: " + psi.pointColors.Length);
 
-        // add info to info list
-        infoList.Add(info);
+                // Add the size per point
+                psi.pointSizes = new float[vertCount];
 
-        // Instantiate and add to scene
-        //GameObject model = ModelFromInfo(info);
 
-        // add the game object to object list
-        //objList.Add(model);
+                if (vertCount > 0)
+                {
+                    Debug.Log("5-OnDropPaintStrokeClick");
+                    for (int j = 0; j < vertCount; j++)
+                    {
+                        Debug.Log("6-OnDropPaintStrokeClick and ps.verts.Count is: " + ps.verts.Count);
+                        //psi.verts[j] = new SerializableVector3(ps.verts[j].x, ps.verts[j].y, ps.verts[j].z);
+
+                        psi.verts[j] = ps.verts[j]; // auto-conversion sv3 and Vector3
+                        Debug.Log("6.5-OnDropPaintStrokeClick");
+                        //Vector4 vector4color = ps.pointColors[j]; // implicit conversion of Color to Vector4
+                        psi.pointColors[j] = new Vector3(ps.pointColors[j].r, ps.pointColors[j].g, ps.pointColors[j].b);
+                        psi.pointSizes[j] = ps.pointSizes[j];
+                    }
+                    Debug.Log("7-OnDropPaintStrokeClick");
+                    infoList.Add(psi);
+                    Debug.Log("8-OnDropPaintStrokeClick");
+                }
+            }
+        }
     }
+
 
     // get a custom 3D model
     private PaintStroke ModelFromInfo(ModelInfo info)
@@ -97,40 +145,40 @@ using Newtonsoft.Json.Linq;
     }
 
     // convert array of model info to json
-    public JObject ToJSON()
-    {
-        ModelInfoArray modelInfoArray = new ModelInfoArray();
-        modelInfoArray.modelInfos = new ModelInfo[infoList.Count];
-        for (int i = 0; i < infoList.Count; i++)
-        {
-            modelInfoArray.modelInfos[i] = infoList[i];
-        }
+ //   public JObject ToJSON()
+ //   {
+        //ModelInfoArray modelInfoArray = new ModelInfoArray();
+        //modelInfoArray.modelInfos = new ModelInfo[infoList.Count];
+        //for (int i = 0; i < infoList.Count; i++)
+        //{
+        //    modelInfoArray.modelInfos[i] = infoList[i];
+        //}
 
-        return JObject.FromObject(modelInfoArray);
-    }
+        //return JObject.FromObject(modelInfoArray);
+ //   }
 
     // reconstitute the JSON
     public void LoadFromJSON(JToken mapMetadata)
     {
-        ClearModels();
+        //ClearModels();
 
-        if (mapMetadata is JObject && mapMetadata[jsonKey] is JObject)
-        {
-            ModelInfoArray modelInfoArray = mapMetadata[jsonKey].ToObject<ModelInfoArray>();
-            if (modelInfoArray.modelInfos == null)
-            {
-                Debug.Log("No models");
-                return;
-            }
+        //if (mapMetadata is JObject && mapMetadata[jsonKey] is JObject)
+        //{
+        //    ModelInfoArray modelInfoArray = mapMetadata[jsonKey].ToObject<ModelInfoArray>();
+        //    if (modelInfoArray.modelInfos == null)
+        //    {
+        //        Debug.Log("No models");
+        //        return;
+        //    }
 
-            // populate the object and info Lists
-            foreach (var info in modelInfoArray.modelInfos)
-            {
-                infoList.Add(info);
-                //GameObject model = ModelFromInfo(info);
-                //objList.Add(model);
-            }
-        }
+        //    // populate the object and info Lists
+        //    foreach (var info in modelInfoArray.modelInfos)
+        //    {
+        //        infoList.Add(info);
+        //        //GameObject model = ModelFromInfo(info);
+        //        //objList.Add(model);
+        //    }
+        //}
     }
 
     public void ClearModels()

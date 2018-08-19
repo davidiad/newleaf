@@ -29,20 +29,20 @@ public class ShapeList
     public ShapeInfo[] shapes;
 }
 
-[Serializable]
-public class PaintStrokeInfo
-{
-    public SerializableVector3[] verts;
-    public SerializableVector3[] pointColors; // alpha is always 1, and using V3 avoids deserialization problems with V4
-    public float[] pointSizes;
-    public SerializableVector4 initialColor; // initial color of stroke. Color implicitly converts to Vector4.
-}
+//[Serializable]
+//public class PaintStrokeInfo
+//{
+//    public SerializableVector3[] verts;
+//    public SerializableVector3[] pointColors; // alpha is always 1, and using V3 avoids deserialization problems with V4
+//    public float[] pointSizes;
+//    public SerializableVector4 initialColor; // initial color of stroke. Color implicitly converts to Vector4.
+//}
 
-[Serializable]
-public class PaintStrokeList
-{
-    public PaintStrokeInfo[] strokes;
-}
+//[Serializable]
+//public class PaintStrokeList
+//{
+//    public PaintStrokeInfo[] strokes;
+//}
 
 public class LeavesManager : MonoBehaviour, PlacenoteListener
 {
@@ -123,8 +123,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
         FeaturesVisualizer.EnablePointcloud();
         LibPlacenote.Instance.RegisterListener(this);
 
-        GameObject pmgo = GameObject.FindWithTag("PaintManager");
-        paintManager = pmgo.GetComponent<PaintManager>();
+        paintManager = GameObject.FindWithTag("PaintManager").GetComponent<PaintManager>();
         ARPlanePaintingStatus = mPlaneDetectionToggle.GetComponent<Toggle>().isOn;
         paintManager.ARPlanePainting = ARPlanePaintingStatus;
         paintManager.paintOnTouch = !ARPlanePaintingStatus; // TODO: make an enum to replace multiple bools
