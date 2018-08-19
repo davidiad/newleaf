@@ -22,7 +22,7 @@ public class ModelInfoArray // changed  name from ModelList, because not a List 
     public ModelInfo[] modelInfos;
 }
 
-public class SerializableModel : ScriptableObject {
+public class SerializeModels : ScriptableObject {
 
     // vars are public to allow accessing from LeavesManager
     public String jsonKey;// = "models";

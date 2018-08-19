@@ -73,7 +73,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
     private List<PaintStroke> paintStrokeObjList = new List<PaintStroke>();
 
     private PaintManager paintManager;
-    private SerializableModel sModel;
+    private SerializeModels sModel;
 
     //New stuff with PN 1.62
     private Slider mRadiusSlider;
@@ -106,7 +106,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
         InitUI();
 
         // Set up SerializableModel's
-        sModel = ScriptableObject.CreateInstance<SerializableModel>();
+        sModel = ScriptableObject.CreateInstance<SerializeModels>();
         sModel.Init();
         sModel.prefabs[0] = modelPrefab;
 
