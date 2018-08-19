@@ -73,6 +73,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
     private List<PaintStroke> paintStrokeObjList = new List<PaintStroke>();
 
     private PaintManager paintManager;
+    private SerializableModel sModel;
 
     //New stuff with PN 1.62
     private Slider mRadiusSlider;
@@ -103,14 +104,18 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
     void Start()
     {
         InitUI();
+
+        // Set up SerializableModel's
+        sModel = ScriptableObject.CreateInstance<SerializableModel>();
+        sModel.Init();
+        sModel.prefabs[0] = modelPrefab;
+
         currentMapId = "";
         mappingStarted = false;
         hasLocalized = false;
         mPNPlaneManager = GameObject.FindWithTag("PNPlaneManager").GetComponent<PlacenoteARGeneratePlane>();
 
         Input.location.Start();
-
-        //mMapLoader.SetActive(false);
 
         mSession = UnityARSessionNativeInterface.GetARSessionNativeInterface();
         UnityARSessionNativeInterface.ARFrameUpdatedEvent += ARFrameUpdated;
@@ -397,8 +402,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
             ToastManager.ShowToast("SDK not yet initialized", 2f);
             return;
         }
-        Debug.Log("LOADING A MAP");
-        //ResetSlider();
+
         hasLocalized = false;
         mLabelText.text = "Loading Map ID: " + mSelectedMapId;
         LibPlacenote.Instance.LoadMap(mSelectedMapId,
@@ -407,10 +411,6 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
                 if (completed)
                 {
                     mMapLoader.SetActive(false);
-                    //mMapListPanel.SetActive(false);
-                    //mInitButtonPanel.SetActive(false);
-                    //mExitButton.SetActive(true);
-                    //mPlaneDetectionToggle.SetActive(true);
 
                     LibPlacenote.Instance.StartSession();
                     mLabelText.text = "Loaded ID: " + mSelectedMapId;
@@ -607,9 +607,11 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
                     //
 
                     //JObject metadata = new JObject();
+                    
+                    userdata[sModel.jsonKey] = sModel.ToJSON(); // replaces shapeList
 
-                    JObject shapeList = Shapes2JSON();
-                    userdata["shapeList"] = shapeList;
+                    //JObject shapeList = Shapes2JSON();
+                    //userdata["shapeList"] = shapeList;
 
                     JObject paintStrokeList = PaintStrokes2JSON();
                     userdata["paintStrokeList"] = paintStrokeList;
@@ -668,8 +670,10 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
         JObject userdata = new JObject();
         metadata.userdata = userdata;
 
-        JObject shapeList = Shapes2JSON();
-        userdata["shapeList"] = shapeList;
+        //JObject shapeList = Shapes2JSON();
+        //userdata["shapeList"] = shapeList;
+
+        userdata[sModel.jsonKey] = sModel.ToJSON();
 
         JObject paintStrokeList = PaintStrokes2JSON();
         userdata["paintStrokeList"] = paintStrokeList;
@@ -695,25 +699,26 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
 
     public void OnDropShapeClick()
     {
-        Vector3 shapePosition = Camera.main.transform.position + Camera.main.transform.forward * 1.3f;// + new Vector3(0f,0f,0.5f);
-        Quaternion shapeRotation = Camera.main.transform.rotation;
-        Debug.Log("Drop Shape @ Pos: " + shapePosition + ", Rot: " + shapeRotation);
-        System.Random rnd = new System.Random();
-        PrimitiveType type = (PrimitiveType)rnd.Next(0, 3);
+        sModel.OnAddToScene();
+        //Vector3 shapePosition = Camera.main.transform.position + Camera.main.transform.forward * 1.3f;// + new Vector3(0f,0f,0.5f);
+        //Quaternion shapeRotation = Camera.main.transform.rotation;
+        //Debug.Log("Drop Shape @ Pos: " + shapePosition + ", Rot: " + shapeRotation);
+        //System.Random rnd = new System.Random();
+        //PrimitiveType type = (PrimitiveType)rnd.Next(0, 3);
 
-        ShapeInfo shapeInfo = new ShapeInfo();
-        shapeInfo.px = shapePosition.x;
-        shapeInfo.py = shapePosition.y;
-        shapeInfo.pz = shapePosition.z;
-        shapeInfo.qx = shapeRotation.x;
-        shapeInfo.qy = shapeRotation.y;
-        shapeInfo.qz = shapeRotation.z;
-        shapeInfo.qw = shapeRotation.w;
-        shapeInfo.shapeType = type.GetHashCode();
-        shapeInfoList.Add(shapeInfo);
+        //ShapeInfo shapeInfo = new ShapeInfo();
+        //shapeInfo.px = shapePosition.x;
+        //shapeInfo.py = shapePosition.y;
+        //shapeInfo.pz = shapePosition.z;
+        //shapeInfo.qx = shapeRotation.x;
+        //shapeInfo.qy = shapeRotation.y;
+        //shapeInfo.qz = shapeRotation.z;
+        //shapeInfo.qw = shapeRotation.w;
+        //shapeInfo.shapeType = type.GetHashCode();
+        //shapeInfoList.Add(shapeInfo);
 
-        GameObject shape = ModelFromInfo(shapeInfo);
-        shapeObjList.Add(shape);
+        //GameObject shape = ModelFromInfo(shapeInfo);
+        //shapeObjList.Add(shape);
     }
 
     public void OnDropPaintStrokeClick()  // called when SaveMap is clicked. Add all the paint strokes to the lists at once
@@ -952,7 +957,8 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
             if (!hasLocalized)
             {
                 mLabelText.text = "Localized";
-                LoadShapesJSON(mSelectedMapInfo.metadata.userdata);
+                //LoadShapesJSON(mSelectedMapInfo.metadata.userdata);
+                sModel.LoadFromJSON(mSelectedMapInfo.metadata.userdata);
                 LoadPaintStrokesJSON(mSelectedMapInfo.metadata.userdata);
                 hasLocalized = true;
             }

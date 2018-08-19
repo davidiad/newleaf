@@ -24,28 +24,25 @@ public class ModelInfoArray // changed  name from ModelList, because not a List 
 
 public class SerializableModel : ScriptableObject {
 
-    public String jsonKey = "models";
+    // vars are public to allow accessing from LeavesManager
+    public String jsonKey;// = "models";
     public GameObject[] prefabs; // models to choose from
     //TODO: load the prefabs
-    private List<ModelInfo> modelInfoList = new List<ModelInfo>(); // need to pass in
-    private List<GameObject> modelObjList = new List<GameObject>();
+    public List<ModelInfo> modelInfoList;// = new List<ModelInfo>(); // need to pass in
+    public List<GameObject> modelObjList;// = new List<GameObject>();
 
-
-    // convert array of model info to json
-    public JObject ToJSON()
+    public void Init()
     {
-        ModelInfoArray modelInfoArray = new ModelInfoArray();
-        modelInfoArray.modelInfos = new ModelInfo[modelInfoList.Count];
-        for (int i = 0; i < modelInfoList.Count; i++)
-        {
-            modelInfoArray.modelInfos[i] = modelInfoList[i];
-        }
-
-        return JObject.FromObject(modelInfoArray);
+        prefabs = new GameObject[1];
+        modelInfoList = new List<ModelInfo>();
+        modelObjList = new List<GameObject>();
+        jsonKey = "models";
     }
 
-    public void OnAddToScene(ModelInfo info)
+    public void OnAddToScene()
     {
+        ModelInfo info = new ModelInfo();
+
         // get the object transform info to use
         Vector3 pos = Camera.main.transform.position + Camera.main.transform.forward * 1.3f;
         Quaternion rot = Camera.main.transform.rotation;
@@ -58,7 +55,7 @@ public class SerializableModel : ScriptableObject {
         info.qy = rot.y;
         info.qz = rot.z;
         info.qw = rot.w;
-        info.modelIndex = 0; // modelIndex should already be in the info parameter
+        info.modelIndex = 0; // Default to 0 (just one model) for now
 
         // add info to info list
         modelInfoList.Add(info);
@@ -79,6 +76,19 @@ public class SerializableModel : ScriptableObject {
         GameObject model = Instantiate(prefabs[info.modelIndex], pos, rot);
 
         return model;
+    }
+
+    // convert array of model info to json
+    public JObject ToJSON()
+    {
+        ModelInfoArray modelInfoArray = new ModelInfoArray();
+        modelInfoArray.modelInfos = new ModelInfo[modelInfoList.Count];
+        for (int i = 0; i < modelInfoList.Count; i++)
+        {
+            modelInfoArray.modelInfos[i] = modelInfoList[i];
+        }
+
+        return JObject.FromObject(modelInfoArray);
     }
 
     // reconstitute the JSON
