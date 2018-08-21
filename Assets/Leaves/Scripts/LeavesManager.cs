@@ -73,7 +73,8 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
     private List<PaintStroke> paintStrokeObjList = new List<PaintStroke>();
 
     private PaintManager paintManager;
-    private SerializeModels sModel;
+    private SerializeModels sModels;
+    private SerializePaintStrokes sPaintStrokes;
 
     //New stuff with PN 1.62
     private Slider mRadiusSlider;
@@ -106,9 +107,9 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
         InitUI();
 
         // Set up SerializableModel's
-        sModel = ScriptableObject.CreateInstance<SerializeModels>();
-        sModel.Init();
-        sModel.prefabs[0] = modelPrefab;
+        sModels = ScriptableObject.CreateInstance<SerializeModels>();
+        sModels.Init();
+        sModels.prefabs[0] = modelPrefab;
 
         currentMapId = "";
         mappingStarted = false;
@@ -607,7 +608,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
 
                     //JObject metadata = new JObject();
                     
-                    userdata[sModel.jsonKey] = sModel.ToJSON(); // replaces shapeList
+                    userdata[sModels.jsonKey] = sModels.ToJSON(); // replaces shapeList
 
                     //JObject shapeList = Shapes2JSON();
                     //userdata["shapeList"] = shapeList;
@@ -672,7 +673,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
         //JObject shapeList = Shapes2JSON();
         //userdata["shapeList"] = shapeList;
 
-        userdata[sModel.jsonKey] = sModel.ToJSON();
+        userdata[sModels.jsonKey] = sModels.ToJSON();
 
         JObject paintStrokeList = PaintStrokes2JSON();
         userdata["paintStrokeList"] = paintStrokeList;
@@ -698,7 +699,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
 
     public void OnDropShapeClick()
     {
-        sModel.OnAddToScene();
+        sModels.OnAddToScene();
         //Vector3 shapePosition = Camera.main.transform.position + Camera.main.transform.forward * 1.3f;// + new Vector3(0f,0f,0.5f);
         //Quaternion shapeRotation = Camera.main.transform.rotation;
         //Debug.Log("Drop Shape @ Pos: " + shapePosition + ", Rot: " + shapeRotation);
@@ -957,7 +958,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
             {
                 mLabelText.text = "Localized";
                 //LoadShapesJSON(mSelectedMapInfo.metadata.userdata);
-                sModel.LoadFromJSON(mSelectedMapInfo.metadata.userdata);
+                sModels.LoadFromJSON(mSelectedMapInfo.metadata.userdata);
                 LoadPaintStrokesJSON(mSelectedMapInfo.metadata.userdata);
                 hasLocalized = true;
             }

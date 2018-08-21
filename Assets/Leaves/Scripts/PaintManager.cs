@@ -7,7 +7,6 @@ using Ara; // 3rd party Trail Renderer
 public class PaintManager : MonoBehaviour
 {
     public GameObject paintBrushPrefab;
-    public GameObject paintOnObject;
     public Button onoff;
     public ColorJoystick colorJoystick;
     public Vector3 paintPosition;
@@ -50,18 +49,15 @@ public class PaintManager : MonoBehaviour
         paintOnTouch = true;
         newPaintVertices = false;
         paintStrokesList = new List<PaintStroke>();
-        currVertices = new List<Vector3>();
         paintColor = Color.blue;
         brushColorMats = GameObject.FindWithTag("BrushColor").GetComponent<Renderer>().materials;
         leavesManager = GameObject.FindWithTag("LeavesManager").GetComponent<LeavesManager>();
-        paintPosition = leavesManager.paintPosition;
         paintTarget = GameObject.FindWithTag("PaintTarget");
         paintSlider = GameObject.FindWithTag("PaintSlider").GetComponent<Slider>();
         brushSizeSlider = GameObject.FindWithTag("SizeSlider").GetComponent<Slider>();
-        paintOnObject = GameObject.FindWithTag("PaintOn");
-        paintOnComponent = paintOnObject.GetComponent<PaintOn>();
         targetSliderGO = GameObject.FindWithTag("TargetSlider");
         targetSlider = targetSliderGO.GetComponent<Slider>();
+        paintPosition = leavesManager.paintPosition;
         AdjustTargetDistance();
         AdjustPaintColor(); // set the color to what the color slider is set to
         paintButtonGroup = onoff.GetComponent<CanvasGroup>();
@@ -75,45 +71,6 @@ public class PaintManager : MonoBehaviour
         if (colorInput != Vector3.zero)
         {
             UpdateSV();
-        }
-
-        currVertices = paintOnComponent.currentVertices; //TODO: update only when needed, not every frame
-
-        bool endPainting = paintOnComponent.endPainting;
-
-        if (endPainting)
-        {
-            /*
-            // Get the vertices of the trail renderer(s)
-            Vector3[] positions = new Vector3[1000]; // assuming there'll never be > 1000
-            paintBrush = GameObject.FindWithTag("PaintBrush");
-            if (!paintBrush){
-                paintBrush = GameObject.FindGameObjectsWithTag("Mesh")[0];
-            }
-            // TrailRenderer.GetPositions adds its positions to an existing arrays, and returns the # of vertices
-            int numPos = paintBrush.GetComponent<TrailRenderer>().GetPositions(positions);
-            List<Vector3> vertList = new List<Vector3>();
-            for (int i = 0; i < numPos; i++) {
-                vertList.Add(positions[i]);
-            }
-
-            //***New Way, can hold >1 paint mesh/strokes***
-            // Only add the new PaintStrokes if it's newly created, not if loading from a saved map
-            if (!paintOnComponent.meshLoading) 
-            {
-                PaintStrokes paintStrokes = new PaintStrokes();
-                paintStrokes.verts = vertList;
-                paintStrokesList.Add(paintStrokes);
-            }
-
-            paintOnComponent.currentVertices = vertList; // old way, still working
-
-            paintBrush.transform.parent = null;
-            paintBrush.tag = "Mesh";
-            */
-            //paintOnComponent.endPainting = false;
-            //paintOnComponent.meshLoading = false;
-            //Destroy(this.gameObject.GetComponent(ExtrudedMeshTrail));
         }
     }
 
@@ -212,7 +169,6 @@ public class PaintManager : MonoBehaviour
 
 
     public void RecreatePaintedStrokes() {
-        paintOnComponent.meshLoading = true;
         // The paint stroke info that was saved with the map should already have been put into paintStrokesList
         foreach (PaintStroke paintstroke in paintStrokesList)
         {
@@ -223,8 +179,6 @@ public class PaintManager : MonoBehaviour
             StartCoroutine(PaintTrail(newBrush, paintstroke, araTrail));
 
         }
-        paintOnComponent.meshLoading = false;
-        paintOnComponent.endPainting = true; // flag to destroy mesh extrusion component
     }
 
     private IEnumerator PaintTrail(GameObject brush, PaintStroke paintstroke, AraTrail araTrail)
@@ -275,19 +229,6 @@ public class PaintManager : MonoBehaviour
         List<Vector3> vertList = new List<Vector3>();
         List<Color> colorList = new List<Color>();
         List<float> sizeList = new List<float>();
-        // TrailRenderer.GetPositions adds its positions to an existing arrays, and returns the # of vertices
-        // Get the vertices of the trail renderer(s)
-        //Vector3[] positions = new Vector3[1000]; // assuming there'll never be > 1000
-        // Note: // Trail Renderer may be turned off in favor of Ara Trail Renderer
-        //int numPos = brush.GetComponent<TrailRenderer>().GetPositions(positions);
-        //if (numPos > 0) 
-        //{
-        //    for (int i = 0; i < numPos; i++)
-        //    {
-        //        vertList.Add(positions[i]);
-        //    }
-        //} else {
-            // Ara Trail version
 
             AraTrail araTrail = brush.GetComponent<AraTrail>();
             araTrail.initialColor = paintColor;
@@ -302,7 +243,6 @@ public class PaintManager : MonoBehaviour
                 // alternately, could add the AraTrail points themselves to the Paintstroke, 
                 // since they already hold the colors, plus other info such as discontinuous.
             }
-        //}
 
         // Only add the new PaintStrokes if it's newly created, not if loading from a saved map
         if (!paintOnComponent.meshLoading)
@@ -320,8 +260,6 @@ public class PaintManager : MonoBehaviour
     {
         
         paintOn = !paintOn;
-        //paintOnObject.PaintOn.paintOn = paintOn;// the state to an object from which other scripts can access
-        paintOnObject.GetComponent<PaintOn>().paintOn = paintOn; 
 
         // let user know that painting is on
         if (paintOn)
@@ -360,8 +298,6 @@ public class PaintManager : MonoBehaviour
         DestroyAllPaintstrokes();
         // Reset all pertinent parameters
         paintOn = false;
-        paintOnComponent.paintOn = false;
-        paintOnComponent.endPainting = true;
         paintOnTouch = true;
     }
 

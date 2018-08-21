@@ -45,7 +45,7 @@ public class SerializePaintStrokes : ScriptableObject
     // vars are public to allow accessing from LeavesManager
     public String jsonKey;
     public List<PaintStrokeInfo> infoList;
-    public List<PaintStroke> objList;
+    public List<PaintStroke> objList; // used to hold a list of PaintStrokes recreated from JSON, and then passed to PaintManager's list of paintstrokes
 
     private PaintManager paintManager;
 
@@ -113,75 +113,90 @@ public class SerializePaintStrokes : ScriptableObject
     }
 
 
-    // get a custom 3D model
-    private PaintStroke ModelFromInfo(ModelInfo info)
+    // Helper func to convert info to a PaintStroke object
+    private PaintStroke PaintStrokeFromInfo(PaintStrokeInfo info)
     {
-        GameObject psHolder = new GameObject("psholder");
+        GameObject psHolder = new GameObject("psholder"); // Since PaintStroke is a Monobehavior, it needs a game object to attach to
         psHolder.AddComponent<PaintStroke>();
         PaintStroke paintStroke = psHolder.GetComponent<PaintStroke>();
-        //paintStroke.color = new Color(info.initialColor.x, info.initialColor.y, info.initialColor.z, info.initialColor.w);
-        //List<Vector3> v = new List<Vector3>();
-        //paintStroke.verts = v;
-        //List<Color> c = new List<Color>();
-        //paintStroke.pointColors = c;
-        //// List<float> s = new List<float>();
-        //paintStroke.pointSizes = new List<float>();
+        paintStroke.color = new Color(info.initialColor.x, info.initialColor.y, info.initialColor.z, info.initialColor.w);
+        List<Vector3> v = new List<Vector3>();
+        paintStroke.verts = v;
+        List<Color> c = new List<Color>();
+        paintStroke.pointColors = c;
+        paintStroke.pointSizes = new List<float>();
 
-        //for (int i = 0; i < info.verts.Length; i++)
-        //{
-        //    //paintStroke.verts[i] = info.verts[i];  // implicit conversion of SV3 to Vector3
-        //    paintStroke.verts.Add(info.verts[i]);
-        //    //Vector4 vector2color = info.pointColors[i]; // implicit conversion of SV4 to Vector4
-        //    // explicit conversion of SV4 to Vector4
-        //    //Vector4 vector2color = new Vector4(info.pointColors[i].w, info.pointColors[i].x, info.pointColors[i].y, info.pointColors[i].z);
-        //    //paintStroke.pointColors.Add(info.pointColors[i]); // implicit conversion of Vector4 to Color
-        //    Color ptColor = new Color(info.pointColors[i].x, info.pointColors[i].y, info.pointColors[i].z, 1f);
-        //    paintStroke.pointColors.Add(ptColor);
-        //    paintStroke.pointSizes.Add(info.pointSizes[i]);
-
-        //}
+        for (int i = 0; i < info.verts.Length; i++)
+        {
+            paintStroke.verts.Add(info.verts[i]);
+            Color ptColor = new Color(info.pointColors[i].x, info.pointColors[i].y, info.pointColors[i].z, 1f);
+            paintStroke.pointColors.Add(ptColor);
+            paintStroke.pointSizes.Add(info.pointSizes[i]);
+        }
 
         return paintStroke;
     }
 
-    // convert array of model info to json
- //   public JObject ToJSON()
- //   {
-        //ModelInfoArray modelInfoArray = new ModelInfoArray();
-        //modelInfoArray.modelInfos = new ModelInfo[infoList.Count];
-        //for (int i = 0; i < infoList.Count; i++)
-        //{
-        //    modelInfoArray.modelInfos[i] = infoList[i];
-        //}
+    // convert array of paintstroke info to json
+    public JObject ToJSON()
+    {
+        // Create a new PaintStrokeList with values copied from paintStrokesInfoList(a List of PaintStrokeInfo)
+        // Despite the name, PaintStrokeList contains an array (not a List) of PaintStrokeInfo
+        // TODO: rename PaintStrokeList to PaintStrokeInfoArray
+        // Need this array to convert to a JObject
 
-        //return JObject.FromObject(modelInfoArray);
- //   }
+        PaintStrokeList psList = new PaintStrokeList();
+        // define the array
+        PaintStrokeInfo[] psiArray = new PaintStrokeInfo[infoList.Count];
+        psList.strokes = psiArray;
+        // populate the array
+        for (int i = 0; i < infoList.Count; i++)
+        {
+            psiArray[i] = new PaintStrokeInfo();
+            psiArray[i].verts = infoList[i].verts;
+            psiArray[i].pointColors = infoList[i].pointColors;
+            psiArray[i].pointSizes = infoList[i].pointSizes;
+            psiArray[i].initialColor = infoList[i].initialColor;
+        }
+
+        return JObject.FromObject(psList);
+    }
 
     // reconstitute the JSON
     public void LoadFromJSON(JToken mapMetadata)
     {
-        //ClearModels();
+        Clear(); // Clear the paintstrokes
 
-        //if (mapMetadata is JObject && mapMetadata[jsonKey] is JObject)
-        //{
-        //    ModelInfoArray modelInfoArray = mapMetadata[jsonKey].ToObject<ModelInfoArray>();
-        //    if (modelInfoArray.modelInfos == null)
-        //    {
-        //        Debug.Log("No models");
-        //        return;
-        //    }
+        if (mapMetadata is JObject && mapMetadata["paintStrokeList"] is JObject)
+        {
+            Debug.Log("A-LoadPaintStrokesJSON");
+            // this next line breaks when deserializing a list of vector4's
+            PaintStrokeList paintStrokes = mapMetadata["paintStrokeList"].ToObject<PaintStrokeList>();
+            Debug.Log("B-LoadPaintStrokesJSON");
+            if (paintStrokes.strokes == null)
+            {
+                Debug.Log("no PaintStrokes were added");
+                return;
+            }
 
-        //    // populate the object and info Lists
-        //    foreach (var info in modelInfoArray.modelInfos)
-        //    {
-        //        infoList.Add(info);
-        //        //GameObject model = ModelFromInfo(info);
-        //        //objList.Add(model);
-        //    }
-        //}
+            // (may need to do a for loop to ensure they stay in order?)
+            foreach (var paintInfo in paintStrokes.strokes)
+            {
+                infoList.Add(paintInfo);
+                PaintStroke paintstroke = PaintStrokeFromInfo(paintInfo);
+                objList.Add(paintstroke); // should be used by PaintManager to recreate painting
+                Debug.Log("C-LoadPaintStrokesJSON");
+            }
+            Debug.Log("D-LoadPaintStrokesJSON");
+            paintManager.paintStrokesList = objList; // not really objects, rather components (Monobehaviors)
+            Debug.Log("E-LoadPaintStrokesJSON");
+            paintManager.RecreatePaintedStrokes();
+            Debug.Log("F-LoadPaintStrokesJSON");
+        }
     }
 
-    public void ClearModels()
+    // TODO: practically the same as in SerializeModels, so could be abstracted into a base class
+    public void Clear ()
     {
         foreach (var obj in objList)
         {

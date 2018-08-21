@@ -94,7 +94,7 @@ public class SerializeModels : ScriptableObject {
     // reconstitute the JSON
     public void LoadFromJSON(JToken mapMetadata)
     {
-        ClearModels();
+        Clear();
 
         if (mapMetadata is JObject && mapMetadata[jsonKey] is JObject)
         {
@@ -115,7 +115,7 @@ public class SerializeModels : ScriptableObject {
         }
     }
 
-    public void ClearModels()
+    public void Clear()
     {
         foreach (var obj in modelObjList)
         {

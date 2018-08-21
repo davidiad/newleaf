@@ -23,7 +23,7 @@ namespace UnityEngine.XR.iOS
         private void Start()
         {
             maxAllowedSizeChange = 1.3f;
-            paintOn = GameObject.FindWithTag("PaintOn").GetComponent<PaintOn>();
+            //paintOn = GameObject.FindWithTag("PaintOn").GetComponent<PaintOn>();
             paintManager = GameObject.FindWithTag("PaintManager").GetComponent<PaintManager>();
             paintTarget = GameObject.FindWithTag("PaintTarget");
             camPaintingPlane = GameObject.FindWithTag("CamPaintingPlane");
