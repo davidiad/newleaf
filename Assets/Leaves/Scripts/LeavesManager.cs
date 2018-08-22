@@ -111,6 +111,9 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
         sModels.Init();
         sModels.prefabs[0] = modelPrefab;
 
+        sPaintStrokes = ScriptableObject.CreateInstance<SerializePaintStrokes>();
+        sPaintStrokes.Init();
+
         currentMapId = "";
         mappingStarted = false;
         hasLocalized = false;
@@ -260,6 +263,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
         yield return null;
     }
 
+    //TODO: Use search map instead (ListMap downloads the entire map + metadata for all maps, very inefficient)
     public void OnListMapClick()
     {
         if (!LibPlacenote.Instance.Initialized())
@@ -613,9 +617,9 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
                     //JObject shapeList = Shapes2JSON();
                     //userdata["shapeList"] = shapeList;
 
-                    JObject paintStrokeList = PaintStrokes2JSON();
-                    userdata["paintStrokeList"] = paintStrokeList;
-
+                    //JObject paintStrokeList = PaintStrokes2JSON();
+                    //userdata["paintStrokeList"] = paintStrokeList;
+                    userdata[sPaintStrokes.jsonKey] = sPaintStrokes.ToJSON();
 
                     if (useLocation)
                     {
@@ -658,7 +662,8 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
     //TODO: update for 1.62
     private void SetMetaData(string mid)
     {
-        OnDropPaintStrokeClick();
+       // OnDropPaintStrokeClick();
+        sPaintStrokes.OnAddToScene();
 
         bool useLocation = Input.location.status == LocationServiceStatus.Running;
         LocationInfo locationInfo = Input.location.lastData;
@@ -675,8 +680,9 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
 
         userdata[sModels.jsonKey] = sModels.ToJSON();
 
-        JObject paintStrokeList = PaintStrokes2JSON();
-        userdata["paintStrokeList"] = paintStrokeList;
+        //JObject paintStrokeList = PaintStrokes2JSON();
+        //userdata["paintStrokeList"] = paintStrokeList;
+        userdata[sPaintStrokes.jsonKey] = sPaintStrokes.ToJSON();
 
 
         if (useLocation)
@@ -723,56 +729,57 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
 
     public void OnDropPaintStrokeClick()  // called when SaveMap is clicked. Add all the paint strokes to the lists at once
     {
-        Debug.Log("1-OnDropPaintStrokeClick");
-        paintStrokeObjList = paintManager.paintStrokesList;
-        Debug.Log("2-OnDropPaintStrokeClick");
-        // for each PaintStroke, convert to a PaintStrokeInfo, and add to paintStrokesInfoList
-        if (paintStrokeObjList.Count > 0)
-        {
-            Debug.Log("3-OnDropPaintStrokeClick");
-            foreach (var ps in paintStrokeObjList) // TODO: convert to for loop (?)
-            {
-                // Add the intialColor of the paintstroke
-                Vector4 c = ps.color; // implicit conversion of Color to Vector4
-                Debug.Log("4-OnDropPaintStrokeClick: " + c.x + " | " + c.y + " | " + c.z + " | " + c.w);
-                PaintStrokeInfo psi = new PaintStrokeInfo();
-                psi.initialColor = c; // implicit conversion of Vector4 to SerialiazableVector4  
+        sPaintStrokes.OnAddToScene();
+        //Debug.Log("1-OnDropPaintStrokeClick");
+        //paintStrokeObjList = paintManager.paintStrokesList;
+        //Debug.Log("2-OnDropPaintStrokeClick");
+        //// for each PaintStroke, convert to a PaintStrokeInfo, and add to paintStrokesInfoList
+        //if (paintStrokeObjList.Count > 0)
+        //{
+        //    Debug.Log("3-OnDropPaintStrokeClick");
+        //    foreach (var ps in paintStrokeObjList) // TODO: convert to for loop (?)
+        //    {
+        //        // Add the intialColor of the paintstroke
+        //        Vector4 c = ps.color; // implicit conversion of Color to Vector4
+        //        Debug.Log("4-OnDropPaintStrokeClick: " + c.x + " | " + c.y + " | " + c.z + " | " + c.w);
+        //        PaintStrokeInfo psi = new PaintStrokeInfo();
+        //        psi.initialColor = c; // implicit conversion of Vector4 to SerialiazableVector4  
 
-                // Add the verts
-                int vertCount = ps.verts.Count;
-                //todo: combine in 1 line?
-                SerializableVector3[] psiverts = new SerializableVector3[vertCount];
-                psi.verts = psiverts;
+        //        // Add the verts
+        //        int vertCount = ps.verts.Count;
+        //        //todo: combine in 1 line?
+        //        SerializableVector3[] psiverts = new SerializableVector3[vertCount];
+        //        psi.verts = psiverts;
 
-                // Add the colors per point
-                SerializableVector3[] psicolors = new SerializableVector3[vertCount];
-                psi.pointColors = psicolors;
-                Debug.Log("psi.pointColors length: " + psi.pointColors.Length);
+        //        // Add the colors per point
+        //        SerializableVector3[] psicolors = new SerializableVector3[vertCount];
+        //        psi.pointColors = psicolors;
+        //        Debug.Log("psi.pointColors length: " + psi.pointColors.Length);
 
-                // Add the size per point
-                psi.pointSizes = new float[vertCount];
+        //        // Add the size per point
+        //        psi.pointSizes = new float[vertCount];
 
 
-                if (vertCount > 0)
-                {
-                    Debug.Log("5-OnDropPaintStrokeClick");
-                    for (int j = 0; j < vertCount; j++)
-                    {
-                        Debug.Log("6-OnDropPaintStrokeClick and ps.verts.Count is: " + ps.verts.Count);
-                        //psi.verts[j] = new SerializableVector3(ps.verts[j].x, ps.verts[j].y, ps.verts[j].z);
+        //        if (vertCount > 0)
+        //        {
+        //            Debug.Log("5-OnDropPaintStrokeClick");
+        //            for (int j = 0; j < vertCount; j++)
+        //            {
+        //                Debug.Log("6-OnDropPaintStrokeClick and ps.verts.Count is: " + ps.verts.Count);
+        //                //psi.verts[j] = new SerializableVector3(ps.verts[j].x, ps.verts[j].y, ps.verts[j].z);
 
-                        psi.verts[j] = ps.verts[j]; // auto-conversion sv3 and Vector3
-                        Debug.Log("6.5-OnDropPaintStrokeClick");
-                        //Vector4 vector4color = ps.pointColors[j]; // implicit conversion of Color to Vector4
-                        psi.pointColors[j] = new Vector3(ps.pointColors[j].r, ps.pointColors[j].g, ps.pointColors[j].b);
-                        psi.pointSizes[j] = ps.pointSizes[j];
-                    }
-                    Debug.Log("7-OnDropPaintStrokeClick");
-                    paintStrokeInfoList.Add(psi);
-                    Debug.Log("8-OnDropPaintStrokeClick");
-                }
-            }
-        }
+        //                psi.verts[j] = ps.verts[j]; // auto-conversion sv3 and Vector3
+        //                Debug.Log("6.5-OnDropPaintStrokeClick");
+        //                //Vector4 vector4color = ps.pointColors[j]; // implicit conversion of Color to Vector4
+        //                psi.pointColors[j] = new Vector3(ps.pointColors[j].r, ps.pointColors[j].g, ps.pointColors[j].b);
+        //                psi.pointSizes[j] = ps.pointSizes[j];
+        //            }
+        //            Debug.Log("7-OnDropPaintStrokeClick");
+        //            paintStrokeInfoList.Add(psi);
+        //            Debug.Log("8-OnDropPaintStrokeClick");
+        //        }
+        //    }
+        //}
     }
 
     private GameObject ShapeFromInfo(ShapeInfo info)
@@ -959,7 +966,8 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
                 mLabelText.text = "Localized";
                 //LoadShapesJSON(mSelectedMapInfo.metadata.userdata);
                 sModels.LoadFromJSON(mSelectedMapInfo.metadata.userdata);
-                LoadPaintStrokesJSON(mSelectedMapInfo.metadata.userdata);
+                sPaintStrokes.LoadFromJSON(mSelectedMapInfo.metadata.userdata);
+                //LoadPaintStrokesJSON(mSelectedMapInfo.metadata.userdata);
                 hasLocalized = true;
             }
         }

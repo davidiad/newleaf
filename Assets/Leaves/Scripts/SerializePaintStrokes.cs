@@ -38,7 +38,6 @@ public class PaintStrokeList // TODO: rename to PaintStrokeInfoArray
 }
 
 
-
 public class SerializePaintStrokes : ScriptableObject
 {
 
