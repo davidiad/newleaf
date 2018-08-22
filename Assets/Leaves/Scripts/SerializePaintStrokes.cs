@@ -166,11 +166,11 @@ public class SerializePaintStrokes : ScriptableObject
     {
         Clear(); // Clear the paintstrokes
 
-        if (mapMetadata is JObject && mapMetadata["paintStrokeList"] is JObject)
+        if (mapMetadata is JObject && mapMetadata[jsonKey] is JObject)
         {
             Debug.Log("A-LoadPaintStrokesJSON");
             // this next line breaks when deserializing a list of vector4's
-            PaintStrokeList paintStrokes = mapMetadata["paintStrokeList"].ToObject<PaintStrokeList>();
+            PaintStrokeList paintStrokes = mapMetadata[jsonKey].ToObject<PaintStrokeList>();
             Debug.Log("B-LoadPaintStrokesJSON");
             if (paintStrokes.strokes == null)
             {
