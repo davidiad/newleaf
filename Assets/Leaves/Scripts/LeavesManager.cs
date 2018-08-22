@@ -10,40 +10,6 @@ using System.Runtime.InteropServices;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 
-[Serializable]
-public class ShapeInfo
-{
-    public float px;
-    public float py;
-    public float pz;
-    public float qx;
-    public float qy;
-    public float qz;
-    public float qw;
-    public int shapeType;
-}
-
-[Serializable]
-public class ShapeList
-{
-    public ShapeInfo[] shapes;
-}
-
-//[Serializable]
-//public class PaintStrokeInfo
-//{
-//    public SerializableVector3[] verts;
-//    public SerializableVector3[] pointColors; // alpha is always 1, and using V3 avoids deserialization problems with V4
-//    public float[] pointSizes;
-//    public SerializableVector4 initialColor; // initial color of stroke. Color implicitly converts to Vector4.
-//}
-
-//[Serializable]
-//public class PaintStrokeList
-//{
-//    public PaintStrokeInfo[] strokes;
-//}
-
 public class LeavesManager : MonoBehaviour, PlacenoteListener
 {
     public GameObject modelPrefab;
@@ -608,17 +574,9 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
                     mLabelText.text = "Saved Map Name: " + metadata.name;
                     JObject userdata = new JObject();
                     metadata.userdata = userdata;
-                    //
-
-                    //JObject metadata = new JObject();
                     
                     userdata[sModels.jsonKey] = sModels.ToJSON(); // replaces shapeList
 
-                    //JObject shapeList = Shapes2JSON();
-                    //userdata["shapeList"] = shapeList;
-
-                    //JObject paintStrokeList = PaintStrokes2JSON();
-                    //userdata["paintStrokeList"] = paintStrokeList;
                     userdata[sPaintStrokes.jsonKey] = sPaintStrokes.ToJSON();
 
                     if (useLocation)
@@ -662,7 +620,6 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
     //TODO: update for 1.62
     private void SetMetaData(string mid)
     {
-       // OnDropPaintStrokeClick();
         sPaintStrokes.OnAddToScene();
 
         bool useLocation = Input.location.status == LocationServiceStatus.Running;
@@ -679,9 +636,6 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
         //userdata["shapeList"] = shapeList;
 
         userdata[sModels.jsonKey] = sModels.ToJSON();
-
-        //JObject paintStrokeList = PaintStrokes2JSON();
-        //userdata["paintStrokeList"] = paintStrokeList;
         userdata[sPaintStrokes.jsonKey] = sPaintStrokes.ToJSON();
 
 
@@ -706,246 +660,33 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
     public void OnDropShapeClick()
     {
         sModels.OnAddToScene();
-        //Vector3 shapePosition = Camera.main.transform.position + Camera.main.transform.forward * 1.3f;// + new Vector3(0f,0f,0.5f);
-        //Quaternion shapeRotation = Camera.main.transform.rotation;
-        //Debug.Log("Drop Shape @ Pos: " + shapePosition + ", Rot: " + shapeRotation);
-        //System.Random rnd = new System.Random();
-        //PrimitiveType type = (PrimitiveType)rnd.Next(0, 3);
-
-        //ShapeInfo shapeInfo = new ShapeInfo();
-        //shapeInfo.px = shapePosition.x;
-        //shapeInfo.py = shapePosition.y;
-        //shapeInfo.pz = shapePosition.z;
-        //shapeInfo.qx = shapeRotation.x;
-        //shapeInfo.qy = shapeRotation.y;
-        //shapeInfo.qz = shapeRotation.z;
-        //shapeInfo.qw = shapeRotation.w;
-        //shapeInfo.shapeType = type.GetHashCode();
-        //shapeInfoList.Add(shapeInfo);
-
-        //GameObject shape = ModelFromInfo(shapeInfo);
-        //shapeObjList.Add(shape);
     }
 
     public void OnDropPaintStrokeClick()  // called when SaveMap is clicked. Add all the paint strokes to the lists at once
     {
         sPaintStrokes.OnAddToScene();
-        //Debug.Log("1-OnDropPaintStrokeClick");
-        //paintStrokeObjList = paintManager.paintStrokesList;
-        //Debug.Log("2-OnDropPaintStrokeClick");
-        //// for each PaintStroke, convert to a PaintStrokeInfo, and add to paintStrokesInfoList
-        //if (paintStrokeObjList.Count > 0)
-        //{
-        //    Debug.Log("3-OnDropPaintStrokeClick");
-        //    foreach (var ps in paintStrokeObjList) // TODO: convert to for loop (?)
-        //    {
-        //        // Add the intialColor of the paintstroke
-        //        Vector4 c = ps.color; // implicit conversion of Color to Vector4
-        //        Debug.Log("4-OnDropPaintStrokeClick: " + c.x + " | " + c.y + " | " + c.z + " | " + c.w);
-        //        PaintStrokeInfo psi = new PaintStrokeInfo();
-        //        psi.initialColor = c; // implicit conversion of Vector4 to SerialiazableVector4  
-
-        //        // Add the verts
-        //        int vertCount = ps.verts.Count;
-        //        //todo: combine in 1 line?
-        //        SerializableVector3[] psiverts = new SerializableVector3[vertCount];
-        //        psi.verts = psiverts;
-
-        //        // Add the colors per point
-        //        SerializableVector3[] psicolors = new SerializableVector3[vertCount];
-        //        psi.pointColors = psicolors;
-        //        Debug.Log("psi.pointColors length: " + psi.pointColors.Length);
-
-        //        // Add the size per point
-        //        psi.pointSizes = new float[vertCount];
-
-
-        //        if (vertCount > 0)
-        //        {
-        //            Debug.Log("5-OnDropPaintStrokeClick");
-        //            for (int j = 0; j < vertCount; j++)
-        //            {
-        //                Debug.Log("6-OnDropPaintStrokeClick and ps.verts.Count is: " + ps.verts.Count);
-        //                //psi.verts[j] = new SerializableVector3(ps.verts[j].x, ps.verts[j].y, ps.verts[j].z);
-
-        //                psi.verts[j] = ps.verts[j]; // auto-conversion sv3 and Vector3
-        //                Debug.Log("6.5-OnDropPaintStrokeClick");
-        //                //Vector4 vector4color = ps.pointColors[j]; // implicit conversion of Color to Vector4
-        //                psi.pointColors[j] = new Vector3(ps.pointColors[j].r, ps.pointColors[j].g, ps.pointColors[j].b);
-        //                psi.pointSizes[j] = ps.pointSizes[j];
-        //            }
-        //            Debug.Log("7-OnDropPaintStrokeClick");
-        //            paintStrokeInfoList.Add(psi);
-        //            Debug.Log("8-OnDropPaintStrokeClick");
-        //        }
-        //    }
-        //}
     }
 
-    private GameObject ShapeFromInfo(ShapeInfo info)
-    {
-        GameObject shape = GameObject.CreatePrimitive((PrimitiveType)info.shapeType);
-        shape.transform.position = new Vector3(info.px, info.py, info.pz);
-        shape.transform.rotation = new Quaternion(info.qx, info.qy, info.qz, info.qw);
-        shape.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
-        shape.GetComponent<MeshRenderer>().material = mShapeMaterial;
+    //private GameObject ShapeFromInfo(ShapeInfo info)
+    //{
+    //    GameObject shape = GameObject.CreatePrimitive((PrimitiveType)info.shapeType);
+    //    shape.transform.position = new Vector3(info.px, info.py, info.pz);
+    //    shape.transform.rotation = new Quaternion(info.qx, info.qy, info.qz, info.qw);
+    //    shape.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
+    //    shape.GetComponent<MeshRenderer>().material = mShapeMaterial;
 
-        return shape;
-    }
+    //    return shape;
+    //}
 
-    // Add a custom 3D model to the map
-    private GameObject ModelFromInfo(ShapeInfo info)
-    {
-        Vector3 pos = new Vector3(info.px, info.py, info.pz);
-        Quaternion rot = new Quaternion(info.qx, info.qy, info.qz, info.qw);
-        Vector3 localScale = new Vector3(0.05f, 0.05f, 0.05f);
-        GameObject model = Instantiate(modelPrefab, pos, rot);
-
-        return model;
-    }
-
-    private void ClearShapes()
-    {
-        foreach (var obj in shapeObjList)
-        {
-            Destroy(obj);
-        }
-        shapeObjList.Clear();
-        shapeInfoList.Clear();
-    }
-
-    private void ClearPaintStrokes()
-    {
-        foreach (var ps in paintStrokeObjList)
-        {
-            Destroy(ps);
-        }
-        paintStrokeObjList.Clear();
-        paintStrokeInfoList.Clear();
-    }
-
-    private JObject PaintStrokes2JSON()
-    {
-        // Create a new PaintStrokeList with values copied from paintStrokesInfoList(a List of PaintStrokeInfo)
-        // Despite the name, PaintStrokeList contains an array (not a List) of PaintStrokeInfo
-        // Need this array to convert to a JObject
-
-        PaintStrokeList psList = new PaintStrokeList();
-        // define the array
-        PaintStrokeInfo[] psiArray = new PaintStrokeInfo[paintStrokeInfoList.Count];
-        psList.strokes = psiArray;
-        // populate the array
-        for (int i = 0; i < paintStrokeInfoList.Count; i++)
-        {
-            psiArray[i] = new PaintStrokeInfo();
-            psiArray[i].verts = paintStrokeInfoList[i].verts;
-            psiArray[i].pointColors = paintStrokeInfoList[i].pointColors;
-            psiArray[i].pointSizes = paintStrokeInfoList[i].pointSizes;
-            psiArray[i].initialColor = paintStrokeInfoList[i].initialColor;
-        }
-
-        return JObject.FromObject(psList);
-    }
-
-
-    private JObject Shapes2JSON()
-    {
-        ShapeList shapeList = new ShapeList();
-        shapeList.shapes = new ShapeInfo[shapeInfoList.Count];
-        for (int i = 0; i < shapeInfoList.Count; i++)
-        {
-            shapeList.shapes[i] = shapeInfoList[i];
-        }
-
-        return JObject.FromObject(shapeList);
-    }
-
-    private void LoadShapesJSON(JToken mapMetadata)
-    {
-        ClearShapes();
-
-        if (mapMetadata is JObject && mapMetadata["shapeList"] is JObject)
-        {
-            ShapeList shapeList = mapMetadata["shapeList"].ToObject<ShapeList>();
-            if (shapeList.shapes == null)
-            {
-                Debug.Log("no shapes dropped");
-                return;
-            }
-
-            foreach (var shapeInfo in shapeList.shapes)
-            {
-                shapeInfoList.Add(shapeInfo);
-                //GameObject shape = ShapeFromInfo(shapeInfo);
-                GameObject shape = ModelFromInfo(shapeInfo);
-                shapeObjList.Add(shape);
-            }
-        }
-    }
-
-    private void LoadPaintStrokesJSON(JToken mapMetadata)
-    {
-        ClearPaintStrokes(); // Clear the paintstrokes
-
-        if (mapMetadata is JObject && mapMetadata["paintStrokeList"] is JObject)
-        {
-            Debug.Log("A-LoadPaintStrokesJSON");
-            // this next line breaks when deserializing a list of vector4's
-            PaintStrokeList paintStrokes = mapMetadata["paintStrokeList"].ToObject<PaintStrokeList>();
-            Debug.Log("B-LoadPaintStrokesJSON");
-            if (paintStrokes.strokes == null)
-            {
-                Debug.Log("no PaintStrokes were added");
-                return;
-            }
-
-            // (may need to do a for loop to ensure they stay in order?)
-            foreach (var paintInfo in paintStrokes.strokes)
-            {
-                paintStrokeInfoList.Add(paintInfo);
-                PaintStroke paintstroke = PaintStrokeFromInfo(paintInfo);
-                paintStrokeObjList.Add(paintstroke); // should be used by PaintManager to recreate painting
-                Debug.Log("C-LoadPaintStrokesJSON");
-            }
-            Debug.Log("D-LoadPaintStrokesJSON");
-            paintManager.paintStrokesList = paintStrokeObjList; // not really objects, rather components
-            Debug.Log("E-LoadPaintStrokesJSON");
-            paintManager.RecreatePaintedStrokes();
-            Debug.Log("F-LoadPaintStrokesJSON");
-        }
-    }
-
-    private PaintStroke PaintStrokeFromInfo(PaintStrokeInfo info)
-    {
-        //TODO: Won't work with 'new' because PaintStroke is a monobehavior. Probably better if PaintStroke is not a monobehavior
-        //PaintStroke paintStroke = new PaintStroke();
-        GameObject psHolder = new GameObject("psholder");
-        psHolder.AddComponent<PaintStroke>();
-        PaintStroke paintStroke = psHolder.GetComponent<PaintStroke>();
-        paintStroke.color = new Color(info.initialColor.x, info.initialColor.y, info.initialColor.z, info.initialColor.w);
-        List<Vector3> v = new List<Vector3>();
-        paintStroke.verts = v;
-        List<Color> c = new List<Color>();
-        paintStroke.pointColors = c;
-        // List<float> s = new List<float>();
-        paintStroke.pointSizes = new List<float>();
-
-        for (int i = 0; i < info.verts.Length; i++)
-        {
-            //paintStroke.verts[i] = info.verts[i];  // implicit conversion of SV3 to Vector3
-            paintStroke.verts.Add(info.verts[i]);
-            //Vector4 vector2color = info.pointColors[i]; // implicit conversion of SV4 to Vector4
-            // explicit conversion of SV4 to Vector4
-            //Vector4 vector2color = new Vector4(info.pointColors[i].w, info.pointColors[i].x, info.pointColors[i].y, info.pointColors[i].z);
-            //paintStroke.pointColors.Add(info.pointColors[i]); // implicit conversion of Vector4 to Color
-            Color ptColor = new Color(info.pointColors[i].x, info.pointColors[i].y, info.pointColors[i].z, 1f);
-            paintStroke.pointColors.Add(ptColor);
-            paintStroke.pointSizes.Add(info.pointSizes[i]);
-
-        }
-
-        return paintStroke;
-    }
+    //private void ClearShapes()
+    //{
+    //    foreach (var obj in shapeObjList)
+    //    {
+    //        Destroy(obj);
+    //    }
+    //    shapeObjList.Clear();
+    //    shapeInfoList.Clear();
+    //}
 
 
     public void OnPose(Matrix4x4 outputPose, Matrix4x4 arkitPose) { }
@@ -954,8 +695,6 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
     public void OnStatusChange(LibPlacenote.MappingStatus prevStatus,
                                 LibPlacenote.MappingStatus currStatus)
     {
-        //Debug.Log("VERSION?: ");
-        //Debug.Log(mSelectedMapInfo.userData["version"]["a"].ToObject<float>());
         Debug.Log("prevStatus: " + prevStatus.ToString() +
                    " currStatus: " + currStatus.ToString());
         if (currStatus == LibPlacenote.MappingStatus.RUNNING &&
@@ -964,10 +703,8 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
             if (!hasLocalized)
             {
                 mLabelText.text = "Localized";
-                //LoadShapesJSON(mSelectedMapInfo.metadata.userdata);
                 sModels.LoadFromJSON(mSelectedMapInfo.metadata.userdata);
-                sPaintStrokes.LoadFromJSON(mSelectedMapInfo.metadata.userdata);
-                //LoadPaintStrokesJSON(mSelectedMapInfo.metadata.userdata);
+                sPaintStrokes.LoadFromJSON(mSelectedMapInfo.metadata.userdata); 
                 hasLocalized = true;
             }
         }
@@ -984,7 +721,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
         {
             if (shapeObjList.Count != 0)
             {
-                ClearShapes();
+                sModels.Clear();
             }
             OnNewMapClick(); // start session automatically
         }
