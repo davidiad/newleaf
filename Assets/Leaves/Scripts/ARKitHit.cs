@@ -10,7 +10,7 @@ namespace UnityEngine.XR.iOS
         public float maxRayDistance = 30.0f;
         public LayerMask collisionLayer = 1 << 8;  //ARKitPlane layer
 
-        private PaintOn paintOn; // holds paint status
+ //       private PaintOn paintOn; // holds paint status
         private PaintManager paintManager;
         private GameObject paintTarget;
         [SerializeField]private GameObject camPaintingPlane;
@@ -23,7 +23,6 @@ namespace UnityEngine.XR.iOS
         private void Start()
         {
             maxAllowedSizeChange = 1.3f;
-            //paintOn = GameObject.FindWithTag("PaintOn").GetComponent<PaintOn>();
             paintManager = GameObject.FindWithTag("PaintManager").GetComponent<PaintManager>();
             paintTarget = GameObject.FindWithTag("PaintTarget");
             camPaintingPlane = GameObject.FindWithTag("CamPaintingPlane");
@@ -57,11 +56,10 @@ namespace UnityEngine.XR.iOS
 
         private void PaintPlaneOn()
         {
-            Debug.Log("PP ON!!");
             // save the transform again, in case the plane has been moved via the UI
             localPlaneTransformValues.TransferValues(camPaintingPlane.transform); 
             // Check if painting with device movement is on. If so, remove that brush, and turn painting off
-            if (paintOn.paintOn) {
+            if (paintManager.paintOn) {
                 paintManager.TogglePaint();
             }
             // In case there is still an existing brush, remove it first, so we are starting a brand new stroke

@@ -16,20 +16,21 @@ public class PaintManager : MonoBehaviour
     public bool paintOnTouch;
     public bool ARPlanePainting;
     public List<PaintStroke> paintStrokesList;
-    public List<Vector3> currVertices; // Stores current paint target positions to paint
+    public bool paintOn;
+//    public List<Vector3> currVertices; // Stores current paint target positions to paint
+
 
     [SerializeField] private GameObject paintTarget;
     [SerializeField] Camera mainCam;
     [SerializeField] private float paintWait; // time to wait before adding next vertex when painting trail
 
     private LeavesManager leavesManager;
-    private PaintOn paintOnComponent;
+//    private PaintOn paintOnComponent;
     private GameObject targetSliderGO;
     private Slider targetSlider;
     private Slider paintSlider;
     private Slider brushSizeSlider;
     private bool newPaintVertices;
-    private bool paintOn;
     private Color paintColor;
     private Material[] brushColorMats;
     private Vector3 previousPosition;
@@ -219,7 +220,7 @@ public class PaintManager : MonoBehaviour
                 Destroy(child.gameObject);
             }
             paintOn = false;
-            paintOnComponent.paintOn = false;
+//            paintOnComponent.paintOn = false;
         }
     }
 
@@ -245,15 +246,16 @@ public class PaintManager : MonoBehaviour
             }
 
         // Only add the new PaintStrokes if it's newly created, not if loading from a saved map
-        if (!paintOnComponent.meshLoading)
-        {
+        // TODO: Need a bool to prevent saving to list when strokes are being recreated?
+        //if (!paintOnComponent.meshLoading)
+        //{
             PaintStroke paintStroke = brush.AddComponent<PaintStroke>();
             paintStroke.color = paintColor;
             paintStroke.verts = vertList;
             paintStroke.pointColors = colorList;
             paintStroke.pointSizes = sizeList;
             paintStrokesList.Add(paintStroke);
-        }
+     //   }
     }
 
     public void TogglePaint()
@@ -274,7 +276,7 @@ public class PaintManager : MonoBehaviour
             RemoveBrushFromTarget();
             onoff.transform.localScale = new Vector3(1f, 1f, 1f); // return paint button to normal size
             paintButtonGroup.alpha = 0.4f;
-            paintOnComponent.endPainting = true;
+  //          paintOnComponent.endPainting = true;
             paintOnTouch = true;
         }
     }

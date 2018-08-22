@@ -292,7 +292,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
                 {
                     if (mapId.metadata.userdata != null)
                     {
-                        Debug.Log(mapId.metadata.userdata.ToString(Formatting.None));
+                        //Debug.Log(mapId.metadata.userdata.ToString(Formatting.None));
                     }
                     AddMapToList(mapId);
                 }
