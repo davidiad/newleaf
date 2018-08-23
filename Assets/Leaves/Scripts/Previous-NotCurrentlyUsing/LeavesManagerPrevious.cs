@@ -1,33 +1,33 @@
 ﻿//// Updated for Placenote 1.6.2
 
-//using System.Collections;
-//using System.Collections.Generic;
-//using UnityEngine;
-//using System;
-//using UnityEngine.UI;
-//using UnityEngine.XR.iOS;
-//using System.Runtime.InteropServices;
-//using Newtonsoft.Json.Linq;
-//using Newtonsoft.Json;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using System;
+using UnityEngine.UI;
+using UnityEngine.XR.iOS;
+using System.Runtime.InteropServices;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
-//[Serializable]
-//public class ShapeInfo
-//{
-//    public float px;
-//    public float py;
-//    public float pz;
-//    public float qx;
-//    public float qy;
-//    public float qz;
-//    public float qw;
-//    public int shapeType;
-//}
+[Serializable]
+public class ShapeInfo
+{
+    public float px;
+    public float py;
+    public float pz;
+    public float qx;
+    public float qy;
+    public float qz;
+    public float qw;
+    public int shapeType;
+}
 
-//[Serializable]
-//public class ShapeList
-//{
-//    public ShapeInfo[] shapes;
-//}
+[Serializable]
+public class ShapeList
+{
+    public ShapeInfo[] shapes;
+}
 
 ////[Serializable]
 ////public class PaintStrokeInfo

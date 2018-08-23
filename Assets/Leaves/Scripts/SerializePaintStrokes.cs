@@ -3,25 +3,6 @@ using UnityEngine;
 using System;
 using Newtonsoft.Json.Linq;
 
-//[Serializable]
-//public class ModelInfo
-//{
-//    public float px;
-//    public float py;
-//    public float pz;
-//    public float qx;
-//    public float qy;
-//    public float qz;
-//    public float qw;
-//    public int modelIndex;
-//}
-
-//[Serializable]
-//public class ModelInfoArray // changed  name from ModelList, because not a List (analagous to ShapeList)
-//{
-//    public ModelInfo[] modelInfos;
-//}
-
 [Serializable]
 public class PaintStrokeInfo
 {
@@ -32,9 +13,9 @@ public class PaintStrokeInfo
 }
 
 [Serializable]
-public class PaintStrokeList // TODO: rename to PaintStrokeInfoArray
+public class PaintStrokeInfoArray
 {
-    public PaintStrokeInfo[] strokes; // TODO: rename to paintStrokeInfos
+    public PaintStrokeInfo[] paintStrokeInfos;
 }
 
 
@@ -139,15 +120,13 @@ public class SerializePaintStrokes : ScriptableObject
     // convert array of paintstroke info to json
     public JObject ToJSON()
     {
-        // Create a new PaintStrokeList with values copied from paintStrokesInfoList(a List of PaintStrokeInfo)
-        // Despite the name, PaintStrokeList contains an array (not a List) of PaintStrokeInfo
-        // TODO: rename PaintStrokeList to PaintStrokeInfoArray
-        // Need this array to convert to a JObject
+        // Create a new PaintStrokeInfoArray object with values copied from paintStrokesInfoList(a List of PaintStrokeInfo)
+        // We need this array so it can convert to a JObject
 
-        PaintStrokeList psList = new PaintStrokeList();
-        // define the array
+        PaintStrokeInfoArray paintStrokeInfoArray = new PaintStrokeInfoArray();
+        // define the array to assign
         PaintStrokeInfo[] psiArray = new PaintStrokeInfo[infoList.Count];
-        psList.strokes = psiArray;
+        paintStrokeInfoArray.paintStrokeInfos = psiArray;
         // populate the array
         for (int i = 0; i < infoList.Count; i++)
         {
@@ -158,7 +137,7 @@ public class SerializePaintStrokes : ScriptableObject
             psiArray[i].initialColor = infoList[i].initialColor;
         }
 
-        return JObject.FromObject(psList);
+        return JObject.FromObject(paintStrokeInfoArray);
     }
 
     // reconstitute the JSON
@@ -170,19 +149,19 @@ public class SerializePaintStrokes : ScriptableObject
         {
             Debug.Log("A-LoadPaintStrokesJSON");
             // this next line breaks when deserializing a list of vector4's
-            PaintStrokeList paintStrokes = mapMetadata[jsonKey].ToObject<PaintStrokeList>();
+            PaintStrokeInfoArray paintStrokes = mapMetadata[jsonKey].ToObject<PaintStrokeInfoArray>();
             Debug.Log("B-LoadPaintStrokesJSON");
-            if (paintStrokes.strokes == null)
+            if (paintStrokes.paintStrokeInfos == null)
             {
                 Debug.Log("no PaintStrokes were added");
                 return;
             }
 
             // (may need to do a for loop to ensure they stay in order?)
-            foreach (var paintInfo in paintStrokes.strokes)
+            foreach (var paintStrokeInfo in paintStrokes.paintStrokeInfos)
             {
-                infoList.Add(paintInfo);
-                PaintStroke paintstroke = PaintStrokeFromInfo(paintInfo);
+                infoList.Add(paintStrokeInfo);
+                PaintStroke paintstroke = PaintStrokeFromInfo(paintStrokeInfo);
                 objList.Add(paintstroke); // should be used by PaintManager to recreate painting
                 Debug.Log("C-LoadPaintStrokesJSON");
             }
