@@ -33,7 +33,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
     private UnityARImageFrameData mImage = null;
     private UnityARCamera mARCamera;
     private bool mARKitInit = false;
-    private List<ShapeInfo> shapeInfoList = new List<ShapeInfo>();
+//    private List<ShapeInfo> shapeInfoList = new List<ShapeInfo>();
     private List<GameObject> shapeObjList = new List<GameObject>();
     private List<PaintStrokeInfo> paintStrokeInfoList = new List<PaintStrokeInfo>();
     private List<PaintStroke> paintStrokeObjList = new List<PaintStroke>();

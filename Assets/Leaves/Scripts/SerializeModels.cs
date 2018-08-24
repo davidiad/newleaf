@@ -22,6 +22,25 @@ public class ModelInfoArray // changed  name from ModelList, because not a List 
     public ModelInfo[] modelInfos;
 }
 
+//[Serializable]
+//public class ShapeInfo
+//{
+//    public float px;
+//    public float py;
+//    public float pz;
+//    public float qx;
+//    public float qy;
+//    public float qz;
+//    public float qw;
+//    public int shapeType;
+//}
+
+//[Serializable]
+//public class ShapeList
+//{
+//    public ShapeInfo[] shapes;
+//}
+
 public class SerializeModels : ScriptableObject {
 
     // vars are public to allow accessing from LeavesManager
