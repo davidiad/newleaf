@@ -712,6 +712,13 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
                  prevStatus == LibPlacenote.MappingStatus.WAITING)
         {
             mLabelText.text = "Mapping";
+            if (!hasLocalized)
+            {
+                mLabelText.text = "Localized";
+                sModels.LoadFromJSON(mSelectedMapInfo.metadata.userdata);
+                sPaintStrokes.LoadFromJSON(mSelectedMapInfo.metadata.userdata);
+                hasLocalized = true;
+            }
         }
         else if (currStatus == LibPlacenote.MappingStatus.LOST)
         {
