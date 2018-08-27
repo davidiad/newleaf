@@ -712,7 +712,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
                  prevStatus == LibPlacenote.MappingStatus.WAITING)
         {
             mLabelText.text = "Mapping";
-            if (!hasLocalized)
+            if (!hasLocalized && (mSelectedMapInfo != null))
             {
                 mLabelText.text = "Localized";
                 sModels.LoadFromJSON(mSelectedMapInfo.metadata.userdata);
