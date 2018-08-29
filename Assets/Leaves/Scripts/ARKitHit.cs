@@ -83,12 +83,15 @@ namespace UnityEngine.XR.iOS
             paintTarget.transform.SetParent(Camera.main.transform);
             paintManager.AdjustTargetDistance();
 
+			/******** Try turning this section off, to see what happens if the plane stays with the paintstroke ******/ /*
             // TODO: add conditional for this (no need to call when painting on ARPlanes)
             camPaintingPlane.transform.SetParent(Camera.main.transform);
             // Reset the transform of camPaintingPlane
             camPaintingPlane.transform.localPosition    = localPlaneTransformValues.pos;
             camPaintingPlane.transform.localRotation    = localPlaneTransformValues.rot;
             camPaintingPlane.transform.localScale       = localPlaneTransformValues.scale;
+			*********************************************************************************/
+
             planePainting = false;
         }
 
