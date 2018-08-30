@@ -38,8 +38,9 @@ namespace UnityEngine.XR.iOS
             //Debug.Log("IN HIT TEST");
             List<ARHitTestResult> hitResults = UnityARSessionNativeInterface.GetARSessionNativeInterface().HitTest(point, resultTypes);
             if (hitResults.Count > 0)
-            {
-                foreach (var hitResult in hitResults)
+            { 
+				// change: use index. If > 1 result, use 1, otherwise use 0
+                foreach (var hitResult in hitResults) 
                 {
                    // Debug.Log("Got hit!");
                     m_HitTransform.position = UnityARMatrixOps.GetPosition(hitResult.worldTransform) + Vector3.up*0.02f; // move above grid slightly
@@ -56,6 +57,8 @@ namespace UnityEngine.XR.iOS
 
         private void PaintPlaneOn()
         {
+			// Get the current camPaintingPlane that's attached to camera
+			camPaintingPlane = GameObject.FindWithTag("CamPaintingPlane");
             // save the transform again, in case the plane has been moved via the UI
             localPlaneTransformValues.TransferValues(camPaintingPlane.transform); 
             // Check if painting with device movement is on. If so, remove that brush, and turn painting off
@@ -143,6 +146,9 @@ namespace UnityEngine.XR.iOS
                             // Deparent the plane that's been hit, so it is stationary in world space
 
                             camPaintingPlane.transform.SetParent(null);
+							// Change tag to Grid. There will be only one camPaintingPlane at a time, but could be many Grids
+							// A new camPaintingPlane will be created when this paintstroke is ended
+							camPaintingPlane.tag = "Grid";
                         }
                     }
                 }
@@ -151,6 +157,7 @@ namespace UnityEngine.XR.iOS
             {
                 var touch = Input.GetTouch(0);
                 if (touch.phase == TouchPhase.Began) {
+					
                     previousRadius = touch.radius;
                 }
                 if (touch.phase == TouchPhase.Began || touch.phase == TouchPhase.Moved)

@@ -30,6 +30,7 @@ TagManager:
   - UploadText
   - PNPlaneManager
   - LeavesManager
+  - Grid
   layers:
   - Default
   - TransparentFX
