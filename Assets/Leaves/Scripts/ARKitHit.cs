@@ -57,7 +57,7 @@ namespace UnityEngine.XR.iOS
 
         private void PaintPlaneOn()
         {
-			// Get the current camPaintingPlane that's attached to camera
+			// Get the current camPaintingPlane that's attached to camera.
 			camPaintingPlane = GameObject.FindWithTag("CamPaintingPlane");
             // save the transform again, in case the plane has been moved via the UI
             localPlaneTransformValues.TransferValues(camPaintingPlane.transform); 
