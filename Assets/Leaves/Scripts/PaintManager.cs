@@ -6,6 +6,7 @@ using Ara; // 3rd party Trail Renderer
 
 public class PaintManager : MonoBehaviour
 {
+    public GameObject paintingPlane;
     public GameObject paintBrushPrefab;
     public Button onoff;
     public ColorJoystick colorJoystick;
@@ -80,6 +81,12 @@ public class PaintManager : MonoBehaviour
         float H, S, V;
         Color.RGBToHSV(color, out H, out S, out V);
         hue = H;
+    }
+
+    public void AddPaintingPlaneToCam() {
+        // check if cam has painting plane
+        // if not, instantiate painting plane, and add to cam
+
     }
 
 

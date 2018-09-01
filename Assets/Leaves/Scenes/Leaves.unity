@@ -410,6 +410,12 @@ Prefab:
       propertyPath: colorJoystick
       value: 
       objectReference: {fileID: 1494754441}
+    - target: {fileID: 114629807613461848, guid: 2ac4e3d93b7be4e809d83e52dae8431a,
+        type: 2}
+      propertyPath: paintingPlane
+      value: 
+      objectReference: {fileID: 1503837756979742, guid: 105dfc8667ec540debdcb72431ff715c,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2ac4e3d93b7be4e809d83e52dae8431a, type: 2}
   m_IsPrefabParent: 0
