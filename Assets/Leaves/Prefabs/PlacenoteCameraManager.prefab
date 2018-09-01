@@ -171,6 +171,7 @@ MonoBehaviour:
   translateSpeed: 2
   rotateSpeed: 90
   randomOffset: 0.01
+  enableSimulatedHandshake: 0
 --- !u!114 &114150863293912434
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -51,10 +51,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ce3c0d59a36c432781d500ea8ad6dbc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  paintBrushPrefab: {fileID: 0}
   onoff: {fileID: 0}
+  colorJoystick: {fileID: 0}
+  paintPosition: {x: 0, y: 0, z: 0}
+  brushSize: 0
+  strokeThickness: 0
+  joystickSensitivity: 0.0125
+  paintOnTouch: 0
+  ARPlanePainting: 0
+  paintStrokesList: []
+  paintOn: 0
   paintTarget: {fileID: 0}
-  particleSystemTemplate: {fileID: 0}
-  particleSystemList: []
-  currVertices: []
-  ps: {fileID: 198548932549232536, guid: 51f1e933513db45759ae10f951a0a14d, type: 2}
   mainCam: {fileID: 0}
+  paintWait: 0
