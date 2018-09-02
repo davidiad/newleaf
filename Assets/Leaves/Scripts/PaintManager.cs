@@ -85,7 +85,13 @@ public class PaintManager : MonoBehaviour
 
     public void AddPaintingPlaneToCam() {
         // check if cam has painting plane
-        // if not, instantiate painting plane, and add to cam
+
+        if (GameObject.FindWithTag("CamPaintingPlane") == null) {
+            // if not, instantiate painting plane, and add as a child to main cam
+            GameObject p = Instantiate(paintingPlane, new Vector3(0f,0f,0.5f), Quaternion.identity);
+            p.transform.parent = mainCam.transform;
+            p.transform.localScale = new Vector3(0.15f, 0.15f, 0.15f);
+        }
 
     }
 

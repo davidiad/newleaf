@@ -57,7 +57,6 @@ namespace UnityEngine.XR.iOS
 
         private void PaintPlaneOn()
         {
-            paintManager.AddPaintingPlaneToCam();
 			// Get the current camPaintingPlane that's attached to camera.
 			camPaintingPlane = GameObject.FindWithTag("CamPaintingPlane");
             // save the transform again, in case the plane has been moved via the UI
@@ -97,6 +96,7 @@ namespace UnityEngine.XR.iOS
 			*********************************************************************************/
 
             planePainting = false;
+
         }
 
         // Update is called once per frame
@@ -228,6 +228,7 @@ namespace UnityEngine.XR.iOS
                             PaintPlaneOff(); 
                             paintManager.paintOnTouch = true; 
                         }
+                        paintManager.AddPaintingPlaneToCam();
                         /*
                         // ensure that there is no brush attached to the PaintTarget
                         foreach (Transform child in paintTarget.transform) {
