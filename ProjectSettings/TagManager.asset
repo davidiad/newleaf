@@ -41,9 +41,9 @@ TagManager:
   - 
   - 
   - ARKitPlane
-  - 
-  - 
-  - 
+  - CameraGrid
+  - Grid
+  - TestLayer
   - 
   - 
   - 

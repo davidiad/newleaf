@@ -5872,7 +5872,13 @@ MonoBehaviour:
   maxRayDistance: 30
   collisionLayer:
     serializedVersion: 2
-    m_Bits: 1280
+    m_Bits: 256
+  cameraGridLayer:
+    serializedVersion: 2
+    m_Bits: 512
+  gridLayer:
+    serializedVersion: 2
+    m_Bits: 1024
   camPaintingPlane: {fileID: 0}
   planePainting: 0
 --- !u!23 &1628538053

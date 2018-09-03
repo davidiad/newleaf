@@ -92,7 +92,11 @@ public class PaintManager : MonoBehaviour
             p.transform.parent = mainCam.transform;
             p.transform.localScale = new Vector3(0.15f, 0.15f, 0.15f);
         }
+    }
 
+    // Add a hit-detecting grid plane to add to Grid layer
+    public void AddGridPlane() {
+        
     }
 
 
