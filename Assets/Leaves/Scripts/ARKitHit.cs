@@ -191,6 +191,7 @@ namespace UnityEngine.XR.iOS
                         // A new camPaintingPlane will be created when this paintstroke is ended
                         camPaintingPlane.tag = "Grid";
                         camPaintingPlane.layer = 10; // the int of the Grid layer
+                        camPaintingPlane.GetComponent<MeshRenderer>().enabled = true;
                     }
                 }
             }

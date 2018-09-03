@@ -87,17 +87,13 @@ public class PaintManager : MonoBehaviour
         // check if cam has painting plane
         if (GameObject.FindWithTag("CamPaintingPlane") == null) {
             // if not, instantiate painting plane, and add as a child to main cam
-            GameObject p = Instantiate(paintingPlane, new Vector3(0f,0f,0.5f), Quaternion.identity);
+            GameObject p = Instantiate(paintingPlane, Vector3.zero, Quaternion.identity);
             p.transform.parent = mainCam.transform;
+            p.transform.localPosition = new Vector3(0f, 0f, 0.5f);
+            p.transform.localRotation = Quaternion.identity;
             p.transform.localScale = new Vector3(0.15f, 0.15f, 0.15f);
         }
     }
-
-    // Add a hit-detecting grid plane to add to Grid layer
-    public void AddGridPlane() {
-        
-    }
-
 
     public void AdjustPaintColor() {
         if (paintSlider)
