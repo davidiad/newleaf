@@ -377,7 +377,7 @@ Prefab:
         type: 2}
       propertyPath: mainCam
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 2061583396}
     - target: {fileID: 114629807613461848, guid: 2ac4e3d93b7be4e809d83e52dae8431a,
         type: 2}
       propertyPath: particleSystemTemplate

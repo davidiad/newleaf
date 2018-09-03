@@ -73,7 +73,7 @@ namespace UnityEngine.XR.iOS
         private void PaintPlaneOn()
         {
 			// Get the current camPaintingPlane that's attached to camera.
-			camPaintingPlane = GameObject.FindWithTag("CamPaintingPlane");
+			// camPaintingPlane = GameObject.FindWithTag("CamPaintingPlane");
             // save the transform again, in case the plane has been moved via the UI
             localPlaneTransformValues.TransferValues(camPaintingPlane.transform); 
             // Check if painting with device movement is on. If so, remove that brush, and turn painting off
@@ -161,30 +161,36 @@ namespace UnityEngine.XR.iOS
                     // If a grid is found, use that exisiting grid
                     // TODO: Add a grid property to each paintstroke, and associate that property with that paintstroke
                     // There could/will be mulitple paintstrokes for each grid
+
+                    // Raycast against Grid layer, and find the first grid hit
                     if (Physics.Raycast(ray, out hit, maxRayDistance, gridLayer)) 
                     {
-                        //we're going to get the position from the contact point
+                        // Get the position from the contact point
                         m_HitTransform.position = hit.point;
                         Debug.Log("PAINTONTOUCH");
                         Debug.Log(string.Format("x:{0:0.######} y:{1:0.######} z:{2:0.######}", m_HitTransform.position.x, m_HitTransform.position.y, m_HitTransform.position.z));
 
-                        //and the rotation from the transform of the plane collider
+                        // and the rotation from the transform of the plane collider
                         m_HitTransform.rotation = hit.transform.rotation;
                         if (!planePainting) { PaintPlaneOn(); }
-                        // Deparent the plane that's been hit, so it is stationary in world space
 
-                        camPaintingPlane.transform.SetParent(null);
-                        // Change tag to Grid. There will be only one camPaintingPlane at a time, but could be many Grids
-                        // A new camPaintingPlane will be created when this paintstroke is ended
-                        camPaintingPlane.tag = "Grid";
+
                     }
+
                     // No other grids found, so cast against the grid attached to the camera
                     // Assuming cam grid is found (usually it will be), a new grid will be created, and then detached from the camera
                     else if (Physics.Raycast(ray, out hit, maxRayDistance, cameraGridLayer)) 
                     {
                         m_HitTransform.position = hit.point;
                         m_HitTransform.rotation = hit.transform.rotation;
-                        // etc. TK
+                        if (!planePainting) { PaintPlaneOn(); }
+
+                        // Deparent the plane that's been hit, so it is stationary in world space
+                        camPaintingPlane.transform.SetParent(null);
+                        // Convert camPaintingPlane to GridPlane. There will be only one camPaintingPlane at a time, but could be many Grids
+                        // A new camPaintingPlane will be created when this paintstroke is ended
+                        camPaintingPlane.tag = "Grid";
+                        camPaintingPlane.layer = 10; // the int of the Grid layer
                     }
                 }
             }
@@ -263,7 +269,9 @@ namespace UnityEngine.XR.iOS
                             PaintPlaneOff(); 
                             paintManager.paintOnTouch = true; 
                         }
+                        // Now create a new Camera painting grid
                         paintManager.AddPaintingPlaneToCam();
+                        camPaintingPlane = GameObject.FindWithTag("CamPaintingPlane");
                         /*
                         // ensure that there is no brush attached to the PaintTarget
                         foreach (Transform child in paintTarget.transform) {
