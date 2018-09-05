@@ -502,8 +502,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 931.5, y: 0}
-  m_SizeDelta: {x: 1863, y: 0}
+  m_AnchoredPosition: {x: 511.5, y: 0}
+  m_SizeDelta: {x: 1023, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &60268926
 MonoBehaviour:
@@ -3122,7 +3122,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4657042996104330, guid: 105dfc8667ec540debdcb72431ff715c, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 0.5
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 4657042996104330, guid: 105dfc8667ec540debdcb72431ff715c, type: 2}
       propertyPath: m_LocalRotation.x
@@ -3147,6 +3147,11 @@ Prefab:
     - target: {fileID: 1503837756979742, guid: 105dfc8667ec540debdcb72431ff715c, type: 2}
       propertyPath: m_Name
       value: gridplane
+      objectReference: {fileID: 0}
+    - target: {fileID: 23608514540998816, guid: 105dfc8667ec540debdcb72431ff715c,
+        type: 2}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 105dfc8667ec540debdcb72431ff715c, type: 2}
