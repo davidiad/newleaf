@@ -5873,8 +5873,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 093d7688a194243e6bfc4d93d729e785, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_HitTransform: {fileID: 341620237}
-  maxRayDistance: 30
   collisionLayer:
     serializedVersion: 2
     m_Bits: 256
@@ -5884,6 +5882,8 @@ MonoBehaviour:
   gridLayer:
     serializedVersion: 2
     m_Bits: 1024
+  m_HitTransform: {fileID: 341620237}
+  maxRayDistance: 30
   camPaintingPlane: {fileID: 0}
   planePainting: 0
 --- !u!23 &1628538053

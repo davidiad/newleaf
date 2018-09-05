@@ -26,7 +26,7 @@ public class PaintManager : MonoBehaviour
     [SerializeField] private float paintWait; // time to wait before adding next vertex when painting trail
 
     private LeavesManager leavesManager;
-    private GameObject currentPaintingPlane;
+    //private GameObject currentPaintingPlane;
 //    private PaintOn paintOnComponent;
     private GameObject targetSliderGO;
     private Slider targetSlider;
@@ -60,7 +60,7 @@ public class PaintManager : MonoBehaviour
         brushSizeSlider = GameObject.FindWithTag("SizeSlider").GetComponent<Slider>();
         targetSliderGO = GameObject.FindWithTag("TargetSlider");
         targetSlider = targetSliderGO.GetComponent<Slider>();
-        currentPaintingPlane = GameObject.FindWithTag("CamPaintingPlane");
+        // currentPaintingPlane = GameObject.FindWithTag("CamPaintingPlane");
         paintPosition = leavesManager.paintPosition;
         AdjustTargetDistance();
         AdjustPaintColor(); // set the color to what the color slider is set to
@@ -89,11 +89,11 @@ public class PaintManager : MonoBehaviour
         // check if cam has painting plane
         if (GameObject.FindWithTag("CamPaintingPlane") == null) {
             // if not, instantiate painting plane, and add as a child to main cam
-            currentPaintingPlane = Instantiate(paintingPlane, Vector3.zero, Quaternion.identity);
-            currentPaintingPlane.transform.parent = mainCam.transform;
-            currentPaintingPlane.transform.localPosition = new Vector3(0f, 0f, 0.3f);
-            currentPaintingPlane.transform.localRotation = Quaternion.identity;
-            currentPaintingPlane.transform.localScale = new Vector3(0.15f, 0.15f, 0.15f);
+            GameObject newPaintingPlane = Instantiate(paintingPlane, Vector3.zero, Quaternion.identity);
+            newPaintingPlane.transform.parent = mainCam.transform;
+            newPaintingPlane.transform.localPosition = new Vector3(0f, 0f, 0.3f);
+            newPaintingPlane.transform.localRotation = Quaternion.identity;
+            newPaintingPlane.transform.localScale = new Vector3(0.15f, 0.15f, 0.15f); 
         }
     }
 
@@ -146,6 +146,7 @@ public class PaintManager : MonoBehaviour
         if (paintTarget) {
             paintTarget.transform.localPosition = new Vector3(0f, 0f, targetSlider.value);
         }
+        GameObject currentPaintingPlane = GameObject.FindWithTag("CamPaintingPlane");
         if (currentPaintingPlane) {
             currentPaintingPlane.transform.localPosition = new Vector3(0f, 0f, targetSlider.value);
             // roughly scale the grid up as it gets further away
