@@ -19,10 +19,12 @@ namespace UnityEngine.XR.iOS
         private TransformValues localPlaneTransformValues;
         private float previousRadius; // needed to smooth brush size adjustments 
         private float maxAllowedSizeChange; // also needed to smooth brush size adjustments
+        private bool touchIsOverUI;
 
         private void Start()
         {
             maxAllowedSizeChange = 1.3f;
+            touchIsOverUI = false;
             paintManager = GameObject.FindWithTag("PaintManager").GetComponent<PaintManager>();
             paintTarget = GameObject.FindWithTag("PaintTarget");
             camPaintingPlane = GameObject.FindWithTag("CamPaintingPlane");
@@ -90,14 +92,21 @@ namespace UnityEngine.XR.iOS
 
         void Update()
         {
-            if (!EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId))
-            { // Block if over UI element
+
+            //if (!EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId))
+            //{ // Block if over UI element
               // detect hit on plane in front of camera, or one of the other grid planes associated with a paintstroke
 
                 // for Any state of a touch, get the transform of the hit
                 if (paintManager.paintOnTouch && Input.touchCount > 0 && !paintManager.ARPlanePainting)
                 {
-                    if (!EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId)) // Block if over UI element
+                    if (EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId))
+                        if (Input.GetTouch(0).phase == TouchPhase.Began)
+                        {
+                            touchIsOverUI = true;
+                        }
+                    //if (!EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId)) // Block if over UI element
+                if (!touchIsOverUI)
                     {
                         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                         RaycastHit hit;
@@ -148,49 +157,49 @@ namespace UnityEngine.XR.iOS
                     var touch = Input.GetTouch(0);
                     if (touch.phase == TouchPhase.Began)
                     {
-
                         previousRadius = touch.radius;
                     }
-                    if (touch.phase == TouchPhase.Began || touch.phase == TouchPhase.Moved)
+                if (touch.phase == TouchPhase.Began || touch.phase == TouchPhase.Moved)
+                {
+                    // Control size of brush with touch
+                    // limit max allowed change from previous frame to keep size transitions smooth
+                    float allowedRadius = touch.radius;
+                    if ((touch.radius - previousRadius) > maxAllowedSizeChange)
                     {
-                        // Control size of brush with touch
-                        // limit max allowed change from previous frame to keep size transitions smooth
-                        float allowedRadius = touch.radius;
-                        if ((touch.radius - previousRadius) > maxAllowedSizeChange)
-                        {
-                            allowedRadius = previousRadius + maxAllowedSizeChange;
-                        }
-                        else if ((touch.radius - previousRadius) < (-1f * maxAllowedSizeChange))
-                        {
-                            allowedRadius = previousRadius - maxAllowedSizeChange;
-                        }
-                        previousRadius = allowedRadius; // reset in prep for next frame
-                                                        // radius usually in range of 20 to 40, as low as 10, as high as 200
-                                                        // attempt to bring brush size to range of 1/4 cm to 10 cm
-                        float adjustedRadius = allowedRadius * 0.002f;
-                        // if Apple pencil is being used, use the amount of pressure instead
-                        if (touch.type == TouchType.Stylus) { adjustedRadius = touch.pressure * 0.04f; }
-                        paintManager.brushSize = adjustedRadius * adjustedRadius;
+                        allowedRadius = previousRadius + maxAllowedSizeChange;
+                    }
+                    else if ((touch.radius - previousRadius) < (-1f * maxAllowedSizeChange))
+                    {
+                        allowedRadius = previousRadius - maxAllowedSizeChange;
+                    }
+                    previousRadius = allowedRadius; // reset in prep for next frame
+                                                    // radius usually in range of 20 to 40, as low as 10, as high as 200
+                                                    // attempt to bring brush size to range of 1/4 cm to 10 cm
+                    float adjustedRadius = allowedRadius * 0.002f;
+                    // if Apple pencil is being used, use the amount of pressure instead
+                    if (touch.type == TouchType.Stylus) { adjustedRadius = touch.pressure * 0.04f; }
+                    paintManager.brushSize = adjustedRadius * adjustedRadius;
 
-                        paintManager.AdjustBrushSize();
-
-                        // This section is needed for painting on AR planes, but interferes with painting on Camera plane (hence the if statement)
-                        if (paintManager.ARPlanePainting && touch.phase == TouchPhase.Moved && touch.phase != TouchPhase.Stationary) // try to avoid beginning touch which is off the plane
+                    paintManager.AdjustBrushSize();
+                    if (!touchIsOverUI) { }
+                    // This section is needed for painting on AR planes, but interferes with painting on Camera plane (hence the if statement)
+                    if (paintManager.ARPlanePainting && touch.phase == TouchPhase.Moved && touch.phase != TouchPhase.Stationary) // try to avoid beginning touch which is off the plane
+                    {
+                        var screenPosition = Camera.main.ScreenToViewportPoint(touch.position);
+                        ARPoint point = new ARPoint
                         {
-                            var screenPosition = Camera.main.ScreenToViewportPoint(touch.position);
-                            ARPoint point = new ARPoint
-                            {
-                                x = screenPosition.x,
-                                y = screenPosition.y
-                            };
+                            x = screenPosition.x,
+                            y = screenPosition.y
+                        };
 
-                            ARHitTestResultType[] resultTypes = { ARHitTestResultType.ARHitTestResultTypeExistingPlaneUsingExtent };
-                            foreach (ARHitTestResultType resultType in resultTypes)
-                            {
-                                // returns the 1st point hit casting from screenpoint to an arplane
-                                if (HitTestWithResultType(point, resultType)) { return; }
-                            }
+                        ARHitTestResultType[] resultTypes = { ARHitTestResultType.ARHitTestResultTypeExistingPlaneUsingExtent };
+                        foreach (ARHitTestResultType resultType in resultTypes)
+                        {
+                            // returns the 1st point hit casting from screenpoint to an arplane
+                            if (HitTestWithResultType(point, resultType)) { return; }
                         }
+                    }
+                
                     }
                     else if (touch.phase == TouchPhase.Ended)
                     {
@@ -211,13 +220,11 @@ namespace UnityEngine.XR.iOS
                                 if (child.name.Contains("Triangle-for-painting")) {
                                 Destroy(child);
                             } */
-
                         }
+                        // After each touch is done, reset the touchIsOverUI flag
+                        touchIsOverUI = false;
                     }
                 }
             }
         }
-
-
-    }
 }
