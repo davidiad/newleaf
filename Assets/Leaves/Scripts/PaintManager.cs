@@ -39,6 +39,7 @@ public class PaintManager : MonoBehaviour
     private float colorDarken = 0.65f; // amount to darken the outer rings of the cursor
     private Vector3 colorInput;
     private float hue;
+    private float planeScale = 0.08f;
 
     private GameObject paintBrush;
     private CanvasGroup paintButtonGroup;
@@ -93,7 +94,7 @@ public class PaintManager : MonoBehaviour
             newPaintingPlane.transform.parent = mainCam.transform;
             newPaintingPlane.transform.localPosition = new Vector3(0f, 0f, 0.3f);
             newPaintingPlane.transform.localRotation = Quaternion.identity;
-            newPaintingPlane.transform.localScale = new Vector3(0.15f, 0.15f, 0.15f); 
+            newPaintingPlane.transform.localScale = new Vector3(planeScale, planeScale, planeScale); 
         }
     }
 
@@ -150,7 +151,7 @@ public class PaintManager : MonoBehaviour
         if (currentPaintingPlane) {
             currentPaintingPlane.transform.localPosition = new Vector3(0f, 0f, targetSlider.value);
             // roughly scale the grid up as it gets further away
-            currentPaintingPlane.transform.localScale = new Vector3(0.5f * targetSlider.value, 0.5f * targetSlider.value, 0.15f); 
+            currentPaintingPlane.transform.localScale = new Vector3(0.5f * targetSlider.value, 0.5f * targetSlider.value, planeScale); 
         }
     }
 

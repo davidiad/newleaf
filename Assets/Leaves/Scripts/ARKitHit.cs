@@ -87,7 +87,8 @@ namespace UnityEngine.XR.iOS
 			*********************************************************************************/
 
             planePainting = false;
-
+            // turn off visibility of plane that is not being currently used
+            camPaintingPlane.GetComponent<MeshRenderer>().enabled = false;
         }
 
         void Update()
@@ -130,7 +131,7 @@ namespace UnityEngine.XR.iOS
 
                             // and the rotation from the transform of the plane collider
                             m_HitTransform.rotation = hit.transform.rotation;
-
+                            hit.collider.gameObject.GetComponent<MeshRenderer>().enabled = true;
                             if (!planePainting) { PaintPlaneOn(); }
                         }
                         // No other grids found, so cast against the grid attached to the camera
@@ -147,6 +148,7 @@ namespace UnityEngine.XR.iOS
                             // A new camPaintingPlane will be created when this paintstroke is ended
                             camPaintingPlane.tag = "Grid";
                             camPaintingPlane.layer = 10; // the int of the Grid layer
+                            // set render to true for current grid only
                             camPaintingPlane.GetComponent<MeshRenderer>().enabled = true;
                         }
                     }
