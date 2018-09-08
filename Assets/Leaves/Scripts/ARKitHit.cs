@@ -93,16 +93,12 @@ namespace UnityEngine.XR.iOS
 
         void Update()
         {
-
-            //if (!EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId))
-            //{ // Block if over UI element
-              // detect hit on plane in front of camera, or one of the other grid planes associated with a paintstroke
-
+            var touch = Input.GetTouch(0);
                 // for Any state of a touch, get the transform of the hit
                 if (paintManager.paintOnTouch && Input.touchCount > 0 && !paintManager.ARPlanePainting)
                 {
-                    if (EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId))
-                        if (Input.GetTouch(0).phase == TouchPhase.Began)
+                    if (EventSystem.current.IsPointerOverGameObject(touch.fingerId))
+                        if (touch.phase == TouchPhase.Began)
                         {
                             touchIsOverUI = true;
                         }
@@ -127,16 +123,26 @@ namespace UnityEngine.XR.iOS
                         if (Physics.Raycast(ray, out hit, maxRayDistance, gridLayer))
                         {
                             // Get the position from the contact point
-                            m_HitTransform.position = hit.point;
+                            m_HitTransform.position = hit.point; 
 
                             // and the rotation from the transform of the plane collider
                             m_HitTransform.rotation = hit.transform.rotation;
                             hit.collider.gameObject.GetComponent<MeshRenderer>().enabled = true;
                             if (!planePainting) { PaintPlaneOn(); }
                         }
+                        else if (touch.phase == TouchPhase.Moved) // hit was null relative to grid layer
+                        {
+                            // The touch continues, but we have left the active grid.
+                        // As a higher priority to painting with a new plane attached to camera,
+                            // To avoid disconcerting jumps to other grids, end this stroke
+                            hit.collider.gameObject.GetComponent<MeshRenderer>().enabled = false;
+                            PaintPlaneOff();
+                        }
                         // No other grids found, so cast against the grid attached to the camera
                         // Assuming cam grid is found (usually it will be), a new grid will be created, and then detached from the camera
-                        else if (Physics.Raycast(ray, out hit, maxRayDistance, cameraGridLayer))
+                    // Check first if we are in the middle of painting on a grid, and then run off the grid. In that case, end the stroke
+                    // to avoid jumping to another grid far away
+                    else if (Physics.Raycast(ray, out hit, maxRayDistance, cameraGridLayer)  && (touch.phase == TouchPhase.Began) )
                         {
                             m_HitTransform.position = hit.point;
                             m_HitTransform.rotation = hit.transform.rotation;
@@ -156,7 +162,7 @@ namespace UnityEngine.XR.iOS
 
                 if (Input.touchCount > 0 && m_HitTransform != null)
                 {
-                    var touch = Input.GetTouch(0);
+                   
                     if (touch.phase == TouchPhase.Began)
                     {
                         previousRadius = touch.radius;
@@ -181,47 +187,48 @@ namespace UnityEngine.XR.iOS
                     // if Apple pencil is being used, use the amount of pressure instead
                     if (touch.type == TouchType.Stylus) { adjustedRadius = touch.pressure * 0.04f; }
                     paintManager.brushSize = adjustedRadius * adjustedRadius;
-
                     paintManager.AdjustBrushSize();
-                    if (!touchIsOverUI) { }
-                    // This section is needed for painting on AR planes, but interferes with painting on Camera plane (hence the if statement)
-                    if (paintManager.ARPlanePainting && touch.phase == TouchPhase.Moved && touch.phase != TouchPhase.Stationary) // try to avoid beginning touch which is off the plane
-                    {
-                        var screenPosition = Camera.main.ScreenToViewportPoint(touch.position);
-                        ARPoint point = new ARPoint
-                        {
-                            x = screenPosition.x,
-                            y = screenPosition.y
-                        };
 
-                        ARHitTestResultType[] resultTypes = { ARHitTestResultType.ARHitTestResultTypeExistingPlaneUsingExtent };
-                        foreach (ARHitTestResultType resultType in resultTypes)
+                    if (!touchIsOverUI)
+                    {
+                        // This section is needed for painting on AR planes, but interferes with painting on Camera plane (hence the if statement)
+                        if (paintManager.ARPlanePainting && touch.phase == TouchPhase.Moved && touch.phase != TouchPhase.Stationary) // try to avoid beginning touch which is off the plane
                         {
-                            // returns the 1st point hit casting from screenpoint to an arplane
-                            if (HitTestWithResultType(point, resultType)) { return; }
+                            var screenPosition = Camera.main.ScreenToViewportPoint(touch.position);
+                            ARPoint point = new ARPoint
+                            {
+                                x = screenPosition.x,
+                                y = screenPosition.y
+                            };
+
+                            ARHitTestResultType[] resultTypes = { ARHitTestResultType.ARHitTestResultTypeExistingPlaneUsingExtent };
+                            foreach (ARHitTestResultType resultType in resultTypes)
+                            {
+                                // returns the 1st point hit casting from screenpoint to an arplane
+                                if (HitTestWithResultType(point, resultType)) { return; }
+                            }
                         }
                     }
-                
-                    }
-                    else if (touch.phase == TouchPhase.Ended)
+                }
+                else if (touch.phase == TouchPhase.Ended)
+                {
+                    if (paintTarget.transform.parent.gameObject.CompareTag("PlanePainter") && !EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId))
                     {
-                        if (paintTarget.transform.parent.gameObject.CompareTag("PlanePainter") && !EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId))
+                        if (planePainting)
                         {
-                            if (planePainting)
-                            {
-                                PaintPlaneOff();
-                                paintManager.paintOnTouch = true;
-                            }
+                            PaintPlaneOff();
+                            paintManager.paintOnTouch = true;
+                        }
 
 
-                            // now create a new Camera painting grid
-                            paintManager.AddPaintingPlaneToCam();
-                            camPaintingPlane = GameObject.FindWithTag("CamPaintingPlane");
-                            /*// ensure that there is no brush attached to the PaintTarget
-                                foreach (Transform child in paintTarget.transform) {
-                                if (child.name.Contains("Triangle-for-painting")) {
-                                Destroy(child);
-                            } */
+                        // now create a new Camera painting grid
+                        paintManager.AddPaintingPlaneToCam();
+                        camPaintingPlane = GameObject.FindWithTag("CamPaintingPlane");
+                        /*// ensure that there is no brush attached to the PaintTarget
+                            foreach (Transform child in paintTarget.transform) {
+                            if (child.name.Contains("Triangle-for-painting")) {
+                            Destroy(child);
+                        } */
                         }
                         // After each touch is done, reset the touchIsOverUI flag
                         touchIsOverUI = false;
