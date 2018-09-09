@@ -31,6 +31,7 @@ TagManager:
   - PNPlaneManager
   - LeavesManager
   - Grid
+  - CurrentPaintingObject
   layers:
   - Default
   - TransparentFX
