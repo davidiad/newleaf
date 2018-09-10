@@ -6,9 +6,10 @@ namespace UnityEngine.XR.iOS
 {
     public class ARKitHit : MonoBehaviour
     {
-        public LayerMask collisionLayer  = 1 << 8;  // ARKitPlane layer
-        public LayerMask cameraGridLayer = 1 << 9;  // Grid parented to camera layer
-        public LayerMask gridLayer       = 1 << 10; // Grids (parented to world) layer
+        public LayerMask collisionLayer         = 1 <<  8;  // ARKitPlane layer
+        public LayerMask cameraGridLayer        = 1 <<  9;  // Grid parented to camera layer
+        public LayerMask gridLayer             = 1 << 10; // Grids (parented to world) layer
+        public LayerMask currentGridLayer       = 1 << 12; // current Grid (parented to world) layer
         public Transform m_HitTransform; // the transform of the raycast hit from screen touch
         public float maxRayDistance = 30.0f;
         [SerializeField] private GameObject camPaintingPlane;
@@ -20,11 +21,13 @@ namespace UnityEngine.XR.iOS
         private float previousRadius; // needed to smooth brush size adjustments 
         private float maxAllowedSizeChange; // also needed to smooth brush size adjustments
         private bool touchIsOverUI;
+        private bool hitGrid;
 
         private void Start()
         {
             maxAllowedSizeChange = 1.3f;
             touchIsOverUI = false;
+            hitGrid = false;
             paintManager = GameObject.FindWithTag("PaintManager").GetComponent<PaintManager>();
             paintTarget = GameObject.FindWithTag("PaintTarget");
             camPaintingPlane = GameObject.FindWithTag("CamPaintingPlane");
@@ -132,17 +135,31 @@ namespace UnityEngine.XR.iOS
                     // TODO: Add a grid property to each paintstroke, and associate that property with that paintstroke
                     // There could/will be mulitple paintstrokes for each grid
 
+                    if (hitGrid && Physics.Raycast(ray, out hit, maxRayDistance, currentGridLayer))
+                    {
+                        Debug.Log("QQQ");
+                
+                        m_HitTransform.position = hit.point;
+                        m_HitTransform.rotation = hit.transform.rotation;
+
+                        hit.collider.gameObject.GetComponent<MeshRenderer>().enabled = true;
+                        // hit.collider.gameObject.layer = 12;
+                        if (!planePainting) { PaintPlaneOn(); }
+
+                    }
+
+
                     // Raycast against Grid layer, and find the first grid hit
-                    if (Physics.Raycast(ray, out hit, maxRayDistance, gridLayer))
+                    if (!hitGrid && Physics.Raycast(ray, out hit, maxRayDistance, gridLayer))
                     {
                         Debug.Log("ZZZ");
-                        if (touch.phase == TouchPhase.Began)
-                        {
-                            hit.collider.gameObject.tag = "CurrentPaintingObject";
-                            Debug.Log("AAA");
-                        }
-                        if (hit.collider.CompareTag("CurrentPaintingObject"))
-                        {
+                        //if (touch.phase == TouchPhase.Began)
+                        //{
+                        //    hit.collider.tag = "CurrentPaintingObject";
+                        //    Debug.Log("AAA");
+                        //}
+                        //if (hit.collider.CompareTag("CurrentPaintingObject"))
+                        //{
                             Debug.Log("BBB");
                             // Get the position from the contact point
                             m_HitTransform.position = hit.point;
@@ -150,9 +167,10 @@ namespace UnityEngine.XR.iOS
                             // and the rotation from the transform of the plane collider
                             m_HitTransform.rotation = hit.transform.rotation;
                             hit.collider.gameObject.GetComponent<MeshRenderer>().enabled = true;
-
+                        hit.collider.gameObject.layer = 12;
+                        hitGrid = true;
                             if (!planePainting) { PaintPlaneOn(); }
-                        }
+                       // }
 
                     }                         
                     else if (touch.phase == TouchPhase.Moved) // hit was null relative to grid layer, or it hit an object not tagged as CurrentPaintingObject
@@ -185,7 +203,7 @@ namespace UnityEngine.XR.iOS
                             // Convert camPaintingPlane to GridPlane. There will be only one camPaintingPlane at a time, but could be many Grids
                             // A new camPaintingPlane will be created when this paintstroke is ended
                             camPaintingPlane.tag = "CurrentPaintingObject";
-                            camPaintingPlane.layer = 10; // the int of the Grid layer
+                            camPaintingPlane.layer = 12; // the int of the current Grid layer
                             // set render to true for current grid only
                             camPaintingPlane.GetComponent<MeshRenderer>().enabled = true;
                         }
@@ -254,6 +272,7 @@ namespace UnityEngine.XR.iOS
                         }
                         camPaintingPlane.GetComponent<MeshRenderer>().enabled = false; // should be redundant - in  planepaintoff
                         camPaintingPlane.tag = "Grid";
+                        camPaintingPlane.layer = 10;
 
                         // now create a new Camera painting grid
                         paintManager.AddPaintingPlaneToCam();
@@ -266,6 +285,7 @@ namespace UnityEngine.XR.iOS
                         }
                         // After each touch is done, reset the touchIsOverUI flag
                         touchIsOverUI = false;
+                    hitGrid = false;
                     }
                 }
             }

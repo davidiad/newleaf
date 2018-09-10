@@ -1314,7 +1314,7 @@ public class LibPlacenote : MonoBehaviour
 		#endif
 
 		if (lmSize == 0) {
-			Debug.Log ("Empty landmarks, probably tried to fail");
+			//Debug.Log ("Empty landmarks, probably tried to fail");
 			return null;
 		}
 
@@ -1344,7 +1344,7 @@ public class LibPlacenote : MonoBehaviour
 		#endif
 
 		if (lmSize == 0) {
-			Debug.Log ("Empty landmarks, probably tried to fail");
+			//Debug.Log ("Empty landmarks, probably tried to fail");
 			return null;
 		}
 
