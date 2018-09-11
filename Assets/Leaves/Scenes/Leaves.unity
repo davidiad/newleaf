@@ -5983,7 +5983,7 @@ MonoBehaviour:
     m_Bits: 4096
   m_HitTransform: {fileID: 341620237}
   maxRayDistance: 30
-  camPaintingPlane: {fileID: 0}
+  PaintingPlane: {fileID: 0}
   planePainting: 0
 --- !u!23 &1628538053
 MeshRenderer:

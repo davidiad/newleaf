@@ -182,44 +182,15 @@ namespace UnityEngine.XR.iOS
                             if (!planePainting) { PaintPlaneOn(); }
 
                         }
-
-                        //else if (touch.phase == TouchPhase.Moved) // hit was null relative to grid layer, but touch is still active. Want to end the stroke.
-                        //{
-                        //    Debug.Log("CCC");
-                        //    // The touch continues, but we have left the active grid.
-                        //    // As a higher priority to painting with a new plane attached to camera,
-                        //    // To avoid disconcerting jumps to other grids, end this stroke
-
-                        //    camPaintingPlane.tag = "Grid";
-                        //    camPaintingPlane.GetComponent<MeshRenderer>().enabled = false;
-                        //    PaintPlaneOff();
-                        //}
-
                         // No other grids found, so cast against the grid attached to the camera
                         // Assuming cam grid is found (usually it will be), a new grid will be created, and then detached from the camera
                         // Check first if we are in the middle of painting on a grid, and then run off the grid. In that case, end the stroke
                         // to avoid jumping to another grid far away
 
-                        // no hit on grid layer and we are still in Begin phase, then use camera grid layer (but only if touch phase Began, to avoid generating new planes on touch Move)
+                        // if no hit on grid layer, and we are still in Begin phase, then use camera grid layer (but only if touch phase Began, to avoid generating new planes on touch Move)
                         else if (touch.phase == TouchPhase.Began)
                         {
-                            if (Physics.Raycast(ray, out hit, maxRayDistance, cameraGridLayer)) {
-                                Debug.Log("DDD");
-                                m_HitTransform.position = hit.point;
-                                m_HitTransform.rotation = hit.transform.rotation;
-                                if (!planePainting) { PaintPlaneOn(); }
-                                PaintingPlane = hit.collider.gameObject;
-                                // Deparent the plane that's been hit, so it is stationary in world space
-                                PaintingPlane.transform.SetParent(null);
-                                // camPaintingPlane.transform.SetParent(null);
-                                // Convert camPaintingPlane to GridPlane. There will be only one camPaintingPlane at a time, but could be many Grids
-                                // A new camPaintingPlane will be created when this paintstroke is ended
-                                PaintingPlane.tag = "CurrentPaintingObject";
-                                PaintingPlane.layer = 12; // the int of the current Grid layer
-                                                          // set render to true for current grid only
-                                PaintingPlane.GetComponent<MeshRenderer>().enabled = true;
-                                hitGrid = true;
-                            }
+                            RaycastPaintingPlane(ray, hit, cameraGridLayer);
                         }
                     }
                 }
@@ -303,5 +274,22 @@ namespace UnityEngine.XR.iOS
                     }
                 }
             }
+
+        private void RaycastPaintingPlane(Ray ray, RaycastHit hit, LayerMask layer)
+        {
+            if (Physics.Raycast(ray, out hit, maxRayDistance, layer))
+            {
+                Debug.Log("DDD");
+                m_HitTransform.position = hit.point;
+                m_HitTransform.rotation = hit.transform.rotation;
+                if (!planePainting) { PaintPlaneOn(); }
+                PaintingPlane = hit.collider.gameObject;
+                PaintingPlane.transform.SetParent(null); // Deparent the plane that's been hit, so it is stationary in world space
+                PaintingPlane.tag = "CurrentPaintingObject";
+                PaintingPlane.layer = 12; // the int of the current Grid layer                        
+                PaintingPlane.GetComponent<MeshRenderer>().enabled = true; // set render to true for current grid only
+                hitGrid = true;
+            }
         }
+    }
 }
