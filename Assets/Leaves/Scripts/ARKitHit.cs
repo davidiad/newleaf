@@ -8,7 +8,7 @@ namespace UnityEngine.XR.iOS
     {
         public LayerMask collisionLayer         = 1 <<  8;  // ARKitPlane layer
         public LayerMask cameraGridLayer        = 1 <<  9;  // Grid parented to camera layer
-        public LayerMask gridLayer             = 1 << 10; // Grids (parented to world) layer
+        public LayerMask gridLayer              = 1 << 10; // Grids (parented to world) layer
         public LayerMask currentGridLayer       = 1 << 12; // current Grid (parented to world) layer
         public Transform m_HitTransform; // the transform of the raycast hit from screen touch
         public float maxRayDistance = 30.0f;
@@ -105,6 +105,7 @@ namespace UnityEngine.XR.iOS
             // for Any state of a touch, get the transform of the hit
             if (paintManager.paintOnTouch && Input.touchCount > 0 && !paintManager.ARPlanePainting)
             {
+                // First, check if the touch starts on a UI element. If so, set a flag to not start painting
                 if (EventSystem.current.IsPointerOverGameObject(touch.fingerId))
                 {
                     if (touch.phase == TouchPhase.Began)
@@ -112,7 +113,7 @@ namespace UnityEngine.XR.iOS
                         touchIsOverUI = true;
                     }
                 }
-                //if (!EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId)) // Block if over UI element
+
                 if (!touchIsOverUI)
                 {
                     Debug.Log("YYY");
@@ -121,74 +122,75 @@ namespace UnityEngine.XR.iOS
 
                     //TODO: (?)set up Begin separately from other states, so can check for tag of collider (prevent jumping from one grid to another)
 
-                    //TODO: set up current object on a separate physics layer
                     // once a touch starts, only that current layer is raycast against, until touch is ended
 
                     Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                    RaycastHit hit;
-                    // try to hit plane collider gameobjects attached to camera
-                    // effectively similar to calling HitTest with ARHitTestResultType.ARHitTestResultTypeExistingPlaneUsingExtent
+                    RaycastHit hit = new RaycastHit();
 
-                    //TODO: Set up 2 raycasts. First will raycast against a Grid layer, and find the first grid hit 
+                    // Set up 3 raycasts. First will cast against the current layer. If nothing on current layer is hit, then raycast against a Grid layer, and find the first grid hit 
                     // (not the camera grid, which will be on a different layer)
-                    // If there are no results from that first raycast, then raycast against the camera grid layer
+                    // If there are no results from that raycast, then raycast against the camera grid layer
 
                     // first, check if there are any grids (not cam grid) being hit
                     // If a grid is found, use that exisiting grid
                     // TODO: Add a grid property to each paintstroke, and associate that property with that paintstroke
                     // There could/will be mulitple paintstrokes for each grid
 
-
-                    // TODO: After determining which layer to cast against, extract rest of method
+                    //TODO: using the distance slider automatically changes the priority so that the camera grid layer is checked first.
+                    // Also, add an outline instead of a grid, and add a leaf shape, that will have a consistent size (and therefore provide a visual cue
+                    // for the distance of the plane from camera (thx. Kathleen T. for the idea)
+                    // Also, add shapes with colliders, that can be painted, e.g., a balloon, a ring, a teapot, etc. (thx again Kathleen)
                     // First, raycast against current layer
-                    if (hitGrid || (touch.phase == TouchPhase.Began)) // hitGrid may not have been set to true yet, so also check on Began
+                    if (hitGrid || (touch.phase == TouchPhase.Began)) // hitGrid may not have been set to true yet, therefore also check on Began
                     {
-                        if (Physics.Raycast(ray, out hit, maxRayDistance, currentGridLayer))
-                        {
-                            Debug.Log("QQQ");
+                        RaycastPaintingPlane(ray, hit, currentGridLayer);
+                        //if (Physics.Raycast(ray, out hit, maxRayDistance, currentGridLayer))
+                        //{
+                        //    Debug.Log("QQQ");
 
-                            m_HitTransform.position = hit.point;
-                            m_HitTransform.rotation = hit.transform.rotation;
+                        //    m_HitTransform.position = hit.point;
+                        //    m_HitTransform.rotation = hit.transform.rotation;
 
-                            PaintingPlane = hit.collider.gameObject;
-                            // TODO: These lines should not have to be called every frame
-                            PaintingPlane.GetComponent<MeshRenderer>().enabled = true;
-                            PaintingPlane.gameObject.transform.SetParent(null);
-                            PaintingPlane.tag = "CurrentPaintingObject";
-                            hitGrid = true;
-                            if (!planePainting) { PaintPlaneOn(); }
+                        //    PaintingPlane = hit.collider.gameObject;
+                        //    // TODO: These lines should not have to be called every frame
+                        //    PaintingPlane.GetComponent<MeshRenderer>().enabled = true;
+                        //    PaintingPlane.gameObject.transform.SetParent(null);
+                        //    PaintingPlane.tag = "CurrentPaintingObject";
+                        //    hitGrid = true;
+                        //    if (!planePainting) { PaintPlaneOn(); }
 
-                        }
+                        //}
                     }
 
 
                     // If no hit on current layer, then raycast against Grid layer, find the first grid hit, and put it on the current layer
                     if (!hitGrid)
                     {
-                        if (Physics.Raycast(ray, out hit, maxRayDistance, gridLayer))
-                        {
-                            Debug.Log("ZZZ");
+                        bool checkHit = RaycastPaintingPlane(ray, hit, gridLayer);
+                        //if (Physics.Raycast(ray, out hit, maxRayDistance, gridLayer))
+                        //{
+                        //    Debug.Log("ZZZ");
 
-                            // Get the position from the contact point
-                            m_HitTransform.position = hit.point;
+                        //    // Get the position from the contact point
+                        //    m_HitTransform.position = hit.point;
 
-                            // and the rotation from the transform of the plane collider
-                            m_HitTransform.rotation = hit.transform.rotation;
-                            PaintingPlane = hit.collider.gameObject;
-                            PaintingPlane.GetComponent<MeshRenderer>().enabled = true;
-                            PaintingPlane.layer = 12;
-                            PaintingPlane.tag = "CurrentPaintingObject";
-                            hitGrid = true;
-                            if (!planePainting) { PaintPlaneOn(); }
+                        //    // and the rotation from the transform of the plane collider
+                        //    m_HitTransform.rotation = hit.transform.rotation;
+                        //    PaintingPlane = hit.collider.gameObject;
+                        //    PaintingPlane.GetComponent<MeshRenderer>().enabled = true;
+                        //    PaintingPlane.layer = 12;
+                        //    PaintingPlane.tag = "CurrentPaintingObject";
+                        //    hitGrid = true;
+                        //    if (!planePainting) { PaintPlaneOn(); }
 
-                        }
+                        //}
                         // No other grids found, so cast against the grid attached to the camera
                         // Assuming cam grid is found (usually it will be), a new grid will be created, and then detached from the camera
                         // Check first if we are in the middle of painting on a grid, and then run off the grid. In that case, end the stroke
                         // to avoid jumping to another grid far away
 
-                        // if no hit on grid layer, and we are still in Begin phase, then use camera grid layer (but only if touch phase Began, to avoid generating new planes on touch Move)
-                        else if (touch.phase == TouchPhase.Began)
+                        // if no hit on grid layer, and we are still in Begin phase, then use the grid attached to camera layer (but only if touch phase Began, to avoid generating new planes on touch Move)
+                        if (!checkHit && touch.phase == TouchPhase.Began)
                         {
                             RaycastPaintingPlane(ray, hit, cameraGridLayer);
                         }
@@ -270,18 +272,20 @@ namespace UnityEngine.XR.iOS
                         }
                         // After each touch is done, reset the touchIsOverUI flag
                         touchIsOverUI = false;
-                    hitGrid = false;
+                        hitGrid = false;
                     }
                 }
             }
 
-        private void RaycastPaintingPlane(Ray ray, RaycastHit hit, LayerMask layer)
+        private bool RaycastPaintingPlane(Ray ray, RaycastHit hit, LayerMask layer)
         {
             if (Physics.Raycast(ray, out hit, maxRayDistance, layer))
             {
                 Debug.Log("DDD");
                 m_HitTransform.position = hit.point;
                 m_HitTransform.rotation = hit.transform.rotation;
+
+                // Ideally, these next lines should not be called every frame
                 if (!planePainting) { PaintPlaneOn(); }
                 PaintingPlane = hit.collider.gameObject;
                 PaintingPlane.transform.SetParent(null); // Deparent the plane that's been hit, so it is stationary in world space
@@ -289,6 +293,11 @@ namespace UnityEngine.XR.iOS
                 PaintingPlane.layer = 12; // the int of the current Grid layer                        
                 PaintingPlane.GetComponent<MeshRenderer>().enabled = true; // set render to true for current grid only
                 hitGrid = true;
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
     }
