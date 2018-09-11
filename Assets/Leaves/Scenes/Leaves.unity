@@ -5978,6 +5978,9 @@ MonoBehaviour:
   gridLayer:
     serializedVersion: 2
     m_Bits: 1024
+  currentGridLayer:
+    serializedVersion: 2
+    m_Bits: 4096
   m_HitTransform: {fileID: 341620237}
   maxRayDistance: 30
   camPaintingPlane: {fileID: 0}
