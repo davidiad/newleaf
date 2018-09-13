@@ -116,16 +116,11 @@ namespace UnityEngine.XR.iOS
 
                 if (!touchIsOverUI)
                 {
-                    Debug.Log("YYY");
-
                     //TODO: detect whether a grid is close to perpendicular to the camera plane - if so, don't allow paintstroke on that grid
 
                     //TODO: (?)set up Begin separately from other states, so can check for tag of collider (prevent jumping from one grid to another)
 
                     // once a touch starts, only that current layer is raycast against, until touch is ended
-
-                    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                    RaycastHit hit = new RaycastHit();
 
                     // Set up 3 raycasts. First will cast against the current layer. If nothing on current layer is hit, then raycast against a Grid layer, and find the first grid hit 
                     // (not the camera grid, which will be on a different layer)
@@ -140,54 +135,22 @@ namespace UnityEngine.XR.iOS
                     // Also, add an outline instead of a grid, and add a leaf shape, that will have a consistent size (and therefore provide a visual cue
                     // for the distance of the plane from camera (thx. Kathleen T. for the idea)
                     // Also, add shapes with colliders, that can be painted, e.g., a balloon, a ring, a teapot, etc. (thx again Kathleen)
+
+
+                    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                    RaycastHit hit = new RaycastHit();
+
                     // First, raycast against current layer
+                    // There is only one current grid at a time, therefore paintstrokes won't jump from grid to grid
                     if (hitGrid || (touch.phase == TouchPhase.Began)) // hitGrid may not have been set to true yet, therefore also check on Began
                     {
                         RaycastPaintingPlane(ray, hit, currentGridLayer);
-                        //if (Physics.Raycast(ray, out hit, maxRayDistance, currentGridLayer))
-                        //{
-                        //    Debug.Log("QQQ");
-
-                        //    m_HitTransform.position = hit.point;
-                        //    m_HitTransform.rotation = hit.transform.rotation;
-
-                        //    PaintingPlane = hit.collider.gameObject;
-                        //    // TODO: These lines should not have to be called every frame
-                        //    PaintingPlane.GetComponent<MeshRenderer>().enabled = true;
-                        //    PaintingPlane.gameObject.transform.SetParent(null);
-                        //    PaintingPlane.tag = "CurrentPaintingObject";
-                        //    hitGrid = true;
-                        //    if (!planePainting) { PaintPlaneOn(); }
-
-                        //}
                     }
-
 
                     // If no hit on current layer, then raycast against Grid layer, find the first grid hit, and put it on the current layer
                     if (!hitGrid)
                     {
                         bool checkHit = RaycastPaintingPlane(ray, hit, gridLayer);
-                        //if (Physics.Raycast(ray, out hit, maxRayDistance, gridLayer))
-                        //{
-                        //    Debug.Log("ZZZ");
-
-                        //    // Get the position from the contact point
-                        //    m_HitTransform.position = hit.point;
-
-                        //    // and the rotation from the transform of the plane collider
-                        //    m_HitTransform.rotation = hit.transform.rotation;
-                        //    PaintingPlane = hit.collider.gameObject;
-                        //    PaintingPlane.GetComponent<MeshRenderer>().enabled = true;
-                        //    PaintingPlane.layer = 12;
-                        //    PaintingPlane.tag = "CurrentPaintingObject";
-                        //    hitGrid = true;
-                        //    if (!planePainting) { PaintPlaneOn(); }
-
-                        //}
-                        // No other grids found, so cast against the grid attached to the camera
-                        // Assuming cam grid is found (usually it will be), a new grid will be created, and then detached from the camera
-                        // Check first if we are in the middle of painting on a grid, and then run off the grid. In that case, end the stroke
-                        // to avoid jumping to another grid far away
 
                         // if no hit on grid layer, and we are still in Begin phase, then use the grid attached to camera layer (but only if touch phase Began, to avoid generating new planes on touch Move)
                         if (!checkHit && touch.phase == TouchPhase.Began)
@@ -198,6 +161,7 @@ namespace UnityEngine.XR.iOS
                 }
             }
 
+            //********* Adjust stroke size based on either touch.radius (finger), or on pressure (styles, e.g. Apple Pencil) ***********
                 if (Input.touchCount > 0 && m_HitTransform != null)
                 {
                    
@@ -227,6 +191,8 @@ namespace UnityEngine.XR.iOS
                     paintManager.brushSize = adjustedRadius * adjustedRadius;
                     paintManager.AdjustBrushSize();
 
+
+                    //********* For ARKit Plane Detection *********
                     if (!touchIsOverUI)
                     {
                         // This section is needed for painting on AR planes, but interferes with painting on Camera plane (hence the if statement)
@@ -247,6 +213,7 @@ namespace UnityEngine.XR.iOS
                             }
                         }
                     }
+                    //END********* For ARKit Plane Detection *********
                 }
                 else if (touch.phase == TouchPhase.Ended)
                 {
