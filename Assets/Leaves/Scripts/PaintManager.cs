@@ -26,8 +26,6 @@ public class PaintManager : MonoBehaviour
     [SerializeField] private float paintWait; // time to wait before adding next vertex when painting trail
 
     private LeavesManager leavesManager;
-    //private GameObject currentPaintingPlane;
-//    private PaintOn paintOnComponent;
     private GameObject targetSliderGO;
     private Slider targetSlider;
     private Slider paintSlider;
@@ -61,7 +59,6 @@ public class PaintManager : MonoBehaviour
         brushSizeSlider = GameObject.FindWithTag("SizeSlider").GetComponent<Slider>();
         targetSliderGO = GameObject.FindWithTag("TargetSlider");
         targetSlider = targetSliderGO.GetComponent<Slider>();
-        // currentPaintingPlane = GameObject.FindWithTag("CamPaintingPlane");
         paintPosition = leavesManager.paintPosition;
         AdjustTargetDistance();
         AdjustPaintColor(); // set the color to what the color slider is set to

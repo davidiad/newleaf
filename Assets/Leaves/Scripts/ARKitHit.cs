@@ -116,26 +116,20 @@ namespace UnityEngine.XR.iOS
 
                 if (!touchIsOverUI)
                 {
-                    //TODO: detect whether a grid is close to perpendicular to the camera plane - if so, don't allow paintstroke on that grid
-
-                    //TODO: (?)set up Begin separately from other states, so can check for tag of collider (prevent jumping from one grid to another)
-
-                    // once a touch starts, only that current layer is raycast against, until touch is ended
-
-                    // Set up 3 raycasts. First will cast against the current layer. If nothing on current layer is hit, then raycast against a Grid layer, and find the first grid hit 
+                    // Set up 3 raycasts. First will cast against the current layer. 
+                    // If nothing on current layer is hit, then raycast against a Grid layer, and find the first grid hit 
                     // (not the camera grid, which will be on a different layer)
                     // If there are no results from that raycast, then raycast against the camera grid layer
 
-                    // first, check if there are any grids (not cam grid) being hit
-                    // If a grid is found, use that exisiting grid
                     // TODO: Add a grid property to each paintstroke, and associate that property with that paintstroke
-                    // There could/will be mulitple paintstrokes for each grid
+                    // There could/will be multiple paintstrokes for each grid
 
-                    //TODO: using the distance slider automatically changes the priority so that the camera grid layer is checked first.
+                    // TODO: using the distance slider automatically changes the priority so that the camera grid layer is checked first.
                     // Also, add an outline instead of a grid, and add a leaf shape, that will have a consistent size (and therefore provide a visual cue
                     // for the distance of the plane from camera (thx. Kathleen T. for the idea)
                     // Also, add shapes with colliders, that can be painted, e.g., a balloon, a ring, a teapot, etc. (thx again Kathleen)
-
+                    // TODO: When paintstroke reaches an edge of a grid, scale the grid so the paintstroke can keep going
+                    // TODO: detect whether a grid is close to perpendicular to the camera plane - if so, don't allow paintstroke on that grid
 
                     Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                     RaycastHit hit = new RaycastHit();
@@ -248,7 +242,6 @@ namespace UnityEngine.XR.iOS
         {
             if (Physics.Raycast(ray, out hit, maxRayDistance, layer))
             {
-                Debug.Log("DDD");
                 m_HitTransform.position = hit.point;
                 m_HitTransform.rotation = hit.transform.rotation;
 
@@ -259,7 +252,7 @@ namespace UnityEngine.XR.iOS
                 PaintingPlane.tag = "CurrentPaintingObject";
                 PaintingPlane.layer = 12; // the int of the current Grid layer                        
                 PaintingPlane.GetComponent<MeshRenderer>().enabled = true; // set render to true for current grid only
-                hitGrid = true;
+                hitGrid = true; // flag so that once a touch starts, only that current layer is raycast against, until touch is ended
                 return true;
             }
             else

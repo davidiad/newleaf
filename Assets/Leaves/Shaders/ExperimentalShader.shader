@@ -22,7 +22,7 @@ Shader "PDT Shaders/ExperimentalShader" {
 
         CGPROGRAM
         // Physically based Standard lighting model, and enable shadows on all light types
-        #pragma surface surf Standard fullforwardshadows
+        #pragma surface surf Lambert alpha:fade
 
         // Use shader model 3.0 target, to get nicer looking lighting
         #pragma target 3.0
@@ -33,8 +33,8 @@ Shader "PDT Shaders/ExperimentalShader" {
             float2 uv_MainTex;
         };
 
-        half _Glossiness = 0.0;
-        half _Metallic = 0.0;
+        //half _Glossiness = 0.0;
+        //half _Metallic = 0.0;
         float4 _LineColor;
         float4 _CellColor;
         float4 _SelectedColor;
@@ -53,7 +53,7 @@ Shader "PDT Shaders/ExperimentalShader" {
             // put more per-instance properties here
         UNITY_INSTANCING_BUFFER_END(Props)
 
-        void surf (Input IN, inout SurfaceOutputStandard o) {
+        void surf (Input IN, inout SurfaceOutput o) {
             // Albedo comes from a texture tinted by color
 
             float2 uv = IN.uv_MainTex;
@@ -94,16 +94,16 @@ Shader "PDT Shaders/ExperimentalShader" {
             
 
             //Clip transparent spots using alpha cutout
-            if (brightness == 0.0) {
-                clip(c.a - 1.0);
-            }
-            brightness = 0.3;
+            //if (brightness == 0.0) {
+             //   clip(c.a - 1.0);
+            //}
+            brightness = 1.0;
 
             o.Albedo = float4( color.x*brightness,color.y*brightness,color.z*brightness,brightness);
             // Metallic and smoothness come from slider variables
-            o.Metallic = 0.0;
-            o.Smoothness = 0.0;
-            o.Alpha = 0.2;
+            //o.Metallic = 0.0;
+            //o.Smoothness = 0.0;
+            o.Alpha = color.w;
         }
         ENDCG
     }
