@@ -8,7 +8,7 @@
         
         Tags { "Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent" }
         Blend SrcAlpha OneMinusSrcAlpha
-        Cull Back Lighting Off ZWrite Off
+        Cull Back Lighting Off ZWrite On
         
         BindChannels {
             Bind "Color", color
@@ -19,7 +19,7 @@
         SubShader {        
             Pass {
                 SetTexture[_MainTex] {
-                    //ConstantColor [_Color]
+                    ConstantColor [_Color]
                     Combine Texture * constant
                 }
             }
