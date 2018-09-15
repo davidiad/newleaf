@@ -18,8 +18,6 @@ public class PaintManager : MonoBehaviour
     public bool ARPlanePainting;
     public List<PaintStroke> paintStrokesList;
     public bool paintOn;
-//    public List<Vector3> currVertices; // Stores current paint target positions to paint
-
 
     [SerializeField] private GameObject paintTarget;
     [SerializeField] Camera mainCam;

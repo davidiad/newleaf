@@ -3097,11 +3097,11 @@ Prefab:
     - target: {fileID: 2300000, guid: b16eb3c2f2fe34dd98fc648b1f6ca790, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 7f98cb4bf1ab24c2fa0e4bfaa7dd478f, type: 2}
+      objectReference: {fileID: 2100000, guid: 102f6f7744bd842f8800489f1e882a18, type: 2}
     - target: {fileID: 2300000, guid: b16eb3c2f2fe34dd98fc648b1f6ca790, type: 3}
       propertyPath: m_Materials.Array.data[1]
       value: 
-      objectReference: {fileID: 2100000, guid: 351afc9bd794c4aeda2d17e042a1c216, type: 2}
+      objectReference: {fileID: 2100000, guid: 102f6f7744bd842f8800489f1e882a18, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: b16eb3c2f2fe34dd98fc648b1f6ca790, type: 3}
   m_IsPrefabParent: 0
