@@ -3,7 +3,9 @@
 	Properties
 	{
 		_MainTex ("Texture", 2D) = "white" {}
+        _HilightTex ("Texture", 2D) = "white" {}
         _Color ("Color", Color) = (1,1,1,1)
+        _Hilight ("Highlight Strength", Range(0,1)) = 0.5
 	}
 	SubShader
 	{
@@ -37,8 +39,11 @@
 			};
 
 			sampler2D _MainTex;
+            sampler2D _HilightTex;
 			float4 _MainTex_ST;
+            float4 _HilightTex_ST;
             float4 _Color;
+            float _Hilight;
 			
 			v2f vert (appdata v)
 			{
@@ -52,8 +57,9 @@
 			
 			fixed4 frag (v2f i) : SV_Target
 			{
-				// sample the texture
-				fixed4 col = tex2D(_MainTex, i.uv) * i.color;
+				// sample the textures
+                fixed4 hi = tex2D(_HilightTex, i.uv);
+				fixed4 col = tex2D(_MainTex, i.uv) * i.color + _Hilight * (hi * hi.a);
 				// apply fog
 				UNITY_APPLY_FOG(i.fogCoord, col);
 				return col;
