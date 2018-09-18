@@ -5,7 +5,7 @@
 		_MainTex ("Texture", 2D) = "white" {}
         _MainTex2 ("Texture", 2D) = "white" {}
         _Color ("Color", Color) = (1,1,1,1)
-        _Hilight ("Highlight Strength", Range(0,1)) = 0.5
+        _Hilight ("Highlight Strength", Range(0,5)) = 1
 	}
 	SubShader
 	{
@@ -17,8 +17,6 @@
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
-			// make fog work
-//			#pragma multi_compile_fog
 			
 			#include "UnityCG.cginc"
 
@@ -34,7 +32,6 @@
 			{
 				half2 uv : TEXCOORD0;
                 half2 uv2 : TEXCOORD1;
-//				UNITY_FOG_COORDS(1)
 				float4 vertex : SV_POSITION;
                 float4 color : COLOR;
 			};
@@ -55,17 +52,13 @@
 				o.uv = TRANSFORM_TEX(v.texcoord, _MainTex);
                 o.uv2 = TRANSFORM_TEX(v.texcoord1, _MainTex2);
                 o.color = _Color;
-//				UNITY_TRANSFER_FOG(o,o.vertex);
 				return o;
 			}
 			
 			fixed4 frag (v2f i) : SV_Target
 			{
-				// sample the textures
                 fixed4 hi = tex2D(_MainTex2, i.uv2);
 				fixed4 col = tex2D(_MainTex, i.uv) * i.color + _Hilight * (hi * hi.a);
-				// apply fog
-//				UNITY_APPLY_FOG(i.fogCoord, col);
 				return col;
 			}
 			ENDCG
