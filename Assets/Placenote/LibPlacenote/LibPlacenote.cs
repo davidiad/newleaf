@@ -497,23 +497,6 @@ public class LibPlacenote : MonoBehaviour
 		#endif
 	}
 
-
-	/// <summary>
-	/// Shutdown the Placenote SDK, especially all mapping threads
-	/// </summary>
-	public void Shutdown ()
-	{
-		#if UNITY_EDITOR
-		mInitialized = false;
-		StopSession();
-		#endif
-
-		#if !UNITY_EDITOR
-		PNShutdown();
-		#endif
-	}
-
-
 	/// <summary>
 	/// Indicates whether the LibPlacenote SDK is successful
 	/// </summary>
@@ -1314,7 +1297,7 @@ public class LibPlacenote : MonoBehaviour
 		#endif
 
 		if (lmSize == 0) {
-			//Debug.Log ("Empty landmarks, probably tried to fail");
+			Debug.Log ("Empty landmarks, probably tried to fail");
 			return null;
 		}
 
@@ -1344,7 +1327,7 @@ public class LibPlacenote : MonoBehaviour
 		#endif
 
 		if (lmSize == 0) {
-			//Debug.Log ("Empty landmarks, probably tried to fail");
+			Debug.Log ("Empty landmarks, probably tried to fail");
 			return null;
 		}
 
@@ -1428,8 +1411,4 @@ public class LibPlacenote : MonoBehaviour
 	[DllImport ("__Internal")]
 	[return: MarshalAs (UnmanagedType.I4)]
 	private static extern int PNSetMetadata (string mapId, string metadataJson);
-
-	[DllImport ("__Internal")]
-	[return: MarshalAs (UnmanagedType.I4)]
-	private static extern int PNShutdown ();
 }

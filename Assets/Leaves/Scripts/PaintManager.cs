@@ -134,6 +134,7 @@ public class PaintManager : MonoBehaviour
         GameObject currentBrush = GameObject.FindWithTag("PaintBrush");
         if (currentBrush)
         {
+            currentBrush.GetComponent<AraTrail>().materials[0].color = paintColor;
             currentBrush.GetComponent<AraTrail>().initialColor = paintColor;
         }
     }
