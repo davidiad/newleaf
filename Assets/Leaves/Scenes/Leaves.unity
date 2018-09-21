@@ -2291,8 +2291,8 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_HighlightedColor: {r: 0.72204787, g: 0.9829093, b: 0.11706148, a: 1}
+    m_PressedColor: {r: 0.1972186, g: 0.80642027, b: 0.15420091, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
@@ -7203,7 +7203,7 @@ MonoBehaviour:
   m_MinValue: 1
   m_MaxValue: 10000
   m_WholeNumbers: 0
-  m_Value: 10000
+  m_Value: 20
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:

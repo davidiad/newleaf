@@ -239,11 +239,15 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
             return;
         }
 
-        //foreach (Transform t in mListContentParent.transform)
-        //{
-        //    // TODO: check if this destroy command is a cause of the slow loading of the list
-        //    Destroy(t.gameObject);
-        //}
+        OnRadiusSelect();
+
+
+        /*
+        foreach (Transform t in mListContentParent.transform)
+        {
+            // TODO: check if this destroy com mand is a cause of the slow loading of the list
+            Destroy(t.gameObject);
+        }
         mMapLoader.SetActive(true);
         //mMapListPanel.SetActive(true);
 
@@ -268,26 +272,30 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
                 }
             }
         });
+        */
     }
 
     // Radius stuff - new with PN 1.62
     public void OnRadiusSelect()
     {
         LocationInfo locationInfo = Input.location.lastData;
-        Debug.Log(locationInfo);
 
-        float radiusSearch = mRadiusSlider.value;// * mMaxRadiusSearch;
+        Debug.Log(locationInfo.ToString());
+
+
+        float radiusSearch = 20f;//mRadiusSlider.value;// * mMaxRadiusSearch;
         //mRadiusLabel.text = "Distance Filter: " + (radiusSearch / 1000.0).ToString("F2") + " km";
-
+        Debug.Log(radiusSearch.ToString());
+        mMapLoader.SetActive(true);
         LibPlacenote.Instance.SearchMaps(locationInfo.latitude, locationInfo.longitude, radiusSearch,
             (mapList) =>
             {
                 //                Debug.Log("MAPID INFO'S HOW much: " + mapList[0].metadata.ToString()); 
 
-                foreach (Transform t in mListContentParent.transform)
-                {
-                    Destroy(t.gameObject);
-                }
+                //foreach (Transform t in mListContentParent.transform)
+                //{
+                //    Destroy(t.gameObject);
+                //}
                 // render the map list!
                 foreach (LibPlacenote.MapInfo mapId in mapList)
                 {
