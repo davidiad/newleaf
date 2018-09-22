@@ -42,7 +42,7 @@ public class PaintManager : MonoBehaviour
 
     void Start()
     {
-        paintWait = 0.01f; // factor to control speed of re-drawing saved paintstrokes
+        paintWait = 0.03f; // factor to control speed of re-drawing saved paintstrokes
         brushSize = 0.005f; // in meters
         strokeThickness = 1f;
         paintOn = false;

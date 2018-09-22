@@ -292,10 +292,10 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
             {
                 //                Debug.Log("MAPID INFO'S HOW much: " + mapList[0].metadata.ToString()); 
 
-                //foreach (Transform t in mListContentParent.transform)
-                //{
-                //    Destroy(t.gameObject);
-                //}
+                foreach (Transform t in mListContentParent.transform)
+                {
+                    Destroy(t.gameObject);
+                }
                 // render the map list!
                 foreach (LibPlacenote.MapInfo mapId in mapList)
                 {
@@ -347,7 +347,8 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
 
     void AddMapToList(LibPlacenote.MapInfo mapInfo)
     {
-        GameObject newElement = Instantiate(mListElement) as GameObject;
+       // GameObject newElement = Instantiate(mListElement) as GameObject;
+        GameObject newElement = Instantiate(Resources.Load("LeafInfoElement", typeof(GameObject))) as GameObject;
         MapInfoElement listElement = newElement.GetComponent<MapInfoElement>();
         listElement.Initialize(mapInfo, mToggleGroup, mListContentParent, (value) =>
         {
