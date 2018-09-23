@@ -19,7 +19,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
     // Get refs to buttons in the UI
     private GameObject mMapLoader;
     private GameObject mExitButton;
-    private GameObject mListElement;
+//    private GameObject mListElement;
     private RectTransform mListContentParent;
     private ToggleGroup mToggleGroup; // Toggle Group for the Toggles in each list element menu item
     private GameObject mPlaneDetectionToggle;
@@ -104,7 +104,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
     {
         mMapLoader = GameObject.FindWithTag("MapLoader");
         mExitButton = GameObject.FindWithTag("ExitMapButton");
-        mListElement = GameObject.FindWithTag("MapInfoElement");
+ //       mListElement = GameObject.FindWithTag("MapInfoElement");
 
         GameObject ListParent = GameObject.FindWithTag("ListContentParent");
         mListContentParent = ListParent.GetComponent<RectTransform>();
@@ -275,6 +275,32 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
         */
     }
 
+    public void SearchUserData()
+    {
+        LibPlacenote.Instance.SearchMapsByUserData("person",
+            (mapList) =>
+        {
+            //TODO:// extract following to method
+            foreach (Transform t in mListContentParent.transform)
+            {
+                Destroy(t.gameObject);
+            }
+            // render the map list!
+            foreach (LibPlacenote.MapInfo mapId in mapList)
+            {
+                Debug.Log(mapId);
+                if (mapId.metadata != null) // extra if statement just prevents warning in Editor
+                {
+                    if (mapId.metadata.userdata != null)
+                    {
+                        Debug.Log(mapId.metadata.userdata.ToString(Formatting.None));
+                    }
+                    AddMapToList(mapId);
+                }
+            }
+        });
+    }
+
     // Radius stuff - new with PN 1.62
     public void OnRadiusSelect()
     {
@@ -287,29 +313,30 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
         //mRadiusLabel.text = "Distance Filter: " + (radiusSearch / 1000.0).ToString("F2") + " km";
         Debug.Log(radiusSearch.ToString());
         mMapLoader.SetActive(true);
-        LibPlacenote.Instance.SearchMaps(locationInfo.latitude, locationInfo.longitude, radiusSearch,
-            (mapList) =>
-            {
-                //                Debug.Log("MAPID INFO'S HOW much: " + mapList[0].metadata.ToString()); 
+        SearchUserData();
+        //LibPlacenote.Instance.SearchMaps(locationInfo.latitude, locationInfo.longitude, radiusSearch,
+            //(mapList) =>
+            //{
+            //    //                Debug.Log("MAPID INFO'S HOW much: " + mapList[0].metadata.ToString()); 
 
-                foreach (Transform t in mListContentParent.transform)
-                {
-                    Destroy(t.gameObject);
-                }
-                // render the map list!
-                foreach (LibPlacenote.MapInfo mapId in mapList)
-                {
-                    Debug.Log(mapId);
-                    if (mapId.metadata != null) // extra if statement just prevents warning in Editor
-                    {
-                        if (mapId.metadata.userdata != null)
-                        {
-                            Debug.Log(mapId.metadata.userdata.ToString(Formatting.None));
-                        }
-                        AddMapToList(mapId);
-                    }
-                }
-            });
+            //    foreach (Transform t in mListContentParent.transform)
+            //    {
+            //        Destroy(t.gameObject);
+            //    }
+            //    // render the map list!
+            //    foreach (LibPlacenote.MapInfo mapId in mapList)
+            //    {
+            //        Debug.Log(mapId);
+            //        if (mapId.metadata != null) // extra if statement just prevents warning in Editor
+            //        {
+            //            if (mapId.metadata.userdata != null)
+            //            {
+            //                Debug.Log(mapId.metadata.userdata.ToString(Formatting.None));
+            //            }
+            //            AddMapToList(mapId);
+            //        }
+            //    }
+            //});
     }
 
     public void ResetSlider()
@@ -587,6 +614,8 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
                     userdata[sModels.jsonKey] = sModels.ToJSON(); // replaces shapeList
 
                     userdata[sPaintStrokes.jsonKey] = sPaintStrokes.ToJSON();
+
+                    userdata["person"] = "David";
 
                     if (useLocation)
                     {
