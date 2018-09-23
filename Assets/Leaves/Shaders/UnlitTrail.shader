@@ -51,7 +51,7 @@
 				o.vertex = UnityObjectToClipPos(v.vertex);
 				o.uv = TRANSFORM_TEX(v.texcoord, _MainTex);
                 o.uv2 = TRANSFORM_TEX(v.texcoord1, _MainTex2);
-                o.color = _Color;
+                o.color = v.color;
 				return o;
 			}
 			
