@@ -32,6 +32,7 @@ TagManager:
   - LeavesManager
   - Grid
   - CurrentPaintingObject
+  - name
   layers:
   - Default
   - TransparentFX

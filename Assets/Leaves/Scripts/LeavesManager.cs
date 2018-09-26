@@ -55,6 +55,8 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
     private bool mappingStarted;
     private string currentMapId;
 
+    private string name;
+
     private Coroutine pulseMapButton;
 
     private string mSelectedMapId
@@ -117,6 +119,8 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
         mRadiusSlider = GameObject.FindWithTag("RadiusSlider").GetComponent<Slider>();
         ResetSlider();
         mMapLoader.SetActive(false); // needs to be active at Start, so the reference to it can be found
+
+        name = GameObject.FindWithTag("name").GetComponent<Text>().text;
     }
 
     // force Ahead Of Time compiling of List<SerializableVector3> with this unused method
@@ -615,7 +619,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
 
                     userdata[sPaintStrokes.jsonKey] = sPaintStrokes.ToJSON();
 
-                    userdata["person"] = "David";
+                    userdata["person"] = name;
 
                     if (useLocation)
                     {
