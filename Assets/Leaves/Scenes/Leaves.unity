@@ -1475,12 +1475,34 @@ MonoBehaviour:
   m_CharacterLimit: 12
   m_OnEndEdit:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1868838729}
+        m_MethodName: UpdateName
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.InputField+SubmitEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1868838729}
+        m_MethodName: UpdateName
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.InputField+OnChangeEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
   m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
@@ -5977,7 +5999,7 @@ Prefab:
     - target: {fileID: 224097549379246650, guid: 496dc46de771248f8bab2cca41920d1c,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: -51
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224097549379246650, guid: 496dc46de771248f8bab2cca41920d1c,
         type: 2}
@@ -5997,7 +6019,7 @@ Prefab:
     - target: {fileID: 224097549379246650, guid: 496dc46de771248f8bab2cca41920d1c,
         type: 2}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224097549379246650, guid: 496dc46de771248f8bab2cca41920d1c,
         type: 2}
@@ -6007,7 +6029,7 @@ Prefab:
     - target: {fileID: 224097549379246650, guid: 496dc46de771248f8bab2cca41920d1c,
         type: 2}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224097549379246650, guid: 496dc46de771248f8bab2cca41920d1c,
         type: 2}

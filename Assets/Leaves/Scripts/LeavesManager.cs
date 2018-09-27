@@ -119,7 +119,12 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
         mRadiusSlider = GameObject.FindWithTag("RadiusSlider").GetComponent<Slider>();
         ResetSlider();
         mMapLoader.SetActive(false); // needs to be active at Start, so the reference to it can be found
+        UpdateName();
 
+    }
+
+    public void UpdateName()
+    {
         name = GameObject.FindWithTag("name").GetComponent<Text>().text;
     }
 
