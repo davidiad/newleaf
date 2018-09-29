@@ -286,7 +286,9 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
 
     public void SearchUserData()
     {
-        LibPlacenote.Instance.SearchMapsByUserData("person",
+        //string query = "person[name=" + name + "]";
+        string q = "person:" + name;
+        LibPlacenote.Instance.SearchMapsByUserData(q,
             (mapList) =>
         {
             //TODO:// extract following to method
