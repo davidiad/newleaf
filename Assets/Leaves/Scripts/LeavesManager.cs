@@ -287,10 +287,12 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
     public void SearchUserData()
     {
         //string query = "person[name=" + name + "]";
-        string q = "person:" + name;
+        //string q = "person:" + name;
+        string q = "*person[name=Kelly]";
         LibPlacenote.Instance.SearchMapsByUserData(q,
             (mapList) =>
         {
+            Debug.Log("MAPLIST: " + mapList);
             //TODO:// extract following to method
             foreach (Transform t in mListContentParent.transform)
             {
@@ -626,7 +628,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
 
                     userdata[sPaintStrokes.jsonKey] = sPaintStrokes.ToJSON();
 
-                    userdata["person"] = name;
+                userdata["person"] = name;
 
                     if (useLocation)
                     {
