@@ -7,8 +7,8 @@ using Newtonsoft.Json.Linq;
 public class PersonInfo
 {
     public int ID { get; set; }
-    public string Name { get; set; }
-    public Role Role { get; set; }
+    public string name { get; set; }
+    public Role role { get; set; }
 }
 
 [Serializable]
@@ -34,33 +34,26 @@ public class SerializePeople : ScriptableObject
 
     // TODO: handle case where a person's name is changed to another person
 
-    //public void OnAddToScene()
-    //{
-    //    ModelInfo info = new ModelInfo();
+    public void OnAddToScene()
+    {
+        PersonInfo info = new PersonInfo();
 
-    //    // get the object transform info to use
-    //    Vector3 pos = Camera.main.transform.position + Camera.main.transform.forward * 1.3f;
-    //    Quaternion rot = Camera.main.transform.rotation;
+        // Get the name of the sender
 
-    //    // put the transform info into model info object
-    //    info.px = pos.x;
-    //    info.py = pos.y;
-    //    info.pz = pos.z;
-    //    info.qx = rot.x;
-    //    info.qy = rot.y;
-    //    info.qz = rot.z;
-    //    info.qw = rot.w;
-    //    info.modelIndex = 0; // Default to 0 (just one model) for now
+        // put the transform info into model info object
+        info.name = "David"; // link to value of text box
+        info.role = Role.Sender;
+        info.ID = 0;
 
-    //    // add info to info list
-    //    modelInfoList.Add(info);
+        // add info to info list
+        personInfoList.Add(info);
 
-    //    // Instantiate and add to scene
-    //    GameObject model = ModelFromInfo(info);
+        //// Instantiate and add to scene
+        //GameObject model = ModelFromInfo(info);
 
-    //    // add the game object to object list
-    //    modelObjList.Add(model);
-    //}
+        //// add the game object to object list
+        //modelObjList.Add(model);
+    }
 
     //private GameObject ModelFromInfo(ModelInfo info)
     //{

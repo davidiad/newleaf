@@ -18,10 +18,8 @@ public class PaintStrokeInfoArray
     public PaintStrokeInfo[] paintStrokeInfos;
 }
 
-
 public class SerializePaintStrokes : ScriptableObject
 {
-
     // vars are public to allow accessing from LeavesManager
     public String jsonKey;
     public List<PaintStrokeInfo> infoList;
@@ -68,7 +66,6 @@ public class SerializePaintStrokes : ScriptableObject
 
                 // Add the size per point
                 psi.pointSizes = new float[vertCount];
-
 
                 if (vertCount > 0)
                 {
