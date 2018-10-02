@@ -1,6 +1,4 @@
-﻿// Updated for Placenote 1.6.2
-
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
@@ -19,7 +17,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
     // Get refs to buttons in the UI
     private GameObject mMapLoader;
     private GameObject mExitButton;
-//    private GameObject mListElement;
+    //    private GameObject mListElement;
     private RectTransform mListContentParent;
     private ToggleGroup mToggleGroup; // Toggle Group for the Toggles in each list element menu item
     private GameObject mPlaneDetectionToggle;
@@ -33,7 +31,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
     private UnityARImageFrameData mImage = null;
     private UnityARCamera mARCamera;
     private bool mARKitInit = false;
-//    private List<ShapeInfo> shapeInfoList = new List<ShapeInfo>();
+    //    private List<ShapeInfo> shapeInfoList = new List<ShapeInfo>();
     private List<GameObject> shapeObjList = new List<GameObject>();
     private List<PaintStrokeInfo> paintStrokeInfoList = new List<PaintStrokeInfo>();
     private List<PaintStroke> paintStrokeObjList = new List<PaintStroke>();
@@ -41,8 +39,8 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
     private PaintManager paintManager;
     private SerializeModels sModels;
     private SerializePaintStrokes sPaintStrokes;
+    private SerializePeople sPeople;
 
-    //New stuff with PN 1.62
     private Slider mRadiusSlider;
     private float defaultDistance = 8000f;
     private LibPlacenote.MapMetadataSettable mCurrMapDetails;
@@ -55,7 +53,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
     private bool mappingStarted;
     private string currentMapId;
 
-    private string name;
+    private string currentName;
 
     private Coroutine pulseMapButton;
 
@@ -106,7 +104,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
     {
         mMapLoader = GameObject.FindWithTag("MapLoader");
         mExitButton = GameObject.FindWithTag("ExitMapButton");
- //       mListElement = GameObject.FindWithTag("MapInfoElement");
+        //       mListElement = GameObject.FindWithTag("MapInfoElement");
 
         GameObject ListParent = GameObject.FindWithTag("ListContentParent");
         mListContentParent = ListParent.GetComponent<RectTransform>();
@@ -125,7 +123,12 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
 
     public void UpdateName()
     {
-        name = GameObject.FindWithTag("name").GetComponent<Text>().text;
+        string n = GameObject.FindWithTag("name").GetComponent<Text>().text;
+        if (n != null) 
+        {
+            currentName = n;
+            sPeople.currentName = currentName;
+        } 
     }
 
     // force Ahead Of Time compiling of List<SerializableVector3> with this unused method
@@ -248,8 +251,8 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
             return;
         }
 
+        UpdateName();
         OnRadiusSelect();
-
 
         /*
         foreach (Transform t in mListContentParent.transform)
@@ -289,7 +292,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
         //string query = "person[name=" + name + "]";
         //string q = "person:" + name;
         string q = "*person[name=Kelly]";
-        LibPlacenote.Instance.SearchMapsByUserData(q,
+        LibPlacenote.Instance.SearchMapsByUserData("*people.person[name=Kelly]",
             (mapList) =>
         {
             Debug.Log("MAPLIST: " + mapList);
@@ -328,28 +331,28 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
         mMapLoader.SetActive(true);
         SearchUserData();
         //LibPlacenote.Instance.SearchMaps(locationInfo.latitude, locationInfo.longitude, radiusSearch,
-            //(mapList) =>
-            //{
-            //    //                Debug.Log("MAPID INFO'S HOW much: " + mapList[0].metadata.ToString()); 
+        //(mapList) =>
+        //{
+        //    //                Debug.Log("MAPID INFO'S HOW much: " + mapList[0].metadata.ToString()); 
 
-            //    foreach (Transform t in mListContentParent.transform)
-            //    {
-            //        Destroy(t.gameObject);
-            //    }
-            //    // render the map list!
-            //    foreach (LibPlacenote.MapInfo mapId in mapList)
-            //    {
-            //        Debug.Log(mapId);
-            //        if (mapId.metadata != null) // extra if statement just prevents warning in Editor
-            //        {
-            //            if (mapId.metadata.userdata != null)
-            //            {
-            //                Debug.Log(mapId.metadata.userdata.ToString(Formatting.None));
-            //            }
-            //            AddMapToList(mapId);
-            //        }
-            //    }
-            //});
+        //    foreach (Transform t in mListContentParent.transform)
+        //    {
+        //        Destroy(t.gameObject);
+        //    }
+        //    // render the map list!
+        //    foreach (LibPlacenote.MapInfo mapId in mapList)
+        //    {
+        //        Debug.Log(mapId);
+        //        if (mapId.metadata != null) // extra if statement just prevents warning in Editor
+        //        {
+        //            if (mapId.metadata.userdata != null)
+        //            {
+        //                Debug.Log(mapId.metadata.userdata.ToString(Formatting.None));
+        //            }
+        //            AddMapToList(mapId);
+        //        }
+        //    }
+        //});
     }
 
     public void ResetSlider()
@@ -387,7 +390,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
 
     void AddMapToList(LibPlacenote.MapInfo mapInfo)
     {
-       // GameObject newElement = Instantiate(mListElement) as GameObject;
+        // GameObject newElement = Instantiate(mListElement) as GameObject;
         GameObject newElement = Instantiate(Resources.Load("LeafInfoElement", typeof(GameObject))) as GameObject;
         MapInfoElement listElement = newElement.GetComponent<MapInfoElement>();
         listElement.Initialize(mapInfo, mToggleGroup, mListContentParent, (value) =>
@@ -623,12 +626,13 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
                     mLabelText.text = "Saved Map Name: " + metadata.name;
                     JObject userdata = new JObject();
                     metadata.userdata = userdata;
-                    
+
                     userdata[sModels.jsonKey] = sModels.ToJSON(); // replaces shapeList
 
                     userdata[sPaintStrokes.jsonKey] = sPaintStrokes.ToJSON();
 
-                userdata["person"] = name;
+                    //userdata["person"] = name;
+                    userdata[sPeople.jsonKey] = sPeople.ToJSON();
 
                     if (useLocation)
                     {
@@ -688,6 +692,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
 
         userdata[sModels.jsonKey] = sModels.ToJSON();
         userdata[sPaintStrokes.jsonKey] = sPaintStrokes.ToJSON();
+        userdata[sPeople.jsonKey] = sPeople.ToJSON();
 
 
         if (useLocation)
@@ -706,6 +711,11 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
         }
 
         LibPlacenote.Instance.SetMetadata(mid, metadata);
+    }
+
+    public void OnAddPersonEvent()
+    {
+        sPeople.OnAddToScene();
     }
 
     public void OnDropShapeClick()

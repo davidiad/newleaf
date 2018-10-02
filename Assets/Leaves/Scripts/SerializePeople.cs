@@ -2,6 +2,7 @@
 using UnityEngine;
 using System;
 using Newtonsoft.Json.Linq;
+using UnityEngine.UI;
 
 [Serializable]
 public class PersonInfo
@@ -10,6 +11,9 @@ public class PersonInfo
     public string name { get; set; }
     public Role role { get; set; }
 }
+
+// Note: Person and PersonInfo currently have the same, serializable properties, but keeping both
+// for now to keep this class's structure analogous to Model and Paintstroke
 
 [Serializable]
 public class PersonInfoArray
@@ -24,46 +28,48 @@ public class SerializePeople : ScriptableObject
     public String jsonKey { get; set; }
     public List<PersonInfo> personInfoList;
     public List<Person> personObjList;
+    public string currentName;
 
     public void Init()
     {
         personInfoList = new List<PersonInfo>();
         personObjList = new List<Person>();
         jsonKey = "people";
+        string n = GameObject.FindWithTag("name").GetComponent<Text>().text;
+        if (n != null) 
+        {
+            currentName = n;
+        } else 
+        {
+            currentName = "noname";
+        }
     }
 
-    // TODO: handle case where a person's name is changed to another person
+    // TODO: handle case where the current person's name is changed to another person
 
     public void OnAddToScene()
     {
+        Clear();
         PersonInfo info = new PersonInfo();
-
-        // Get the name of the sender
-
-        // put the transform info into model info object
-        info.name = "David"; // link to value of text box
+        info.name = currentName; // link to value of input text box
         info.role = Role.Sender;
         info.ID = 0;
 
-        // add info to info list
         personInfoList.Add(info);
 
-        //// Instantiate and add to scene
-        //GameObject model = ModelFromInfo(info);
+        Person person = PersonFromInfo(info);
 
-        //// add the game object to object list
-        //modelObjList.Add(model);
+        personObjList.Add(person);
     }
 
-    //private GameObject ModelFromInfo(ModelInfo info)
-    //{
-    //    Vector3 pos = new Vector3(info.px, info.py, info.pz);
-    //    Quaternion rot = new Quaternion(info.qx, info.qy, info.qz, info.qw);
-    //    Vector3 localScale = new Vector3(0.05f, 0.05f, 0.05f);
-    //    GameObject model = Instantiate(prefabs[info.modelIndex], pos, rot);
-
-    //    return model;
-    //}
+    private Person PersonFromInfo(PersonInfo info)
+    {
+        Person person = new Person();
+        person.name = info.name;
+        person.role = info.role;
+        person.ID = info.ID;
+        return person;
+    }
 
     // convert array of person info to json
     public JObject ToJSON()
@@ -95,8 +101,8 @@ public class SerializePeople : ScriptableObject
             foreach (var info in personInfoArray.personInfos)
             {
                 personInfoList.Add(info);
- //               Person person = PersonFromInfo(info);
- //               personObjList.Add(person);
+                Person person = PersonFromInfo(info);
+                personObjList.Add(person);
             }
         }
     }
@@ -104,6 +110,7 @@ public class SerializePeople : ScriptableObject
     public void Clear()
     {
         personInfoList.Clear();
+        personObjList.Clear();
     }
 
 }
