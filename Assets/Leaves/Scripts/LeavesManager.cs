@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 
-public class LeavesManager : MonoBehaviour, PlacenoteListener
+public class LeavesManager : MonoBehaviour, PlacenoteListener // Updated to Placenote 1.6.8
 {
     public GameObject modelPrefab;
     public Vector3 paintPosition;
@@ -27,9 +27,9 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
     private PlacenoteARGeneratePlane mPNPlaneManager;
 
     private UnityARSessionNativeInterface mSession;
-    private bool mFrameUpdated = false;
-    private UnityARImageFrameData mImage = null;
-    private UnityARCamera mARCamera;
+ //   private bool mFrameUpdated = false;
+ //   private UnityARImageFrameData mImage = null;
+//    private UnityARCamera mARCamera;
     private bool mARKitInit = false;
     //    private List<ShapeInfo> shapeInfoList = new List<ShapeInfo>();
     private List<GameObject> shapeObjList = new List<GameObject>();
@@ -88,7 +88,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
         Input.location.Start();
 
         mSession = UnityARSessionNativeInterface.GetARSessionNativeInterface();
-        UnityARSessionNativeInterface.ARFrameUpdatedEvent += ARFrameUpdated;
+//        UnityARSessionNativeInterface.ARFrameUpdatedEvent += ARFrameUpdated;
         StartARKit();
         FeaturesVisualizer.EnablePointcloud();
         LibPlacenote.Instance.RegisterListener(this);
@@ -139,31 +139,31 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
         List<SerializableVector3> forceAOT = new List<SerializableVector3>();
     }
 
-    private void ARFrameUpdated(UnityARCamera camera)
-    {
-        mFrameUpdated = true;
-        mARCamera = camera;
-    }
+    //private void ARFrameUpdated(UnityARCamera camera)
+    //{
+    //    mFrameUpdated = true;
+    //    mARCamera = camera;
+    //}
 
-    private void InitARFrameBuffer()
-    {
-        mImage = new UnityARImageFrameData();
+    //private void InitARFrameBuffer()
+    //{
+    //    mImage = new UnityARImageFrameData();
 
-        int yBufSize = mARCamera.videoParams.yWidth * mARCamera.videoParams.yHeight;
-        mImage.y.data = Marshal.AllocHGlobal(yBufSize);
-        mImage.y.width = (ulong)mARCamera.videoParams.yWidth;
-        mImage.y.height = (ulong)mARCamera.videoParams.yHeight;
-        mImage.y.stride = (ulong)mARCamera.videoParams.yWidth;
+    //    int yBufSize = mARCamera.videoParams.yWidth * mARCamera.videoParams.yHeight;
+    //    mImage.y.data = Marshal.AllocHGlobal(yBufSize);
+    //    mImage.y.width = (ulong)mARCamera.videoParams.yWidth;
+    //    mImage.y.height = (ulong)mARCamera.videoParams.yHeight;
+    //    mImage.y.stride = (ulong)mARCamera.videoParams.yWidth;
 
-        // This does assume the YUV_NV21 format
-        int vuBufSize = mARCamera.videoParams.yWidth * mARCamera.videoParams.yWidth / 2;
-        mImage.vu.data = Marshal.AllocHGlobal(vuBufSize);
-        mImage.vu.width = (ulong)mARCamera.videoParams.yWidth / 2;
-        mImage.vu.height = (ulong)mARCamera.videoParams.yHeight / 2;
-        mImage.vu.stride = (ulong)mARCamera.videoParams.yWidth;
+    //    // This does assume the YUV_NV21 format
+    //    int vuBufSize = mARCamera.videoParams.yWidth * mARCamera.videoParams.yWidth / 2;
+    //    mImage.vu.data = Marshal.AllocHGlobal(vuBufSize);
+    //    mImage.vu.width = (ulong)mARCamera.videoParams.yWidth / 2;
+    //    mImage.vu.height = (ulong)mARCamera.videoParams.yHeight / 2;
+    //    mImage.vu.stride = (ulong)mARCamera.videoParams.yWidth;
 
-        mSession.SetCapturePixelData(true, mImage.y.data, mImage.vu.data);
-    }
+    //    mSession.SetCapturePixelData(true, mImage.y.data, mImage.vu.data);
+    //}
 
     void Update()
     {
@@ -171,41 +171,41 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
         {
             OnNewMapClick();
         }
-        if (mFrameUpdated)
-        {
-            mFrameUpdated = false;
-            if (mImage == null)
-            {
-                InitARFrameBuffer();
-            }
+        //if (mFrameUpdated)
+        //{
+        //    mFrameUpdated = false;
+        //    if (mImage == null)
+        //    {
+        //        InitARFrameBuffer();
+        //    }
 
-            if (mARCamera.trackingState == ARTrackingState.ARTrackingStateNotAvailable)
-            {
-                // ARKit pose is not yet initialized
-                return;
-            }
-            else if (!mARKitInit)
-            {
-                mARKitInit = true;
-                mLabelText.text = "ARKit Initialized";
-                if (!LibPlacenote.Instance.Initialized())
-                {
-                    Debug.Log("initialized Mapping");
+        //    if (mARCamera.trackingState == ARTrackingState.ARTrackingStateNotAvailable)
+        //    {
+        //        // ARKit pose is not yet initialized
+        //        return;
+        //    }
+        //    else if (!mARKitInit)
+        //    {
+        //        mARKitInit = true;
+        //        mLabelText.text = "ARKit Initialized";
+        //        if (!LibPlacenote.Instance.Initialized())
+        //        {
+        //            Debug.Log("initialized Mapping");
 
 
-                }
+        //        }
 
-            }
+        //    }
 
-            Matrix4x4 matrix = mSession.GetCameraPose();
+        //    Matrix4x4 matrix = mSession.GetCameraPose();
 
-            Vector3 arkitPosition = PNUtility.MatrixOps.GetPosition(matrix);
-            Quaternion arkitQuat = PNUtility.MatrixOps.GetRotation(matrix);
+        //    Vector3 arkitPosition = PNUtility.MatrixOps.GetPosition(matrix);
+        //    Quaternion arkitQuat = PNUtility.MatrixOps.GetRotation(matrix);
 
-            LibPlacenote.Instance.SendARFrame(mImage, arkitPosition, arkitQuat,
-                                              mARCamera.videoParams.screenOrientation);
+        //    LibPlacenote.Instance.SendARFrame(mImage, arkitPosition, arkitQuat,
+        //                                      mARCamera.videoParams.screenOrientation);
 
-        }
+        //}
 
         paintPosition = Camera.main.transform.position + Camera.main.transform.forward * 0.3f;
         if (mappingStarted)
@@ -247,7 +247,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
         if (!LibPlacenote.Instance.Initialized())
         {
             Debug.Log("SDK not yet initialized");
-            ToastManager.ShowToast("SDK not yet initialized", 2f);
+//            ToastManager.ShowToast("SDK not yet initialized", 2f);
             return;
         }
 
@@ -421,7 +421,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
         if (!LibPlacenote.Instance.Initialized())
         {
             Debug.Log("SDK not yet initialized");
-            ToastManager.ShowToast("SDK not yet initialized", 2f);
+//            ToastManager.ShowToast("SDK not yet initialized", 2f);
             return;
         }
 
@@ -478,7 +478,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
         if (!LibPlacenote.Instance.Initialized())
         {
             Debug.Log("SDK not yet initialized");
-            ToastManager.ShowToast("SDK not yet initialized", 2f);
+//            ToastManager.ShowToast("SDK not yet initialized", 2f);
             return;
         }
 
@@ -556,7 +556,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
 
     private void ConfigureSession(bool clearPlanes)
     {
-#if !UNITY_EDITOR
+//#if !UNITY_EDITOR
         ARKitWorldTrackingSessionConfiguration config = new ARKitWorldTrackingSessionConfiguration();
 
         if (mPlaneDetectionToggle.GetComponent<Toggle>().isOn)
@@ -584,7 +584,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
         config.getPointCloudData = true;
         config.enableLightEstimation = true;
         mSession.RunWithConfig(config);
-#endif
+//#endif
     }
 
 
@@ -593,7 +593,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener
         if (!LibPlacenote.Instance.Initialized())
         {
             Debug.Log("SDK not yet initialized");
-            ToastManager.ShowToast("SDK not yet initialized", 2f);
+//            ToastManager.ShowToast("SDK not yet initialized", 2f);
             return;
         }
 
