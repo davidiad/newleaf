@@ -70,8 +70,6 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener // Updated to Plac
 
     void Start()
     {
-        InitUI();
-
         // Set up SerializableModel's
         sModels = ScriptableObject.CreateInstance<SerializeModels>();
         sModels.Init();
@@ -79,6 +77,11 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener // Updated to Plac
 
         sPaintStrokes = ScriptableObject.CreateInstance<SerializePaintStrokes>();
         sPaintStrokes.Init();
+
+        sPeople = ScriptableObject.CreateInstance<SerializePeople>();
+        sPeople.Init();
+
+        InitUI();
 
         currentMapId = "";
         mappingStarted = false;
@@ -127,8 +130,10 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener // Updated to Plac
         if (n != null) 
         {
             currentName = n;
+            Debug.Log("CN   " + currentName);
             sPeople.currentName = currentName;
         } 
+        sPeople.OnNameChange();
     }
 
     // force Ahead Of Time compiling of List<SerializableVector3> with this unused method
@@ -289,11 +294,15 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener // Updated to Plac
 
     public void SearchUserData()
     {
-        //string query = "person[name=" + name + "]";
+        string q = "people[**][name=" + currentName + "]";
+        Debug.Log("Q: " + q);
         //string q = "person:" + name;
-        string q = "*person[name=Kelly]";
-        LibPlacenote.Instance.SearchMapsByUserData("*people.person[name=Kelly]",
-            (mapList) =>
+        //string q = "people[**][name=Kelly]";
+
+        /* JSON snippet
+          "people": { "personInfos": [ { "ID": 0, "name": "Kelly", "role": "Sender" } ]
+        */
+        LibPlacenote.Instance.SearchMapsByUserData(q, (mapList) =>
         {
             Debug.Log("MAPLIST: " + mapList);
             //TODO:// extract following to method
@@ -715,7 +724,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener // Updated to Plac
 
     public void OnAddPersonEvent()
     {
-        sPeople.OnAddToScene();
+        sPeople.OnNameChange();
     }
 
     public void OnDropShapeClick()

@@ -35,21 +35,24 @@ public class SerializePeople : ScriptableObject
         personInfoList = new List<PersonInfo>();
         personObjList = new List<Person>();
         jsonKey = "people";
+        UpdateName();
+    }
+
+    private void UpdateName()
+    {
         string n = GameObject.FindWithTag("name").GetComponent<Text>().text;
-        if (n != null) 
+        if (n != null)
         {
             currentName = n;
-        } else 
-        {
-            currentName = "noname";
         }
     }
 
     // TODO: handle case where the current person's name is changed to another person
 
-    public void OnAddToScene()
+    public void OnNameChange() // TODO: rename to OnNameChange?
     {
         Clear();
+        UpdateName();
         PersonInfo info = new PersonInfo();
         info.name = currentName; // link to value of input text box
         info.role = Role.Sender;
