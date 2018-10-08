@@ -17,19 +17,16 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener // Updated to Plac
     // Get refs to buttons in the UI
     private GameObject mMapLoader;
     private GameObject mExitButton;
-    //    private GameObject mListElement;
     private RectTransform mListContentParent;
     private ToggleGroup mToggleGroup; // Toggle Group for the Toggles in each list element menu item
     private GameObject mPlaneDetectionToggle;
     private Text mLabelText;
     private Text uploadText;
     private GameObject mapButton;
+    private Text nameHolder;
     private PlacenoteARGeneratePlane mPNPlaneManager;
 
     private UnityARSessionNativeInterface mSession;
- //   private bool mFrameUpdated = false;
- //   private UnityARImageFrameData mImage = null;
-//    private UnityARCamera mARCamera;
     private bool mARKitInit = false;
     //    private List<ShapeInfo> shapeInfoList = new List<ShapeInfo>();
     private List<GameObject> shapeObjList = new List<GameObject>();
@@ -91,7 +88,6 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener // Updated to Plac
         Input.location.Start();
 
         mSession = UnityARSessionNativeInterface.GetARSessionNativeInterface();
-//        UnityARSessionNativeInterface.ARFrameUpdatedEvent += ARFrameUpdated;
         StartARKit();
         FeaturesVisualizer.EnablePointcloud();
         LibPlacenote.Instance.RegisterListener(this);
@@ -107,7 +103,6 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener // Updated to Plac
     {
         mMapLoader = GameObject.FindWithTag("MapLoader");
         mExitButton = GameObject.FindWithTag("ExitMapButton");
-        //       mListElement = GameObject.FindWithTag("MapInfoElement");
 
         GameObject ListParent = GameObject.FindWithTag("ListContentParent");
         mListContentParent = ListParent.GetComponent<RectTransform>();
@@ -118,18 +113,22 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener // Updated to Plac
         uploadText = GameObject.FindWithTag("UploadText").GetComponent<Text>();
         mapButton = GameObject.FindWithTag("MapButton");
         mRadiusSlider = GameObject.FindWithTag("RadiusSlider").GetComponent<Slider>();
+        nameHolder = GameObject.FindWithTag("name").GetComponent<Text>();
         ResetSlider();
         mMapLoader.SetActive(false); // needs to be active at Start, so the reference to it can be found
         UpdateName();
+        LoadLocalData();
 
     }
 
+    //TODO: UpdateName is both here and in SerializePeople. Consolidate to one.
     public void UpdateName()
     {
-        string n = GameObject.FindWithTag("name").GetComponent<Text>().text;
-        if (n != null) 
+        string n = nameHolder.text;
+        if (n != null)
         {
             currentName = n;
+            SaveLocalData();
             Debug.Log("CN   " + currentName);
             sPeople.currentName = currentName;
         } 
@@ -144,31 +143,20 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener // Updated to Plac
         List<SerializableVector3> forceAOT = new List<SerializableVector3>();
     }
 
-    //private void ARFrameUpdated(UnityARCamera camera)
-    //{
-    //    mFrameUpdated = true;
-    //    mARCamera = camera;
-    //}
+    public void LoadLocalData()
+    {
+        if (PlayerPrefs.HasKey("name"))
+        {
+            currentName = PlayerPrefs.GetString("name");
+            nameHolder.text = currentName;
+        }
+    }
 
-    //private void InitARFrameBuffer()
-    //{
-    //    mImage = new UnityARImageFrameData();
-
-    //    int yBufSize = mARCamera.videoParams.yWidth * mARCamera.videoParams.yHeight;
-    //    mImage.y.data = Marshal.AllocHGlobal(yBufSize);
-    //    mImage.y.width = (ulong)mARCamera.videoParams.yWidth;
-    //    mImage.y.height = (ulong)mARCamera.videoParams.yHeight;
-    //    mImage.y.stride = (ulong)mARCamera.videoParams.yWidth;
-
-    //    // This does assume the YUV_NV21 format
-    //    int vuBufSize = mARCamera.videoParams.yWidth * mARCamera.videoParams.yWidth / 2;
-    //    mImage.vu.data = Marshal.AllocHGlobal(vuBufSize);
-    //    mImage.vu.width = (ulong)mARCamera.videoParams.yWidth / 2;
-    //    mImage.vu.height = (ulong)mARCamera.videoParams.yHeight / 2;
-    //    mImage.vu.stride = (ulong)mARCamera.videoParams.yWidth;
-
-    //    mSession.SetCapturePixelData(true, mImage.y.data, mImage.vu.data);
-    //}
+    public void SaveLocalData()
+    {
+        PlayerPrefs.SetString("name", currentName);
+        PlayerPrefs.Save();
+    }
 
     void Update()
     {
