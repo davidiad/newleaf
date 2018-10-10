@@ -33,6 +33,7 @@ TagManager:
   - Grid
   - CurrentPaintingObject
   - name
+  - nameInput
   layers:
   - Default
   - TransparentFX

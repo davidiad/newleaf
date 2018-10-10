@@ -24,6 +24,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener // Updated to Plac
     private Text uploadText;
     private GameObject mapButton;
     private Text nameHolder;
+    private InputField nameInput;
     private PlacenoteARGeneratePlane mPNPlaneManager;
 
     private UnityARSessionNativeInterface mSession;
@@ -114,10 +115,12 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener // Updated to Plac
         mapButton = GameObject.FindWithTag("MapButton");
         mRadiusSlider = GameObject.FindWithTag("RadiusSlider").GetComponent<Slider>();
         nameHolder = GameObject.FindWithTag("name").GetComponent<Text>();
+        nameInput = GameObject.FindWithTag("nameInput").GetComponent<InputField>();
         ResetSlider();
         mMapLoader.SetActive(false); // needs to be active at Start, so the reference to it can be found
-        UpdateName();
+      
         LoadLocalData();
+        //UpdateName();
 
     }
 
@@ -128,6 +131,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener // Updated to Plac
         if (n != null)
         {
             currentName = n;
+            nameInput.text = currentName;
             SaveLocalData();
             Debug.Log("CN   " + currentName);
             sPeople.currentName = currentName;
@@ -145,10 +149,14 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener // Updated to Plac
 
     public void LoadLocalData()
     {
+        Debug.Log("LLD");
         if (PlayerPrefs.HasKey("name"))
         {
+            
             currentName = PlayerPrefs.GetString("name");
+            Debug.Log(currentName);
             nameHolder.text = currentName;
+            nameInput.text = currentName; //TODO: need both nameHolder and nameInput? (nameInput seems to supercede) 
         }
     }
 
