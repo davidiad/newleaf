@@ -12,5 +12,8 @@ EditorBuildSettings:
     path: Assets/Leaves/Scenes/Leaves.unity
     guid: dabb9d94135fb4f66be9ef1c0ae8d4f1
   - enabled: 0
-    path: Assets/TouchJoysticks/DemoScenes/SingleJoystickDemo.unity
-    guid: a11e8e47869ff4347bb95f91219a0155
+    path: 
+    guid: 00000000000000000000000000000000
+  - enabled: 0
+    path: Assets/IOSGoodies/Example/ExampleScene.unity
+    guid: ac276adf8cdfc4c069d02a03303ce609
