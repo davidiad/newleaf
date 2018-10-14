@@ -133,7 +133,6 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener // Updated to Plac
             currentName = n;
             nameInput.text = currentName;
             SaveLocalData();
-            Debug.Log("CN   " + currentName);
             sPeople.currentName = currentName;
         } 
         sPeople.OnNameChange();
@@ -248,7 +247,6 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener // Updated to Plac
         if (!LibPlacenote.Instance.Initialized())
         {
             Debug.Log("SDK not yet initialized");
-//            ToastManager.ShowToast("SDK not yet initialized", 2f);
             return;
         }
 
@@ -291,10 +289,6 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener // Updated to Plac
     public void SearchUserData()
     {
         string q = "people[**][name=" + currentName + "]";
-        Debug.Log("Q: " + q);
-        //string q = "person:" + name;
-        //string q = "people[**][name=Kelly]";
-
         /* JSON snippet
           "people": { "personInfos": [ { "ID": 0, "name": "Kelly", "role": "Sender" } ]
         */
@@ -377,7 +371,6 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener // Updated to Plac
     public void OnExitClick()
     {
         paintManager.Reset();
-        //        mInitButtonPanel.SetActive(true);
         mExitButton.SetActive(false);
         mPlaneDetectionToggle.SetActive(false);
 
@@ -407,8 +400,9 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener // Updated to Plac
 
     void OnMapSelected(LibPlacenote.MapInfo mapInfo)
     {
+        Debug.Log("SELECT: " + mapInfo.metadata.userdata);
         mSelectedMapInfo = mapInfo;
-        //mMapSelectedPanel.SetActive(true);
+        LoadFromMetadata();
         mMapLoader.SetActive(true);
         mRadiusSlider.gameObject.SetActive(false);
     }
@@ -426,7 +420,6 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener // Updated to Plac
         if (!LibPlacenote.Instance.Initialized())
         {
             Debug.Log("SDK not yet initialized");
-//            ToastManager.ShowToast("SDK not yet initialized", 2f);
             return;
         }
 
@@ -769,8 +762,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener // Updated to Plac
             if (!hasLocalized)
             {
                 mLabelText.text = "Localized";
-                sModels.LoadFromJSON(mSelectedMapInfo.metadata.userdata);
-                sPaintStrokes.LoadFromJSON(mSelectedMapInfo.metadata.userdata); 
+                LoadFromMetadata();
                 hasLocalized = true;
             }
         }
@@ -781,8 +773,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener // Updated to Plac
             if (!hasLocalized && (mSelectedMapInfo != null))
             {
                 mLabelText.text = "Localized";
-                sModels.LoadFromJSON(mSelectedMapInfo.metadata.userdata);
-                sPaintStrokes.LoadFromJSON(mSelectedMapInfo.metadata.userdata);
+                LoadFromMetadata();
                 hasLocalized = true;
             }
         }
@@ -800,4 +791,9 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener // Updated to Plac
         }
     }
 
+    private void LoadFromMetadata()
+    {
+        sModels.LoadFromJSON(mSelectedMapInfo.metadata.userdata);
+        sPaintStrokes.LoadFromJSON(mSelectedMapInfo.metadata.userdata);
+    }
 }
