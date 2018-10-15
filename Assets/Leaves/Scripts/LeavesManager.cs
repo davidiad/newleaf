@@ -397,7 +397,6 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener // Updated to Plac
         });
     }
 
-
     void OnMapSelected(LibPlacenote.MapInfo mapInfo)
     {
         Debug.Log("SELECT: " + mapInfo.metadata.userdata);
@@ -406,7 +405,6 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener // Updated to Plac
         mMapLoader.SetActive(true);
         mRadiusSlider.gameObject.SetActive(false);
     }
-
 
     public void OnLoadMapClicked()
     {

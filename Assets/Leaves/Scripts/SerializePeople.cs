@@ -115,5 +115,4 @@ public class SerializePeople : ScriptableObject
         personInfoList.Clear();
         personObjList.Clear();
     }
-
 }
