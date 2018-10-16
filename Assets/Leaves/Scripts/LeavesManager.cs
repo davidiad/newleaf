@@ -399,7 +399,6 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener // Updated to Plac
 
     void OnMapSelected(LibPlacenote.MapInfo mapInfo)
     {
-        Debug.Log("SELECT: " + mapInfo.metadata.userdata);
         mSelectedMapInfo = mapInfo;
         LoadFromMetadata();
         mMapLoader.SetActive(true);
@@ -793,5 +792,6 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener // Updated to Plac
     {
         sModels.LoadFromJSON(mSelectedMapInfo.metadata.userdata);
         sPaintStrokes.LoadFromJSON(mSelectedMapInfo.metadata.userdata);
+        Debug.Log("PPPP:" + mSelectedMapInfo.metadata.userdata.ToString());
     }
 }
