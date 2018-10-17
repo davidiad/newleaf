@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 
 public class LeavesManager : MonoBehaviour, PlacenoteListener // Updated to Placenote 1.6.8
 {
+    public Button StopPainting; // only for editor
     public GameObject modelPrefab;
     public Vector3 paintPosition;
     [SerializeField] Material mShapeMaterial;

@@ -6,6 +6,7 @@ using Ara; // 3rd party Trail Renderer
 
 public class PaintManager : MonoBehaviour
 {
+    public Button StopPaintingButton; // only for editor
     public GameObject paintingPlane;
     public GameObject paintBrushPrefab;
     public Button onoff;
@@ -36,13 +37,15 @@ public class PaintManager : MonoBehaviour
     private Vector3 colorInput;
     private float hue;
     private float planeScale = 0.08f;
-
     private GameObject paintBrush;
     private CanvasGroup paintButtonGroup;
 
     void Start()
     {
-        paintWait = 0.03f; // factor to control speed of re-drawing saved paintstrokes
+#if !UNITY_EDITOR
+        StopPaintingButton.enabled = false;
+#endif
+        paintWait = 0.05f; // factor to control speed of re-drawing saved paintstrokes
         brushSize = 0.005f; // in meters
         strokeThickness = 1f;
         paintOn = false;
@@ -277,7 +280,6 @@ public class PaintManager : MonoBehaviour
 
     public void TogglePaint()
     {
-        
         paintOn = !paintOn;
 
         // let user know that painting is on
