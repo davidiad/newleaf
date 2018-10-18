@@ -40,12 +40,10 @@ public class PaintManager : MonoBehaviour
     private GameObject paintBrush;
     private CanvasGroup paintButtonGroup;
     private GameObject paintstrokeParent;
+    private GameObject stopPaintingButton;
 
     void Start()
     {
-#if UNITY_IOS //TODO: not working, button still appears in iOS
-        //StopPaintingButton.enabled = false;
-#endif
         paintWait = 0.05f; // factor to control speed of re-drawing saved paintstrokes
         brushSize = 0.005f; // in meters
         strokeThickness = 1f;
@@ -68,6 +66,12 @@ public class PaintManager : MonoBehaviour
         paintButtonGroup.alpha = 0.4f;
         SetHue(paintColor);
         paintstrokeParent = new GameObject("paintstrokeParent"); // initially at (0,0,0)
+        stopPaintingButton = GameObject.FindWithTag("StopPainting");
+#if UNITY_EDITOR
+        stopPaintingButton.SetActive(true);
+#else
+        stopPaintingButton.SetActive(false);
+#endif
     }
  
     void Update()
