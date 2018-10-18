@@ -39,11 +39,12 @@ public class PaintManager : MonoBehaviour
     private float planeScale = 0.08f;
     private GameObject paintBrush;
     private CanvasGroup paintButtonGroup;
+    private GameObject paintstrokeParent;
 
     void Start()
     {
-#if !UNITY_EDITOR
-        StopPaintingButton.enabled = false;
+#if UNITY_IOS //TODO: not working, button still appears in iOS
+        //StopPaintingButton.enabled = false;
 #endif
         paintWait = 0.05f; // factor to control speed of re-drawing saved paintstrokes
         brushSize = 0.005f; // in meters
@@ -66,6 +67,7 @@ public class PaintManager : MonoBehaviour
         paintButtonGroup = onoff.GetComponent<CanvasGroup>();
         paintButtonGroup.alpha = 0.4f;
         SetHue(paintColor);
+        paintstrokeParent = new GameObject("paintstrokeParent"); // initially at (0,0,0)
     }
  
     void Update()
@@ -190,41 +192,48 @@ public class PaintManager : MonoBehaviour
 
 
     public void RecreatePaintedStrokes() {
+        paintstrokeParent.transform.position = new Vector3(0f, 0f, 1f);
         // The paint stroke info that was saved with the map should already have been put into paintStrokesList
         foreach (PaintStroke paintstroke in paintStrokesList)
         {
             // position the new paintbrush at the first point of the vertex list
             GameObject newBrush = Instantiate(paintBrushPrefab, paintstroke.verts[0], Quaternion.Euler(new Vector3(0f, 90f, 0f)));
+            newBrush.transform.parent = paintstrokeParent.transform;
             AraTrail araTrail = newBrush.GetComponent<AraTrail>();
             araTrail.initialColor = paintstroke.color;
+            araTrail.space = Space.Self; // allows the paintstroke to be moved with the parent's movement
             StartCoroutine(PaintTrail(newBrush, paintstroke, araTrail));
-
         }
+
     }
 
     private IEnumerator PaintTrail(GameObject brush, PaintStroke paintstroke, AraTrail araTrail)
     {
+        Vector3 paintstrokeOffset = new Vector3(0f,0f,0.5f);
+        //brush.transform.parent = paintstrokeParent.transform;
         for (int i = 0; i < paintstroke.verts.Count; i++)
         {
             // can't set point color directly, so set the initialColor, which is then used to create the pointColor for the next point
             araTrail.initialColor = paintstroke.pointColors[i];
             // set the initialThickness, which is then used to create the size of the next point
-            araTrail.initialThickness = paintstroke.pointSizes[i]; 
-            brush.transform.position = paintstroke.verts[i];
+            araTrail.initialThickness = paintstroke.pointSizes[i];
+            brush.transform.position = paintstroke.verts[i] + paintstrokeOffset;
 
             yield return new WaitForSeconds(paintWait); // allow enough time for the previous mesh section to be generated
         }
         // Now that the PaintStroke has been saved, unparent it from the target so it's positioned in worldspace
+        // TODO: refactor into its own method (repeated (almost) in RemoveBrushFromTarget())
         brush.tag = "PaintStroke";
-        brush.transform.parent = null;
         // Remove the reticle and brush, no longer needed
         foreach (Transform child in brush.transform)
         {
             Destroy(child.gameObject);
         }
+
     }
 
     public void RemoveBrushFromTarget() {
+        Debug.Log("RBFT");
         // assuming there is only one paint brush as a time (but there may be multiple paintbrushes when reloading)
         GameObject brush = GameObject.FindWithTag("PaintBrush");
         if (brush)
@@ -240,7 +249,6 @@ public class PaintManager : MonoBehaviour
                 Destroy(child.gameObject);
             }
             paintOn = false;
-//            paintOnComponent.paintOn = false;
         }
     }
 
