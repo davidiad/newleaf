@@ -47,6 +47,8 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener // Updated to Plac
     private string mSaveMapId = null;
 
     private LibPlacenote.MapInfo mSelectedMapInfo;
+    private List<LibPlacenote.MapInfo> downloadedMapInfoList = new List<LibPlacenote.MapInfo>();
+    private bool searchWasCalled = false;
 
     private bool hasLocalized; // flag to prevent continually reloading the metadata when position is lost and regained
     private bool mappingStarted;
@@ -168,6 +170,20 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener // Updated to Plac
 
     void Update()
     {
+        if (!LibPlacenote.Instance.Initialized())
+        {
+            Debug.Log("SDK not yet initialized");
+            return;
+        }
+
+        //TODO: make this a listener instead of a bool
+        if (!searchWasCalled)
+        {
+            Debug.Log("Searching for maps");
+            searchWasCalled = true;
+            SearchUserData();
+        }
+
         if (!mappingStarted) // start mapping automatically
         {
             OnNewMapClick();
@@ -213,6 +229,8 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener // Updated to Plac
         {
             pulseMapButton = StartCoroutine(PulseColor(mapButton.GetComponent<Image>()));
         }
+
+
     }
 
     private void ActivateMapButton(bool mappingOn)
@@ -252,7 +270,15 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener // Updated to Plac
         }
 
         UpdateName();
-        OnRadiusSelect();
+        mMapLoader.SetActive(true);
+        foreach (Transform t in mListContentParent.transform)
+        {
+            Destroy(t.gameObject);
+        }
+        foreach (LibPlacenote.MapInfo mapInfo in downloadedMapInfoList)
+        {
+            AddMapToList(mapInfo);
+        }
 
         /*
         foreach (Transform t in mListContentParent.transform)
@@ -311,7 +337,14 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener // Updated to Plac
                     {
                         Debug.Log(mapId.metadata.userdata.ToString(Formatting.None));
                     }
-                    AddMapToList(mapId);
+                    // AddMapToList(mapId);
+                    // Instead of adding map to the menu list at this point,
+                    // Add the mapInfo to a list that will be held, so that the menu will be ready to display
+                    // immediately, as the mapInfos will already have been downloaded
+                    downloadedMapInfoList.Add(mapId);
+                    //TODO: add a listener for when this is finished, to add to menu if it is open
+                    // Also, add a mechanism to update the list wwhen a new map is added or deleted.
+                    // if poss., cache maps so they don't need to be downloaded more than once
                 }
             }
         });
@@ -322,14 +355,14 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener // Updated to Plac
     {
         LocationInfo locationInfo = Input.location.lastData;
 
-        Debug.Log(locationInfo.ToString());
+        //Debug.Log(locationInfo.ToString());
 
 
         float radiusSearch = 20f;//mRadiusSlider.value;// * mMaxRadiusSearch;
         //mRadiusLabel.text = "Distance Filter: " + (radiusSearch / 1000.0).ToString("F2") + " km";
         Debug.Log(radiusSearch.ToString());
-        mMapLoader.SetActive(true);
-        SearchUserData();
+        //mMapLoader.SetActive(true);
+        //SearchUserData();
         //LibPlacenote.Instance.SearchMaps(locationInfo.latitude, locationInfo.longitude, radiusSearch,
         //(mapList) =>
         //{
@@ -383,9 +416,7 @@ public class LeavesManager : MonoBehaviour, PlacenoteListener // Updated to Plac
         mappingStarted = false; // allow a new mapping session to begin auto. in Update
         ActivateMapButton(false); // Should change to true in NewMapClicked
         hasLocalized = false;
-
     }
-
 
     void AddMapToList(LibPlacenote.MapInfo mapInfo)
     {
