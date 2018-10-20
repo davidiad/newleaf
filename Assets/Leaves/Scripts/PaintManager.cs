@@ -237,7 +237,6 @@ public class PaintManager : MonoBehaviour
     }
 
     public void RemoveBrushFromTarget() {
-        Debug.Log("RBFT");
         // assuming there is only one paint brush as a time (but there may be multiple paintbrushes when reloading)
         GameObject brush = GameObject.FindWithTag("PaintBrush");
         if (brush)

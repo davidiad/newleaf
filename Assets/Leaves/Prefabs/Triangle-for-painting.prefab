@@ -475,6 +475,7 @@ MonoBehaviour:
   textureMode: 1
   uvFactor: 50
   tileAnchor: 0
+  poss: []
 --- !u!198 &198025165707391226
 ParticleSystem:
   m_ObjectHideFlags: 1

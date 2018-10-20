@@ -266,6 +266,7 @@ namespace Ara{
         public event System.Action onUpdatePoints;
     	
     	[HideInInspector] public List<Point> points = new List<Point>();
+        public List<Vector3> poss = new List<Vector3>(); // test
         private List<Point> renderablePoints = new List<Point>();
         private List<int> discontinuities = new List<int>();
     	
@@ -275,7 +276,7 @@ namespace Ara{
     	private float speed = 0;
         private float accumTime = 0;
     
-    	private List<Vector3> vertices = new List<Vector3>();
+        private List<Vector3> vertices = new List<Vector3>();
     	private List<Vector3> normals = new List<Vector3>();
     	private List<Vector4> tangents = new List<Vector4>();
     	private List<Vector2> uvs = new List<Vector2>();
@@ -360,6 +361,14 @@ namespace Ara{
 
             if (onUpdatePoints != null)
                 onUpdatePoints();
+
+            ///* test.df
+            poss.Clear();
+            for (int i = 0; i < points.Count; i++)
+            {
+                poss.Add(points[i].position);
+            }
+            //*/
     	}
 
         private void EmissionStep(float time){
