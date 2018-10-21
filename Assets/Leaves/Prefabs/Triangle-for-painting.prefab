@@ -328,7 +328,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   time: 2
   autoCalculateOrientation: 1
-  minDistance: 0.03
+  minDistance: 0.02
   invertFaces: 0
   endPainting: 0
 --- !u!114 &114663269444835524
@@ -365,15 +365,27 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 2
       time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
+      value: 0.5
+      inSlope: 44.313065
+      outSlope: 44.313065
       tangentMode: 0
     - serializedVersion: 2
-      time: 1
+      time: 0.036511157
       value: 1
       inSlope: 0
       outSlope: 0
+      tangentMode: 1
+    - serializedVersion: 2
+      time: 0.97
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 1
+    - serializedVersion: 2
+      time: 1
+      value: 0.5
+      inSlope: -41.973564
+      outSlope: -41.973564
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
@@ -458,8 +470,8 @@ MonoBehaviour:
   initialThickness: 0.01
   initialColor: {r: 0.9937728, g: 0.69502157, b: 0.069012426, a: 1}
   initialVelocity: {x: 0, y: 0, z: 0}
-  timeInterval: 0.075
-  minDistance: 0.01
+  timeInterval: 0.3
+  minDistance: 0.05
   time: 512
   enablePhysics: 0
   warmup: 0
@@ -476,6 +488,7 @@ MonoBehaviour:
   uvFactor: 50
   tileAnchor: 0
   poss: []
+  sqMag: 0
 --- !u!198 &198025165707391226
 ParticleSystem:
   m_ObjectHideFlags: 1

@@ -266,7 +266,9 @@ namespace Ara{
         public event System.Action onUpdatePoints;
     	
     	[HideInInspector] public List<Point> points = new List<Point>();
-        public List<Vector3> poss = new List<Vector3>(); // test
+        public List<Vector3> poss = new List<Vector3>(); // test -df
+        bool hasClicked = false;
+        public float sqMag = 0.0f; // testing -df
         private List<Point> renderablePoints = new List<Point>();
         private List<int> discontinuities = new List<int>();
     	
@@ -345,47 +347,66 @@ namespace Ara{
     		prevPosition = transform.position;
     
     	}
-    	
+
         /**
          * Updates point logic.
          */
-    	private void LateUpdate () {
-    
-    		UpdateVelocity();
-    		
-    		EmissionStep(DeltaTime);
-    
-    		SnapLastPointToTransform();
+        private void LateUpdate()
+        {
 
-            UpdatePointsLifecycle();
+            UpdateVelocity();
+
+            EmissionStep(DeltaTime);
+
+            SnapLastPointToTransform();
+
+            //UpdatePointsLifecycle();  // commented out so points never die -df
 
             if (onUpdatePoints != null)
                 onUpdatePoints();
 
-            ///* test.df
+            ///* test -df   to be able to look at positions in the editor
+#if UNITY_EDITOR
             poss.Clear();
             for (int i = 0; i < points.Count; i++)
             {
                 poss.Add(points[i].position);
             }
+#endif
             //*/
-    	}
+        }
 
         private void EmissionStep(float time){
-        
+            
             // Acumulate the amount of time passed:
             accumTime += time;
+
+#if UNITY_EDITOR 
+            if (Input.GetMouseButtonDown(0)) // testing -df
+            {
+                hasClicked = true;
+            }
+#endif
 
             // If enough time has passed since the last emission (>= timeInterval), consider emitting new points.
             if (accumTime >= timeInterval){
 
                 if (emit){
-
+                    Debug.Log("EMIsssion PoinT");
                     // Select the emission position, depending on the simulation space:
                     Vector3 position = space == Space.Self ? transform.localPosition : transform.position;
-                    
+                    Vector3 previousPosition = position;
+
+                    if (points.Count > 1) // testing -df
+                    {
+                        previousPosition = points[points.Count - 2].position; 
+                        sqMag = (position - previousPosition).sqrMagnitude;
+                    }
                     // If there's at least 1 point and it is not far enough from the current position, don't spawn any new points this frame.
-                    if (points.Count <= 1 || Vector3.Distance(position,points[points.Count-2].position) >= minDistance){
+                    //if (points.Count <= 1 || Vector3.Distance(position,previousPosition) >= minDistance){
+                    if ((points.Count <= 1 || sqMag >= minDistance) && !hasClicked) // testing -df
+                    {
+                        Debug.Log("EMIT PT");
                         EmitPoint(position);    
                         accumTime = 0;
                     }
@@ -409,7 +430,7 @@ namespace Ara{
 
                 SnapLastPointToTransform();
     
-                UpdatePointsLifecycle();
+                //UpdatePointsLifecycle(); // commented out so points never die -df
 
                 if (onUpdatePoints != null)
                      onUpdatePoints();
@@ -666,6 +687,8 @@ namespace Ara{
                 Color vertexColor;
     
                 bool hqCorners = highQualityCorners && alignment != TrailAlignment.Local;
+
+
 
                 // Initialize curve frame using the first two points to calculate the first tangent vector:
                 CurveFrame frame = InitializeCurveFrame(trail[trail.Count-1].position,

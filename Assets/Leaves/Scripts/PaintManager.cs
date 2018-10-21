@@ -272,6 +272,7 @@ public class PaintManager : MonoBehaviour
                 vertList.Add(araTrail.points[i].position);
                 colorList.Add(araTrail.points[i].color);
                 sizeList.Add(araTrail.points[i].thickness);
+
                 // alternately, could add the AraTrail points themselves to the Paintstroke, 
                 // since they already hold the colors, plus other info such as discontinuous.
             }
@@ -286,6 +287,7 @@ public class PaintManager : MonoBehaviour
             paintStroke.pointColors = colorList;
             paintStroke.pointSizes = sizeList;
             paintStrokesList.Add(paintStroke);
+
      //   }
     }
 
