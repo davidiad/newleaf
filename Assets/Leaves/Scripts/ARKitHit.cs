@@ -277,6 +277,10 @@ namespace UnityEngine.XR.iOS // TODO: move out of this namespace
             {
                 m_HitTransform.position = hit.point;
                 m_HitTransform.rotation = hit.transform.rotation;
+                if (paintManager.currentAraTrail)
+                {
+                    paintManager.currentAraTrail.hasMoved = true;
+                }
 
                 // Ideally, these next lines should not be called every frame
                 if (!planePainting) { PaintPlaneOn(); }

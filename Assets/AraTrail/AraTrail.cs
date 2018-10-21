@@ -268,7 +268,8 @@ namespace Ara{
     	[HideInInspector] public List<Point> points = new List<Point>();
         public List<Vector3> poss = new List<Vector3>(); // test -df
         public bool hasMoved = true; // testing -df
-        public double sqMag; // testing -df
+        public bool loading = false; // testing -df
+        public float sqMag; // testing -df
         private List<Point> renderablePoints = new List<Point>();
         private List<int> discontinuities = new List<int>();
     	
@@ -382,9 +383,12 @@ namespace Ara{
             accumTime += time;
 
 #if UNITY_EDITOR 
-            if (Input.GetMouseButtonDown(0)) // testing -df
+            if (Input.GetMouseButtonDown(0))
             {
-                hasMoved = true;
+                if (!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+                {
+                    hasMoved = true;
+                }
             }
 #endif
 
@@ -401,7 +405,7 @@ namespace Ara{
                     {
                         previousPosition = points[points.Count - 2].position; 
                         sqMag = (position - previousPosition).sqrMagnitude;
-                        if (Mathf.Sqrt((float)sqMag) < (double)minDistance)
+                        if ( Mathf.Sqrt(sqMag) < minDistance ) //TODO: remove Sqrt operation, verify still works
                         {
                             hasMoved = false;
                         }
@@ -410,7 +414,7 @@ namespace Ara{
                     }
                     // If there's at least 1 point and it is not far enough from the current position, don't spawn any new points this frame.
                     //if (points.Count <= 1 || Vector3.Distance(position,previousPosition) >= minDistance){
-                    if ( points.Count <= 1 || hasMoved ) // testing -df
+                    if ( points.Count <= 1 || hasMoved || loading) // testing -df
                     {
                         Debug.Log("EMIT PT");
                         EmitPoint(position);

@@ -205,6 +205,8 @@ public class PaintManager : MonoBehaviour
             GameObject newBrush = Instantiate(paintBrushPrefab, paintstroke.verts[0], Quaternion.Euler(new Vector3(0f, 90f, 0f)));
             newBrush.transform.parent = paintstrokeParent.transform;
             AraTrail araTrail = newBrush.GetComponent<AraTrail>();
+            araTrail.hasMoved = true; // on by default, controls whether a point is emitted
+            araTrail.loading = true;
             araTrail.initialColor = paintstroke.color;
             araTrail.space = Space.Self; // allows the paintstroke to be moved with the parent's movement
             StartCoroutine(PaintTrail(newBrush, paintstroke, araTrail));
@@ -215,6 +217,7 @@ public class PaintManager : MonoBehaviour
     private IEnumerator PaintTrail(GameObject brush, PaintStroke paintstroke, AraTrail araTrail)
     {
         Vector3 paintstrokeOffset = new Vector3(0f,0f,0.5f);
+        araTrail.hasMoved = true; // on by default, controls whether a point is emitted
         //brush.transform.parent = paintstrokeParent.transform;
         for (int i = 0; i < paintstroke.verts.Count; i++)
         {
@@ -226,6 +229,7 @@ public class PaintManager : MonoBehaviour
 
             yield return new WaitForSeconds(paintWait); // allow enough time for the previous mesh section to be generated
         }
+        araTrail.loading = false;
         // Now that the PaintStroke has been saved, unparent it from the target so it's positioned in worldspace
         // TODO: refactor into its own method (repeated (almost) in RemoveBrushFromTarget())
         brush.tag = "PaintStroke";
