@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
+using Ara;
 
-namespace UnityEngine.XR.iOS
+namespace UnityEngine.XR.iOS // TODO: move out of this namespace
 {
     public class ARKitHit : MonoBehaviour
     {
@@ -94,10 +95,15 @@ namespace UnityEngine.XR.iOS
             PaintingPlane.GetComponent<MeshRenderer>().enabled = false;
         }
 
-        #if UNITY_EDITOR
-        private void LateUpdate()
-        {
 
+
+        void Update()
+        {
+#if UNITY_EDITOR
+            //if (paintManager.currentAraTrail != null)
+            //{
+            //    paintManager.currentAraTrail.hasMoved = false;
+            //}
             // Only in Editor, have a End Painting (Remove brush from target) button
 
             if (Input.GetMouseButtonDown(0))
@@ -117,14 +123,11 @@ namespace UnityEngine.XR.iOS
                         m_HitTransform.position = hit.point;
                         Debug.Log(string.Format("x:{0:0.######} y:{1:0.######} z:{2:0.######}", m_HitTransform.position.x, m_HitTransform.position.y, m_HitTransform.position.z));
                         m_HitTransform.rotation = hit.transform.rotation;
+                        paintManager.currentAraTrail.hasMoved = true; // avoid double points
                     }
                 }
             }
-        }
-        #endif
-
-        void Update()
-        {
+#endif
 
             var touch = new Touch();
             if (Input.touchCount > 0)

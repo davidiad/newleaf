@@ -267,8 +267,8 @@ namespace Ara{
     	
     	[HideInInspector] public List<Point> points = new List<Point>();
         public List<Vector3> poss = new List<Vector3>(); // test -df
-        bool hasClicked = false;
-        public float sqMag = 0.0f; // testing -df
+        public bool hasMoved = true; // testing -df
+        public double sqMag; // testing -df
         private List<Point> renderablePoints = new List<Point>();
         private List<int> discontinuities = new List<int>();
     	
@@ -354,7 +354,7 @@ namespace Ara{
         private void LateUpdate()
         {
 
-            UpdateVelocity();
+            //UpdateVelocity();
 
             EmissionStep(DeltaTime);
 
@@ -384,7 +384,7 @@ namespace Ara{
 #if UNITY_EDITOR 
             if (Input.GetMouseButtonDown(0)) // testing -df
             {
-                hasClicked = true;
+                hasMoved = true;
             }
 #endif
 
@@ -401,13 +401,20 @@ namespace Ara{
                     {
                         previousPosition = points[points.Count - 2].position; 
                         sqMag = (position - previousPosition).sqrMagnitude;
+                        if (Mathf.Sqrt((float)sqMag) < (double)minDistance)
+                        {
+                            hasMoved = false;
+                        }
+                        Debug.Log("sqMag:  " + sqMag);
+                        Debug.Log("HASMOVED: " + hasMoved);
                     }
                     // If there's at least 1 point and it is not far enough from the current position, don't spawn any new points this frame.
                     //if (points.Count <= 1 || Vector3.Distance(position,previousPosition) >= minDistance){
-                    if ((points.Count <= 1 || sqMag >= minDistance) && !hasClicked) // testing -df
+                    if ( points.Count <= 1 || hasMoved ) // testing -df
                     {
                         Debug.Log("EMIT PT");
-                        EmitPoint(position);    
+                        EmitPoint(position);
+                        hasMoved = false;
                         accumTime = 0;
                     }
                 }

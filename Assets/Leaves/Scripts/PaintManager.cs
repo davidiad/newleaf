@@ -19,7 +19,7 @@ public class PaintManager : MonoBehaviour
     public bool ARPlanePainting;
     public List<PaintStroke> paintStrokesList;
     public bool paintOn;
-
+    public AraTrail currentAraTrail;
     [SerializeField] private GameObject paintTarget;
     [SerializeField] Camera mainCam;
     [SerializeField] private float paintWait; // time to wait before adding next vertex when painting trail
@@ -143,8 +143,9 @@ public class PaintManager : MonoBehaviour
         GameObject currentBrush = GameObject.FindWithTag("PaintBrush");
         if (currentBrush)
         {
-            currentBrush.GetComponent<AraTrail>().materials[0].color = paintColor;
-            currentBrush.GetComponent<AraTrail>().initialColor = paintColor;
+            currentAraTrail = currentBrush.GetComponent<AraTrail>();
+            currentAraTrail.materials[0].color = paintColor;
+            currentAraTrail.initialColor = paintColor;
         }
     }
 
