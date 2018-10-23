@@ -405,9 +405,11 @@ namespace Ara{
                     {
                         previousPosition = points[points.Count - 2].position; 
                         sqMag = (position - previousPosition).sqrMagnitude;
-                        if ( Mathf.Sqrt(sqMag) < minDistance ) //TODO: remove Sqrt operation, verify still works
+                        if (Mathf.Sqrt(sqMag) < minDistance) //TODO: remove Sqrt operation, verify still works
                         {
+#if UNITY_EDITOR
                             hasMoved = false;
+#endif
                         }
                         Debug.Log("sqMag:  " + sqMag);
                         Debug.Log("HASMOVED: " + hasMoved);
@@ -418,7 +420,9 @@ namespace Ara{
                     {
                         Debug.Log("EMIT PT");
                         EmitPoint(position);
-                        hasMoved = false;
+#if UNITY_EDITOR
+                        hasMoved = false; // prevents doubling of points when clicking mouse in Editor
+#endif
                         accumTime = 0;
                     }
                 }
