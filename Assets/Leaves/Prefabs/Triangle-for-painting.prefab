@@ -358,7 +358,7 @@ MonoBehaviour:
   alignment: 0
   thickness: 1
   smoothness: 8
-  highQualityCorners: 1
+  highQualityCorners: 0
   cornerRoundness: 12
   thicknessOverLenght:
     serializedVersion: 2
@@ -467,11 +467,11 @@ MonoBehaviour:
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
   emit: 1
-  initialThickness: 0.01
+  initialThickness: 0.02
   initialColor: {r: 0.9937728, g: 0.69502157, b: 0.069012426, a: 1}
   initialVelocity: {x: 0, y: 0, z: 0}
   timeInterval: 0.07
-  minDistance: 0.01
+  minDistance: 0.00005
   time: 512
   enablePhysics: 0
   warmup: 0

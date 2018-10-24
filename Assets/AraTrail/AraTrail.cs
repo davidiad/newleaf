@@ -269,7 +269,7 @@ namespace Ara{
         public List<Vector3> poss = new List<Vector3>(); // test -df
         public bool hasMoved = true; // testing -df
         public bool loading = false; // testing -df
-        public float sqMag; // testing -df
+        public float mag; // testing -df
         private List<Point> renderablePoints = new List<Point>();
         private List<int> discontinuities = new List<int>();
     	
@@ -382,6 +382,7 @@ namespace Ara{
             // Acumulate the amount of time passed:
             accumTime += time;
 
+            // hasMoved needs to be true by default - unless in Editor, and the mouse is *not* being clicked
 #if UNITY_EDITOR 
             if (Input.GetMouseButtonDown(0))
             {
@@ -390,6 +391,8 @@ namespace Ara{
                     hasMoved = true;
                 }
             }
+#else
+            hasMoved = true; // not in Unity Editor
 #endif
 
             // If enough time has passed since the last emission (>= timeInterval), consider emitting new points.
@@ -403,22 +406,17 @@ namespace Ara{
 
                     if (points.Count > 1) // testing -df
                     {
-                        previousPosition = points[points.Count - 2].position; 
-                        sqMag = (position - previousPosition).sqrMagnitude;
-                        if (Mathf.Sqrt(sqMag) < minDistance) //TODO: remove Sqrt operation, verify still works
+                        previousPosition = points[points.Count - 2].position;
+                        mag = (position - previousPosition).magnitude;
+                        if (mag < minDistance)
                         {
-#if UNITY_EDITOR
                             hasMoved = false;
-#endif
                         }
-                        Debug.Log("sqMag:  " + sqMag);
-                        Debug.Log("HASMOVED: " + hasMoved);
                     }
                     // If there's at least 1 point and it is not far enough from the current position, don't spawn any new points this frame.
-                    //if (points.Count <= 1 || Vector3.Distance(position,previousPosition) >= minDistance){
-                    if ( points.Count <= 1 || hasMoved || loading) // testing -df
+                    //if (points.Count <= 1 || Vector3.Distance(position,previousPosition) >= minDistance)
+                    if ( points.Count <= 1 || loading || hasMoved ) // testing -df
                     {
-                        Debug.Log("EMIT PT");
                         EmitPoint(position);
 #if UNITY_EDITOR
                         hasMoved = false; // prevents doubling of points when clicking mouse in Editor

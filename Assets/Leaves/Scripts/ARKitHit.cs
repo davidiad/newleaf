@@ -123,7 +123,7 @@ namespace UnityEngine.XR.iOS // TODO: move out of this namespace
                         m_HitTransform.position = hit.point;
                         Debug.Log(string.Format("x:{0:0.######} y:{1:0.######} z:{2:0.######}", m_HitTransform.position.x, m_HitTransform.position.y, m_HitTransform.position.z));
                         m_HitTransform.rotation = hit.transform.rotation;
-                        paintManager.currentAraTrail.hasMoved = true; // avoid double points
+                        paintManager.currentAraTrail.hasMoved = true; // flag to avoid double points while in Editor
                     }
                 }
             }
@@ -267,6 +267,7 @@ namespace UnityEngine.XR.iOS // TODO: move out of this namespace
                         // After each touch is done, reset the touchIsOverUI flag
                         touchIsOverUI = false;
                         hitGrid = false;
+
                     }
                 }
             }
