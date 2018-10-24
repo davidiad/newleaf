@@ -698,8 +698,8 @@ namespace Ara{
                 Vector4 texTangent = Vector4.zero;
                 Vector2 uv = Vector2.zero;
                 Color vertexColor;
-    
-                bool hqCorners = highQualityCorners && alignment != TrailAlignment.Local;
+
+                bool hqCorners = (highQualityCorners && alignment != TrailAlignment.Local) || end == trail.Count - 1; // edit -df Make the end point hi quality so it's rounded, not flat
 
 
 

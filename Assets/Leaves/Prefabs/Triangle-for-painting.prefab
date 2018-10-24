@@ -358,34 +358,28 @@ MonoBehaviour:
   alignment: 0
   thickness: 1
   smoothness: 8
-  highQualityCorners: 0
+  highQualityCorners: 1
   cornerRoundness: 12
   thicknessOverLenght:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 2
       time: 0
-      value: 0.5
-      inSlope: 44.313065
-      outSlope: 44.313065
+      value: 0.75
+      inSlope: 32.22915
+      outSlope: 1.3662579
+      tangentMode: 1
+    - serializedVersion: 2
+      time: 0.87362635
+      value: 1
+      inSlope: -0.27907506
+      outSlope: -0.27907506
       tangentMode: 0
     - serializedVersion: 2
-      time: 0.036511157
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 1
-    - serializedVersion: 2
-      time: 0.97
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 1
-    - serializedVersion: 2
       time: 1
-      value: 0.5
-      inSlope: -41.973564
-      outSlope: -41.973564
+      value: 0.05
+      inSlope: 0
+      outSlope: 0
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
@@ -471,7 +465,7 @@ MonoBehaviour:
   initialColor: {r: 0.9937728, g: 0.69502157, b: 0.069012426, a: 1}
   initialVelocity: {x: 0, y: 0, z: 0}
   timeInterval: 0.07
-  minDistance: 0.00005
+  minDistance: 0.01
   time: 512
   enablePhysics: 0
   warmup: 0
@@ -490,7 +484,7 @@ MonoBehaviour:
   poss: []
   hasMoved: 0
   loading: 0
-  sqMag: 0
+  mag: 0
 --- !u!198 &198025165707391226
 ParticleSystem:
   m_ObjectHideFlags: 1
