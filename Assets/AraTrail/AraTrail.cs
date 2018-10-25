@@ -693,13 +693,33 @@ namespace Ara{
             if (trail.Count > 1){
     
                 float lenght = Mathf.Max(GetLenght(trail),epsilon);
+
+                //*********** df - when tapering the start of the trail, set a maximum absolute amount of taper (not simply proportional)
+                // max, set to 0.05
+                // calculate the max percentage
+                //      get the current value
+                float currentTaperLength = thicknessOverLenght.keys[1].time * lenght;
+                if (currentTaperLength >= 0.00005f)
+                {
+                    Debug.Log("currentTaperLength: " + currentTaperLength);
+                    Keyframe keyframe = new Keyframe(1, 0.00005f / lenght);
+                    thicknessOverLenght.MoveKey(1, keyframe);
+                    currentTaperLength = thicknessOverLenght.keys[1].time * lenght;
+                    Debug.Log("currentTaperLength 2: " + currentTaperLength);
+                }
+                // check that not over max
+                // if over, move the key
+
+                //***********************
+
+
                 float partialLenght = 0;
                 float vCoord = textureMode == TextureMode.Stretch ? 0 : - uvFactor * lenght * tileAnchor;
                 Vector4 texTangent = Vector4.zero;
                 Vector2 uv = Vector2.zero;
                 Color vertexColor;
 
-                bool hqCorners = (highQualityCorners && alignment != TrailAlignment.Local) || end == trail.Count - 1; // edit -df Make the end point hi quality so it's rounded, not flat
+                bool hqCorners = (highQualityCorners && alignment != TrailAlignment.Local);// || start < 3 || end > trail.Count - 3; // edit -df Make the end points hi quality so rounded, not flat
 
 
 
@@ -751,7 +771,7 @@ namespace Ara{
                     // Update vcoord:
                     vCoord += uvFactor * (textureMode == TextureMode.Stretch ? sectionLength/lenght : sectionLength);
         
-                    // Calulate final thickness:
+                    // Calculate final thickness:
                     float sectionThickness = thickness * trail[i].thickness * thicknessOverTime.Evaluate(normalizedLife) * thicknessOverLenght.Evaluate(normalizedLength);
 
                     Quaternion q = Quaternion.identity;
