@@ -698,13 +698,17 @@ namespace Ara{
                 // max, set to 0.05
                 // calculate the max percentage
                 //      get the current value
-                float currentTaperLength = thicknessOverLenght.keys[1].time * lenght;
-                if (currentTaperLength >= 0.00005f)
+                Keyframe[] keys = thicknessOverLenght.keys; // This is making a copy of all keys
+
+                float currentTaperLength = lenght - thicknessOverLenght.keys[2].time * lenght;
+                if (currentTaperLength >= 0.02f) // length in meters
                 {
                     Debug.Log("currentTaperLength: " + currentTaperLength);
-                    Keyframe keyframe = new Keyframe(1, 0.00005f / lenght);
-                    thicknessOverLenght.MoveKey(1, keyframe);
-                    currentTaperLength = thicknessOverLenght.keys[1].time * lenght;
+                    // Keyframe keyframe = new Keyframe(1, 0.005f / lenght);
+                    // thicknessOverLenght.MoveKey(1, keyframe);
+                    keys[2].time = 1 - (0.02f / lenght);
+                    thicknessOverLenght.keys = keys; // Copy the keys back into the AnimationCurve's array
+                    currentTaperLength = lenght - thicknessOverLenght.keys[2].time * lenght; 
                     Debug.Log("currentTaperLength 2: " + currentTaperLength);
                 }
                 // check that not over max
