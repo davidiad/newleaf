@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 /**
  * Ara is a trail renderer for Unity, meant to replace and extend the standard TrailRenderer.
@@ -265,8 +266,20 @@ namespace Ara{
     
         public event System.Action onUpdatePoints;
     	
-    	[HideInInspector] public List<Point> points = new List<Point>();
+    	[HideInInspector] public List<Point> points = new List<Point>(); 
+
+        //***************** Customizations for Leaves -df *******************
         public List<Vector3> poss = new List<Vector3>(); // test -df
+
+        /////////////////////////// Debug ////////////////////////////////////
+
+        private DebugLeaves debug;
+        private float maxTaperLength = 0.01f;
+
+
+
+        //END************** Customizations for Leaves -df *******************
+
         public bool hasMoved = true; // testing -df
         public bool loading = false; // testing -df
         public float mag; // testing -df
@@ -305,6 +318,10 @@ namespace Ara{
 
         public void Awake(){
             Warmup();
+
+            /// -df
+            debug = GameObject.FindWithTag("DebugPanel").GetComponent<DebugLeaves>();
+            maxTaperLength = debug.maxTaperLength;
         }
     
     	void OnEnable () {
@@ -698,15 +715,19 @@ namespace Ara{
                 // max, set to 0.05
                 // calculate the max percentage
                 //      get the current value
+
+#if UNITY_EDITOR
+                maxTaperLength = 0.05f;
+#endif
                 Keyframe[] keys = thicknessOverLenght.keys; // This is making a copy of all keys
 
                 float currentTaperLength = lenght - thicknessOverLenght.keys[2].time * lenght;
-                if (currentTaperLength >= 0.02f) // length in meters
+                if (currentTaperLength >= maxTaperLength) // length in meters
                 {
                     Debug.Log("currentTaperLength: " + currentTaperLength);
                     // Keyframe keyframe = new Keyframe(1, 0.005f / lenght);
                     // thicknessOverLenght.MoveKey(1, keyframe);
-                    keys[2].time = 1 - (0.02f / lenght);
+                    keys[2].time = 1 - (maxTaperLength / lenght);
                     thicknessOverLenght.keys = keys; // Copy the keys back into the AnimationCurve's array
                     currentTaperLength = lenght - thicknessOverLenght.keys[2].time * lenght; 
                     Debug.Log("currentTaperLength 2: " + currentTaperLength);
