@@ -274,7 +274,7 @@ namespace Ara{
         /////////////////////////// Debug ////////////////////////////////////
 
         private DebugLeaves debug;
-        private float maxTaperLength = 0.01f;
+        public float maxTaperLength = 0.01f;
 
 
 
@@ -416,7 +416,7 @@ namespace Ara{
             if (accumTime >= timeInterval){
 
                 if (emit){
-                    Debug.Log("EMIsssion PoinT");
+
                     // Select the emission position, depending on the simulation space:
                     Vector3 position = space == Space.Self ? transform.localPosition : transform.position;
                     Vector3 previousPosition = position;
@@ -712,28 +712,31 @@ namespace Ara{
                 float lenght = Mathf.Max(GetLenght(trail),epsilon);
 
                 //*********** df - when tapering the start of the trail, set a maximum absolute amount of taper (not simply proportional)
-                // max, set to 0.05
-                // calculate the max percentage
-                //      get the current value
 
-#if UNITY_EDITOR
-                maxTaperLength = 0.05f;
-#endif
-                Keyframe[] keys = thicknessOverLenght.keys; // This is making a copy of all keys
-
+                Keyframe[] keys = thicknessOverLenght.keys; // Make a copy of all keys
+                //keys[2].inTangent = 0.0f;
+                //keys[2].outTangent = 0.0f;
+                Debug.Log("TAN: " + thicknessOverLenght.keys[3].inTangent);
                 float currentTaperLength = lenght - thicknessOverLenght.keys[2].time * lenght;
-                if (currentTaperLength >= maxTaperLength) // length in meters
+                // check that not over max. If over, move the key to keep the same absolute length of taper in meters
+                if (currentTaperLength >= maxTaperLength)
                 {
-                    Debug.Log("currentTaperLength: " + currentTaperLength);
-                    // Keyframe keyframe = new Keyframe(1, 0.005f / lenght);
-                    // thicknessOverLenght.MoveKey(1, keyframe);
-                    keys[2].time = 1 - (maxTaperLength / lenght);
+                    //Debug.Log("currentTaperLength: " + currentTaperLength);
+                    //Keyframe keyframe = new Keyframe( (1 - maxTaperLength) / lenght, thicknessOverLenght.keys[2].value );
+                    //thicknessOverLenght.MoveKey(2, keyframe);
+                    keys[2].time = 1f - (maxTaperLength / lenght);
+                    keys[3].time = 1f - ((1f - keys[2].time) * 0.125f); // emperically set key 3 to 1/8 length of key 2
+                    //for (int i = 0; i < keys.Length; i++)
+                    //{
+                    //    keys[i].tangentMode = 21; // 21 is linear
+                    //}
                     thicknessOverLenght.keys = keys; // Copy the keys back into the AnimationCurve's array
-                    currentTaperLength = lenght - thicknessOverLenght.keys[2].time * lenght; 
-                    Debug.Log("currentTaperLength 2: " + currentTaperLength);
+                    //currentTaperLength = lenght - thicknessOverLenght.keys[2].time * lenght; 
+                    //Debug.Log("currentTaperLength 2: " + currentTaperLength);
                 }
-                // check that not over max
-                // if over, move the key
+
+                thicknessOverLenght.SmoothTangents(3, 0);
+                thicknessOverLenght.SmoothTangents(4, 0);
 
                 //***********************
 
