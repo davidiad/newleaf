@@ -716,28 +716,38 @@ namespace Ara{
                 Keyframe[] keys = thicknessOverLenght.keys; // Make a copy of all keys
                 //keys[2].inTangent = 0.0f;
                 //keys[2].outTangent = 0.0f;
-                Debug.Log("TAN: " + thicknessOverLenght.keys[3].inTangent);
-                float currentTaperLength = lenght - thicknessOverLenght.keys[2].time * lenght;
+                float currentTaperLength = lenght - thicknessOverLenght.keys[3].time * lenght;
                 // check that not over max. If over, move the key to keep the same absolute length of taper in meters
                 if (currentTaperLength >= maxTaperLength)
                 {
                     //Debug.Log("currentTaperLength: " + currentTaperLength);
                     //Keyframe keyframe = new Keyframe( (1 - maxTaperLength) / lenght, thicknessOverLenght.keys[2].value );
                     //thicknessOverLenght.MoveKey(2, keyframe);
-                    keys[2].time = 1f - (maxTaperLength / lenght);
-                    keys[3].time = 1f - ((1f - keys[2].time) * 0.125f); // emperically set key 3 to 1/8 length of key 2
+                    keys[3].time = 1f - (maxTaperLength / lenght);
+                    keys[4].time = 1f - ((1f - keys[3].time) * 0.125f); // emperically set key 3 to 1/8 length of key 2
                     //for (int i = 0; i < keys.Length; i++)
                     //{
                     //    keys[i].tangentMode = 21; // 21 is linear
                     //}
-                    thicknessOverLenght.keys = keys; // Copy the keys back into the AnimationCurve's array
+
                     //currentTaperLength = lenght - thicknessOverLenght.keys[2].time * lenght; 
                     //Debug.Log("currentTaperLength 2: " + currentTaperLength);
                 }
-
-                thicknessOverLenght.SmoothTangents(3, 0);
+                // Smooth last 2 points of curve
                 thicknessOverLenght.SmoothTangents(4, 0);
+                thicknessOverLenght.SmoothTangents(5, 0);
 
+                // Round the drawing end of the stroke (points 0, 1 and 2)
+
+                // Get the current width of the stroke
+                float currentThickness = thickness * trail[trail.Count - 1].thickness * 0.0001f;
+                keys[1].time = 0.05f * currentThickness / lenght;
+                keys[2].time = 0.5f  * currentThickness / lenght;
+                // Smooth first 2 points of curve
+                thicknessOverLenght.SmoothTangents(0, 0);
+                thicknessOverLenght.SmoothTangents(1, 0);
+
+                thicknessOverLenght.keys = keys; // Copy the keys back into the AnimationCurve's array
                 //***********************
 
 
