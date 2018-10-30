@@ -466,8 +466,23 @@ namespace Ara{
                      onUpdatePoints();
 
                 simulatedTime -= FixedDeltaTime;
-            }
+                points.Remove(this.points[points.Count - 1]);
         }
+
+
+        //void UpdatePoints()
+        //{
+            //TODO: 
+            // first check for a minimum number of points
+            // for the last 3 (or more) points, create new points with thickness tapering down, then remove originals
+            // replace with thinner (otherwise identical) points
+        //    //List<Point> trail = GetRenderablePoints();
+        //    for (int i = 0; i < 20; ++i)
+        //    {
+        //        AraTrail.Point point = this.points[i]; // dosomecustom pointprocesinghere.trail.points[i] = point;
+        //        point.thickness = 0.5f;
+        //    }
+        //}
 
         private void PhysicsStep(float timestep){
 
@@ -713,6 +728,7 @@ namespace Ara{
 
                 //*********** df - when tapering the start of the trail, set a maximum absolute amount of taper (not simply proportional)
 
+
                 Keyframe[] keys = thicknessOverLenght.keys; // Make a copy of all keys
                 //keys[2].inTangent = 0.0f;
                 //keys[2].outTangent = 0.0f;
@@ -740,14 +756,20 @@ namespace Ara{
                 // Round the drawing end of the stroke (points 0, 1 and 2)
 
                 // Get the current width of the stroke
-                float currentThickness = thickness * trail[trail.Count - 1].thickness * 0.0001f;
-                keys[1].time = 0.05f * currentThickness / lenght;
-                keys[2].time = 0.5f  * currentThickness / lenght;
-                // Smooth first 2 points of curve
-                thicknessOverLenght.SmoothTangents(0, 0);
-                thicknessOverLenght.SmoothTangents(1, 0);
+                //float currentThickness = thickness * trail[trail.Count - 1].thickness * 0.001f;
+                //Debug.Log("thickness: " + thickness);
+                //Debug.Log("trail[trail.Count - 1].thickness: " + trail[trail.Count - 1].thickness);
+                //keys[1].time = 0.05f * currentThickness / lenght;
+                //keys[2].time = 0.5f  * currentThickness / lenght;
+                //// Smooth first 2 points of curve
+                //thicknessOverLenght.SmoothTangents(0,0);
+                //thicknessOverLenght.SmoothTangents(1, 0);
+                //thicknessOverLenght.keys[2].inTangent = 0.0f;
+                //thicknessOverLenght.keys[2].outTangent = 0.0f;
 
                 thicknessOverLenght.keys = keys; // Copy the keys back into the AnimationCurve's array
+
+                //TODO: Try setting the thickness of stroke end points in OnUpdatePoints
                 //***********************
 
 
@@ -757,7 +779,7 @@ namespace Ara{
                 Vector2 uv = Vector2.zero;
                 Color vertexColor;
 
-                bool hqCorners = (highQualityCorners && alignment != TrailAlignment.Local);// || start < 3 || end > trail.Count - 3; // edit -df Make the end points hi quality so rounded, not flat
+                bool hqCorners = (highQualityCorners && alignment != TrailAlignment.Local);// || end > trail.Count - 3; // || start < 3 edit -df Make the end points hi quality so rounded, not flat
 
 
 
