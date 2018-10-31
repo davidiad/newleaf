@@ -445,34 +445,42 @@ namespace Ara{
 
         }
 
-        private void Warmup(){
+        private void Warmup()
+        {
 
             if (!Application.isPlaying || !enablePhysics)
                 return;
 
             float simulatedTime = warmup;
 
-            while (simulatedTime > FixedDeltaTime){
+            while (simulatedTime > FixedDeltaTime)
+            {
 
                 PhysicsStep(FixedDeltaTime);
 
                 EmissionStep(FixedDeltaTime);
 
                 SnapLastPointToTransform();
-    
+
                 //UpdatePointsLifecycle(); // commented out so points never die -df
 
                 if (onUpdatePoints != null)
-                     onUpdatePoints();
+                    onUpdatePoints();
 
                 simulatedTime -= FixedDeltaTime;
                 points.Remove(this.points[points.Count - 1]);
+            }
+
         }
-
-
-        //void UpdatePoints()
-        //{
+            public void UpdatePoints()
+            {
             //TODO: 
+            List<Point> trail = GetRenderablePoints(this.points, 0, points.Count - 1);
+            Point lastPoint = trail[0];
+            Point newLastPoint = new Point(lastPoint.position, lastPoint.velocity, lastPoint.tangent, lastPoint.normal, Color.red, lastPoint.thickness * 6f, lastPoint.life);
+            points.Remove(points[0]);
+            points.Add(newLastPoint);
+
             // first check for a minimum number of points
             // for the last 3 (or more) points, create new points with thickness tapering down, then remove originals
             // replace with thinner (otherwise identical) points
@@ -482,7 +490,7 @@ namespace Ara{
         //        AraTrail.Point point = this.points[i]; // dosomecustom pointprocesinghere.trail.points[i] = point;
         //        point.thickness = 0.5f;
         //    }
-        //}
+        }
 
         private void PhysicsStep(float timestep){
 
