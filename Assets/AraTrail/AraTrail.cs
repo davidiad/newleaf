@@ -337,6 +337,9 @@ namespace Ara{
     		
             // subscribe to OnPreCull for all cameras.
     		Camera.onPreCull += UpdateTrailMesh;
+
+            this.onUpdatePoints += UpdatePoints;
+
     
     	}
     
@@ -347,6 +350,8 @@ namespace Ara{
     
             // unsubscribe from OnPreCull.
     		Camera.onPreCull -= UpdateTrailMesh;
+
+            this.onUpdatePoints -= UpdatePoints;
     	}
     
         /**
@@ -381,6 +386,7 @@ namespace Ara{
             //UpdatePointsLifecycle();  // commented out so points never die -df
 
             if (onUpdatePoints != null)
+                Debug.Log("PUPU{I");
                 onUpdatePoints();
 
             ///* test -df   to be able to look at positions in the editor
@@ -474,17 +480,23 @@ namespace Ara{
         }
             public void UpdatePoints()
             {
-            //TODO: 
-            List<Point> trail = GetRenderablePoints(this.points, 0, points.Count - 1);
-            Point lastPoint = trail[0];
-            Point newLastPoint = new Point(lastPoint.position, lastPoint.velocity, lastPoint.tangent, lastPoint.normal, Color.red, lastPoint.thickness * 6f, lastPoint.life);
-            points.Remove(points[0]);
-            points.Add(newLastPoint);
+
+            if (points.Count > 12)
+            {
+                List<Point> trail = GetRenderablePoints(this.points, 0, points.Count - 1);
+                Point lastPoint = trail[points.Count - 1];
+                Point newLastPoint = new Point(lastPoint.position, lastPoint.velocity, lastPoint.tangent, lastPoint.normal, Color.red, lastPoint.thickness * 1.8f, lastPoint.life);
+                points.Remove(points[points.Count - 1]);
+                points.Add(newLastPoint);
+                //trail[0] = newLastPoint;
+            }
 
             // first check for a minimum number of points
             // for the last 3 (or more) points, create new points with thickness tapering down, then remove originals
             // replace with thinner (otherwise identical) points
-        //    //List<Point> trail = GetRenderablePoints();
+              
+            //AraTrail.Point point = this.points[points.Count - 1];
+
         //    for (int i = 0; i < 20; ++i)
         //    {
         //        AraTrail.Point point = this.points[i]; // dosomecustom pointprocesinghere.trail.points[i] = point;
