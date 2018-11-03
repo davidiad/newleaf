@@ -482,18 +482,28 @@ namespace Ara{
         }
 
         public void UpdatePoints()
+        {
+            if (readyToAddEndPoints && points.Count > 4)
             {
-            // TODO: Why does that point jump back to (near) the starting point each time?
-            // TODO: Make sure points are added to correct side. Is RenderablePoints in opposite direction to added points?
-            if (readyToAddEndPoints && points.Count > 12)
-            {
-                List<Point> trail = GetRenderablePoints(this.points, 0, points.Count - 1);
-                Point lastPoint = trail[points.Count - 1];
-                Point newLastPoint = new Point(lastPoint.position, lastPoint.velocity, lastPoint.tangent, lastPoint.normal, Color.red, lastPoint.thickness * 1.1f, lastPoint.life);
+                //List<Point> trail = GetRenderablePoints(this.points, 0, points.Count - 1);
+                //Point lastPoint = trail[points.Count - 1];
+                Point lastPoint = points[points.Count - 1];
+                Point newLastPoint = new Point(lastPoint.position, lastPoint.velocity, lastPoint.tangent, lastPoint.normal, lastPoint.color, lastPoint.thickness * 0.4f, lastPoint.life);
                 points.Remove(points[points.Count - 1]); // remove the original point, that is being replaced with a modified one
                 points.Add(newLastPoint);
                 //trail[0] = newLastPoint;
                 readyToAddEndPoints = false;
+                //TODO: Make sure that thickness is set back to original values
+                //TODO: Create an array of points of decreasing thickness, to form rounded end (the length approx. of the current thickness)
+                //Add these points to the end of each new point as it's laid down. Remove them before adding the next point.
+                //TODO: Increase the distance between points. Then when laying down points (eg when dragging), test for whether a point has 
+                // deviated off the line enough to reduce the distance, so sharp corners are still possible.
+                // In other words, when emitting a point, test for whether it is more or less within a straight line from preceding points
+                // If not, then allow, or set, a smaller distance between points.
+                // Alternatively, go thru list of points and remove those that are in straight line.
+                // Question: Is it possible to test for points in straight line or not, BEFORE emitting them? In other words,
+                // delay point emission slightly to test for straightness. If line is straight, do not emit that point. Delete it from the list.
+
             }
 
             // first check for a minimum number of points

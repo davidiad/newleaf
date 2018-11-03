@@ -258,33 +258,33 @@ MonoBehaviour:
   alignment: 0
   thickness: 2
   smoothness: 8
-  highQualityCorners: 1
+  highQualityCorners: 0
   cornerRoundness: 12
   thicknessOverLenght:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 2
-      time: 0
-      value: 0.4
+      time: 0.002197802
+      value: 0.9842322
       inSlope: 32.22915
-      outSlope: 21.769392
+      outSlope: 0.060728494
       tangentMode: 1
     - serializedVersion: 2
-      time: 0.012078357
-      value: 0.64328647
-      inSlope: 13.298465
-      outSlope: 13.298465
+      time: 0.021497857
+      value: 0.9869524
+      inSlope: -0.017518708
+      outSlope: -0.017518708
       tangentMode: 0
     - serializedVersion: 2
-      time: 0.07181108
-      value: 0.99447227
-      inSlope: 0.016003013
-      outSlope: 0.04144485
+      time: 0.042443953
+      value: 0.9859109
+      inSlope: 0.025310442
+      outSlope: 0.088093586
       tangentMode: 65
     - serializedVersion: 2
       time: 0.19988136
       value: 0.9997801
-      inSlope: 0.04144485
+      inSlope: 0.088093586
       outSlope: -0.020417571
       tangentMode: 5
     - serializedVersion: 2
