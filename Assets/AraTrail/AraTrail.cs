@@ -282,6 +282,7 @@ namespace Ara{
 
         public bool hasMoved = true; // testing -df
         public bool loading = false; // testing -df
+        private bool readyToAddEndPoints = false; // testing -df // flag on whether to add extra points at leading edge, for a rounded edge
         public float mag; // testing -df
         private List<Point> renderablePoints = new List<Point>();
         private List<int> discontinuities = new List<int>();
@@ -441,6 +442,7 @@ namespace Ara{
                     if ( points.Count <= 1 || loading || hasMoved ) // testing -df
                     {
                         EmitPoint(position);
+                        readyToAddEndPoints = true; // allow adding extra points for a softer leading edge, in UpdatePoints
 #if UNITY_EDITOR
                         hasMoved = false; // prevents doubling of points when clicking mouse in Editor
 #endif
@@ -478,18 +480,20 @@ namespace Ara{
             }
 
         }
-            public void UpdatePoints()
+
+        public void UpdatePoints()
             {
-            // TODO: make sure only runs after a point has been added, not every frame
+            // TODO: Why does that point jump back to (near) the starting point each time?
             // TODO: Make sure points are added to correct side. Is RenderablePoints in opposite direction to added points?
-            if (points.Count > 12)
+            if (readyToAddEndPoints && points.Count > 12)
             {
                 List<Point> trail = GetRenderablePoints(this.points, 0, points.Count - 1);
                 Point lastPoint = trail[points.Count - 1];
                 Point newLastPoint = new Point(lastPoint.position, lastPoint.velocity, lastPoint.tangent, lastPoint.normal, Color.red, lastPoint.thickness * 1.1f, lastPoint.life);
-                //points.Remove(points[points.Count - 1]);
+                points.Remove(points[points.Count - 1]); // remove the original point, that is being replaced with a modified one
                 points.Add(newLastPoint);
                 //trail[0] = newLastPoint;
+                readyToAddEndPoints = false;
             }
 
             // first check for a minimum number of points
