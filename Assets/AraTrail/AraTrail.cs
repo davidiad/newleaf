@@ -480,13 +480,14 @@ namespace Ara{
         }
             public void UpdatePoints()
             {
-
+            // TODO: make sure only runs after a point has been added, not every frame
+            // TODO: Make sure points are added to correct side. Is RenderablePoints in opposite direction to added points?
             if (points.Count > 12)
             {
                 List<Point> trail = GetRenderablePoints(this.points, 0, points.Count - 1);
                 Point lastPoint = trail[points.Count - 1];
-                Point newLastPoint = new Point(lastPoint.position, lastPoint.velocity, lastPoint.tangent, lastPoint.normal, Color.red, lastPoint.thickness * 1.8f, lastPoint.life);
-                points.Remove(points[points.Count - 1]);
+                Point newLastPoint = new Point(lastPoint.position, lastPoint.velocity, lastPoint.tangent, lastPoint.normal, Color.red, lastPoint.thickness * 1.1f, lastPoint.life);
+                //points.Remove(points[points.Count - 1]);
                 points.Add(newLastPoint);
                 //trail[0] = newLastPoint;
             }

@@ -155,9 +155,12 @@ public class PaintManager : MonoBehaviour
         }
         GameObject currentPaintingPlane = GameObject.FindWithTag("CamPaintingPlane");
         if (currentPaintingPlane) {
-            currentPaintingPlane.transform.localPosition = new Vector3(0f, 0f, targetSlider.value);
-            // roughly scale the grid up as it gets further away
-            currentPaintingPlane.transform.localScale = new Vector3(0.5f * targetSlider.value, 0.5f * targetSlider.value, planeScale); 
+            if (targetSlider)
+            {
+                currentPaintingPlane.transform.localPosition = new Vector3(0f, 0f, targetSlider.value);
+                // roughly scale the grid up as it gets further away
+                currentPaintingPlane.transform.localScale = new Vector3(0.5f * targetSlider.value, 0.5f * targetSlider.value, planeScale);
+            }
         }
     }
 
