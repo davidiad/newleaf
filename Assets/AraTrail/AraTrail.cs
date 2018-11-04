@@ -485,13 +485,15 @@ namespace Ara{
         {
             if (readyToAddEndPoints && points.Count > 4)
             {
-                //List<Point> trail = GetRenderablePoints(this.points, 0, points.Count - 1);
-                //Point lastPoint = trail[points.Count - 1];
-                Point lastPoint = points[points.Count - 1];
-                Point newLastPoint = new Point(lastPoint.position, lastPoint.velocity, lastPoint.tangent, lastPoint.normal, lastPoint.color, lastPoint.thickness * 0.4f, lastPoint.life);
-                points.Remove(points[points.Count - 1]); // remove the original point, that is being replaced with a modified one
+                int numPoints = points.Count; // need the point count ref to not change while adding and removing points, 
+                Point secondToLastPoint = points[numPoints - 2];
+                Point newSecondToLastPoint = new Point(secondToLastPoint.position, secondToLastPoint.velocity, secondToLastPoint.tangent, secondToLastPoint.normal, Color.green, initialThickness, secondToLastPoint.life);
+                Point lastPoint = points[numPoints - 1];
+                Point newLastPoint = new Point(lastPoint.position, lastPoint.velocity, lastPoint.tangent, lastPoint.normal, Color.yellow, initialThickness * 0.5f, lastPoint.life);
+                points.Remove(points[numPoints - 1]); // remove the original point, that is being replaced with a modified one
+                points.Remove(points[numPoints - 2]);
+                points.Add(newSecondToLastPoint);
                 points.Add(newLastPoint);
-                //trail[0] = newLastPoint;
                 readyToAddEndPoints = false;
                 //TODO: Make sure that thickness is set back to original values
                 //TODO: Create an array of points of decreasing thickness, to form rounded end (the length approx. of the current thickness)
