@@ -382,13 +382,12 @@ namespace Ara{
 
             EmissionStep(DeltaTime);
 
-            SnapLastPointToTransform();
+            //SnapLastPointToTransform();
 
             //UpdatePointsLifecycle();  // commented out so points never die -df
 
-            if (onUpdatePoints != null)
-                Debug.Log("PUPU{I");
-                onUpdatePoints();
+            if (onUpdatePoints != null) { onUpdatePoints(); }
+                
 
             ///* test -df   to be able to look at positions in the editor
 #if UNITY_EDITOR
@@ -489,13 +488,16 @@ namespace Ara{
                 Point secondToLastPoint = points[numPoints - 2];
                 Point newSecondToLastPoint = new Point(secondToLastPoint.position, secondToLastPoint.velocity, secondToLastPoint.tangent, secondToLastPoint.normal, Color.green, initialThickness, secondToLastPoint.life);
                 Point lastPoint = points[numPoints - 1];
-                Point newLastPoint = new Point(lastPoint.position, lastPoint.velocity, lastPoint.tangent, lastPoint.normal, Color.yellow, initialThickness * 0.5f, lastPoint.life);
+
+                Vector3 direction = (lastPoint.position - secondToLastPoint.position).normalized;  
+
+                Point newLastPoint = new Point(lastPoint.position + 0.05f * direction, lastPoint.velocity, lastPoint.tangent, lastPoint.normal, Color.yellow, initialThickness * 0.5f, lastPoint.life);
                 points.Remove(points[numPoints - 1]); // remove the original point, that is being replaced with a modified one
                 points.Remove(points[numPoints - 2]);
                 points.Add(newSecondToLastPoint);
                 points.Add(newLastPoint);
                 readyToAddEndPoints = false;
-                //TODO: Make sure that thickness is set back to original values
+
                 //TODO: Create an array of points of decreasing thickness, to form rounded end (the length approx. of the current thickness)
                 //Add these points to the end of each new point as it's laid down. Remove them before adding the next point.
                 //TODO: Increase the distance between points. Then when laying down points (eg when dragging), test for whether a point has 
@@ -573,6 +575,7 @@ namespace Ara{
                 if (!emit)
                     lastPoint.discontinuous = true;
 
+                // TODO: Make the transform match the last point instead
                 // if the point is discontinuous, move and orient it according to the transform.
                 if (!lastPoint.discontinuous){
                     lastPoint.position = space == Space.Self ? transform.localPosition : transform.position;
