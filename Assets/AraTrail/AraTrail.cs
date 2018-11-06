@@ -491,7 +491,7 @@ namespace Ara{
 
                 Vector3 direction = (lastPoint.position - secondToLastPoint.position).normalized;  
 
-                Point newLastPoint = new Point(lastPoint.position + 0.05f * direction, lastPoint.velocity, lastPoint.tangent, lastPoint.normal, Color.yellow, initialThickness * 0.5f, lastPoint.life);
+                Point newLastPoint = new Point(lastPoint.position + 0.02f * direction, lastPoint.velocity, lastPoint.tangent, lastPoint.normal, Color.yellow, initialThickness * 0.5f, lastPoint.life);
                 points.Remove(points[numPoints - 1]); // remove the original point, that is being replaced with a modified one
                 points.Remove(points[numPoints - 2]);
                 points.Add(newSecondToLastPoint);
@@ -578,9 +578,12 @@ namespace Ara{
                 // TODO: Make the transform match the last point instead
                 // if the point is discontinuous, move and orient it according to the transform.
                 if (!lastPoint.discontinuous){
-                    lastPoint.position = space == Space.Self ? transform.localPosition : transform.position;
-                    lastPoint.normal = transform.forward;
-                    lastPoint.tangent = transform.right;
+                    //lastPoint.position = space == Space.Self ? transform.localPosition : transform.position;
+                    //lastPoint.normal = transform.forward;
+                    //lastPoint.tangent = transform.right;
+
+                    transform.position = lastPoint.position;
+
                 }
 
                 points[points.Count-1] = lastPoint;
