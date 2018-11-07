@@ -986,25 +986,38 @@ namespace Ara{
                             corner = q * corner;
                         }
 
-                    }     
+                    }
+
+                    /***********************/
+                    if (i==0) // run only after all the rest has run
+                    {
+                        Vector3 dir = vertices[vertices.Count - 1] - vertices[vertices.Count - 2];
+                        dir.Normalize();
+                        Vector3 endPos = vertices[vertices.Count - 1] + 0.05f * dir; // replace number with correctedThickness
+                        vertices.Add(endPos);
+
+                        // Calculate normal vector:
+                        Vector3 endNormal = trail[trail.Count - 1].normal;
+                        normals.Add(endNormal);
+                        tangents.Add(trail[trail.Count - 1].tangent);
+                        vertColors.Add(Color.magenta);
+                        //TODO: add the UV's for the new point to the uvs array
+                        // NOTE: vertices are the verts of the mesh; trail points are the points used to generate the mesh (the trail)
+                        uv.Set(vCoord, 0);
+                        uvs.Add(uv);
+                        //uv.Set(vCoord, 1);
+                        //uvs.Add(uv);
+
+                        tris.Add(1);
+                        tris.Add(0);
+                        tris.Add(vertices.Count - 1); 
+                    }
+                    /***********************/
+
                         
                 }
 
-                /***********************/
 
-                Vector3 dir = vertices[vertices.Count - 1] - vertices[vertices.Count - 2];
-                dir.Normalize();
-                Vector3 endPos = vertices[vertices.Count - 1] + 0.05f * dir; // replace number with correctedThickness
-                vertices.Add(endPos);
-
-                // Calculate normal vector:
-                Vector3 endNormal = trail[trail.Count - 1].normal;
-                normals.Add(endNormal);
-                tangents.Add(trail[trail.Count - 1].tangent);
-                vertColors.Add(trail[trail.Count - 1].color);
-                //TODO: add the UV's for the new point to the uvs array
-                // NOTE: vertices are the verts of the mesh; trail points are the points used to generate the mesh (the trail)
-                /***********************/
 
             }
             
