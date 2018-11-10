@@ -481,7 +481,7 @@ namespace Ara{
         }
 
         public void UpdatePoints()
-        {
+        {/*
             if (readyToAddEndPoints && points.Count > 4)
             {
                 int numPoints = points.Count; // need the point count ref to not change while adding and removing points, 
@@ -509,7 +509,7 @@ namespace Ara{
                 // delay point emission slightly to test for straightness. If line is straight, do not emit that point. Delete it from the list.
 
             }
-
+*/
             // first check for a minimum number of points
             // for the last 3 (or more) points, create new points with thickness tapering down, then remove originals
             // replace with thinner (otherwise identical) points
@@ -923,8 +923,58 @@ namespace Ara{
                         }
 
                     }else{
+
                         vertices.Add(trail[i].position + bitangent * correctedThickness);
                         vertices.Add(trail[i].position - bitangent * correctedThickness);
+
+                        // adding extra rounding polys at the end -df
+                        if (i == trail.Count - 1)
+                        {
+                            Vector3 dir = trail[trail.Count - 1].position - trail[trail.Count - 2].position;
+                            //dir = dir.normalized;
+
+                            float thicknessFactor = 0.01f * correctedThickness / dir.magnitude;
+                            Debug.Log("TF: " + thicknessFactor);
+                            vertices.Add(trail[i].position + (thicknessFactor * dir.normalized) + 0.25f * bitangent * correctedThickness);
+                            vertices.Add(trail[i].position + (thicknessFactor * dir.normalized) - 0.25f * bitangent * correctedThickness);
+                            normals.Add(-normal);
+                            normals.Add(-normal);
+
+                            texTangent = -bitangent;
+                            texTangent.w = 1;
+                            tangents.Add(texTangent);
+                            tangents.Add(texTangent);
+
+                            vertColors.Add(vertexColor);
+                            vertColors.Add(vertexColor);
+
+                            uv.Set(vCoord, 0);
+                            uvs.Add(uv);
+                            uv.Set(vCoord, 1);
+                            uvs.Add(uv);
+
+                            if (i < trail.Count - 1)
+                            {
+
+                                int vc = vertices.Count - 1;
+
+                                tris.Add(vc);
+                                tris.Add(va);
+                                tris.Add(vb);
+
+                                tris.Add(vb);
+                                tris.Add(vc - 1);
+                                tris.Add(vc);
+                            }
+
+                            va = vertices.Count - 1;
+                            vb = vertices.Count - 2;
+                        }
+                        // END - adding extra rounding polys at the end -df
+                        //TODO:
+                        //1) Refactor so not repeating code
+                        //2) Make the rounding consistent, not proportional to segment length
+                        //3) add more polys for rounding
                     }
         
                     normals.Add(-normal);
@@ -987,31 +1037,35 @@ namespace Ara{
                         }
 
                     }
+                     
+                    /***********************/// -df
+                    // Add additional points and tris to make the leading edge rounded
+                    //if ( trail.Count > 21 && i==0) // run only after all the rest has run
+                    //{
+                        
+                    //    //Vector3 dir = vertices[vertices.Count - 1] - vertices[vertices.Count - 2];
+                    //    Vector3 dir = trail[trail.Count - 1].position - trail[trail.Count - 4].position;
+                    //   // dir.Normalize();
+                    //    Debug.Log ("dir: " + dir );
+                    //    Vector3 endPos = vertices[vertices.Count - 1] +  0.05f * dir; // replace number with correctedThickness
+                    //    vertices.Add(endPos);
 
-                    /***********************/
-                    if (i==0) // run only after all the rest has run
-                    {
-                        Vector3 dir = vertices[vertices.Count - 1] - vertices[vertices.Count - 2];
-                        dir.Normalize();
-                        Vector3 endPos = vertices[vertices.Count - 1] + 0.05f * dir; // replace number with correctedThickness
-                        vertices.Add(endPos);
+                    //    // Calculate normal vector:
+                    //    Vector3 endNormal = trail[trail.Count - 1].normal;
+                    //    normals.Add(endNormal);
+                    //    tangents.Add(trail[trail.Count - 1].tangent);
+                    //    vertColors.Add(Color.yellow);
+                    //    //TODO: add the UV's for the new point to the uvs array
+                    //    // NOTE: vertices are the verts of the mesh; trail points are the points used to generate the mesh (the trail)
+                    //    uv.Set(vCoord, 0);
+                    //    uvs.Add(uv);
+                    //    //uv.Set(vCoord, 1);
+                    //    //uvs.Add(uv);
 
-                        // Calculate normal vector:
-                        Vector3 endNormal = trail[trail.Count - 1].normal;
-                        normals.Add(endNormal);
-                        tangents.Add(trail[trail.Count - 1].tangent);
-                        vertColors.Add(Color.magenta);
-                        //TODO: add the UV's for the new point to the uvs array
-                        // NOTE: vertices are the verts of the mesh; trail points are the points used to generate the mesh (the trail)
-                        uv.Set(vCoord, 0);
-                        uvs.Add(uv);
-                        //uv.Set(vCoord, 1);
-                        //uvs.Add(uv);
-
-                        tris.Add(1);
-                        tris.Add(0);
-                        tris.Add(vertices.Count - 1); 
-                    }
+                    //    tris.Add(0);
+                    //    tris.Add(1);
+                    //    tris.Add(5); 
+                    //}
                     /***********************/
 
                         
