@@ -668,15 +668,65 @@ namespace Ara{
             return lenght;
 
     	}
+
+        // TODO: call in GetRenderablePoints, as one approach to add rounding to leading edge of stroke
+        private List<Point> AddRoundingToEnd (List<Point> input)
+        {
+
+
+            // Distance between points should be proportional to overall thickness
+            // Store the thickness from the last point
+            Point initialLastPoint = input[input.Count - 1];
+            Point initialSecondToLastPoint = input[input.Count - 2];
+            float strokeThickness = initialLastPoint.thickness;
+            float length = Mathf.Max(GetLenght(input), epsilon);
+            float overallThickness = thickness * strokeThickness;
+
+
+            List<Point> output = input;
+
+            // Store the initial direction the stroke is heading
+            Vector3 dir = initialLastPoint.position - initialSecondToLastPoint.position;
+            output.RemoveAt(input.Count - 1);
+
+            if (length > overallThickness) // first, check that the stroke is currently long enough to be rounded  // needs to be the overall thickness
+            {
+                Debug.Log(dir.magnitude + " : " + strokeThickness);
+                // and which points, if any, are within the rounding distance and so need to be deleted
+                while (dir.magnitude < overallThickness)
+                {
+                    Debug.Log("while " + dir.magnitude + " : " + strokeThickness + " : " + output.Count);
+                    output.RemoveAt(output.Count - 1);
+                    dir = initialLastPoint.position - output[output.Count - 1].position;
+                    if (output.Count < 3) { return input; } // safeguard for while statement
+                }
+
+                    // Add extra points leading up to end point, setting the points' thickness to round the edge
+
+                    // Set overall distance of round = strokeThickness. Generate that point where the rounding starts
+                    // that startRoundingPoint should be on the vector between secondToLast and Last
+                    // The thickness of the very last point will be very small
+                    
+                    return output;
+
+            } else {
+                return input;
+            }
+        }
     
         private List<Point> GetRenderablePoints(List<Point> input, int start, int end){
     
             renderablePoints.Clear();    
 
+            //TODO: Can the number of trail points be reduced here? 
+            // as when a lot of points are added on touch device, but don't need
+            // so many on straight parts -- only on sharp corners especially 
+
             if (smoothness <= 1){
                 for (int i = start; i <= end; ++i)
                     renderablePoints.Add(points[i]);
-                return renderablePoints;
+                //return renderablePoints;
+                return AddRoundingToEnd(renderablePoints); // -df
             }
 
             // calculate sample size in normalized coordinates:
@@ -695,18 +745,15 @@ namespace Ara{
                                                            points[i],
                                                            points[i+1],
                                                            lastPoint,t);
-    
-                    // only if the interpolated point is alive, we add it to the list of points to render.
-                    if (interpolated.life > 0)
-                        renderablePoints.Add(interpolated);
-                }
-                
-            }
-        
-            if (points[end].life > 0)
-                renderablePoints.Add(points[end]);
 
-            return renderablePoints;
+                    // only if the interpolated point is alive, we add it to the list of points to render.
+                    if (interpolated.life > 0) { renderablePoints.Add(interpolated); }
+                }
+            }
+
+            if (points[end].life > 0) { renderablePoints.Add(points[end]); }
+            //return renderablePoints;
+            return AddRoundingToEnd(renderablePoints); // -df
         }
     
         /**
@@ -783,7 +830,7 @@ namespace Ara{
                     //Keyframe keyframe = new Keyframe( (1 - maxTaperLength) / lenght, thicknessOverLenght.keys[2].value );
                     //thicknessOverLenght.MoveKey(2, keyframe);
                     keys[3].time = 1f - (maxTaperLength / lenght);
-                    keys[4].time = 1f - ((1f - keys[3].time) * 0.125f); // emperically set key 3 to 1/8 length of key 2
+                    keys[4].time = 1f - ((1f - keys[3].time) * 0.125f); // empirically set key 3 to 1/8 length of key 2
                     //for (int i = 0; i < keys.Length; i++)
                     //{
                     //    keys[i].tangentMode = 21; // 21 is linear
@@ -930,51 +977,58 @@ namespace Ara{
                         // adding extra rounding polys at the end -df
                         if (i == trail.Count - 1)
                         {
-                            Vector3 dir = trail[trail.Count - 1].position - trail[trail.Count - 2].position;
-                            //dir = dir.normalized;
-
-                            float thicknessFactor = 0.01f * correctedThickness / dir.magnitude;
-                            Debug.Log("TF: " + thicknessFactor);
-                            vertices.Add(trail[i].position + (thicknessFactor * dir.normalized) + 0.25f * bitangent * correctedThickness);
-                            vertices.Add(trail[i].position + (thicknessFactor * dir.normalized) - 0.25f * bitangent * correctedThickness);
-                            normals.Add(-normal);
-                            normals.Add(-normal);
-
-                            texTangent = -bitangent;
-                            texTangent.w = 1;
-                            tangents.Add(texTangent);
-                            tangents.Add(texTangent);
-
-                            vertColors.Add(vertexColor);
-                            vertColors.Add(vertexColor);
-
-                            uv.Set(vCoord, 0);
-                            uvs.Add(uv);
-                            uv.Set(vCoord, 1);
-                            uvs.Add(uv);
-
-                            if (i < trail.Count - 1)
+                            for (int j= 1; j < 4; j++)
                             {
+                                //TODO: Changing position changes the angle of the normal. Need to get the new normal based on new cam 
+                                // position, then use it to calculate new bitangent
+                                Vector3 dir = trail[trail.Count - 1].position - trail[trail.Count - 2].position;
+                                dir = dir.normalized;
+                                float distanceWantToMove = 0.5f * correctedThickness;
+                                float thicknessFactor = 0.01f * correctedThickness / dir.magnitude;
 
-                                int vc = vertices.Count - 1;
+                                vertices.Add(trail[i].position - (distanceWantToMove * dir.normalized) / dir.magnitude + 0.25f * bitangent * correctedThickness);
+                                vertices.Add(trail[i].position - (distanceWantToMove * dir.normalized) / dir.magnitude - 0.25f * bitangent * correctedThickness);
+                                //vertices.Add(trail[i].position + (2.9f - (j * 0.1f)) * bitangent * correctedThickness);
+                                //vertices.Add(trail[i].position - (2.9f - (j * 0.1f)) * bitangent * correctedThickness);
+                                normals.Add(-normal);
+                                normals.Add(-normal);
 
-                                tris.Add(vc);
-                                tris.Add(va);
-                                tris.Add(vb);
+                                texTangent = -bitangent;
+                                texTangent.w = 1;
+                                tangents.Add(texTangent);
+                                tangents.Add(texTangent);
 
-                                tris.Add(vb);
-                                tris.Add(vc - 1);
-                                tris.Add(vc);
+                                vertColors.Add(vertexColor);
+                                vertColors.Add(vertexColor);
+
+                                uv.Set(vCoord, 0);
+                                uvs.Add(uv);
+                                uv.Set(vCoord, 1);
+                                uvs.Add(uv);
+
+                                if (i < trail.Count - 1)
+                                {
+
+                                    int vc = vertices.Count - 1;
+
+                                    tris.Add(vc);
+                                    tris.Add(va);
+                                    tris.Add(vb);
+
+                                    tris.Add(vb);
+                                    tris.Add(vc - 1);
+                                    tris.Add(vc);
+                                }
+
+                                va = vertices.Count - 1;
+                                vb = vertices.Count - 2;
                             }
-
-                            va = vertices.Count - 1;
-                            vb = vertices.Count - 2;
+                            // END - adding extra rounding polys at the end -df
+                            //TODO:
+                            //1) Refactor so not repeating code
+                            //2) Make the rounding consistent, not proportional to segment length
+                            //3) add more polys for rounding
                         }
-                        // END - adding extra rounding polys at the end -df
-                        //TODO:
-                        //1) Refactor so not repeating code
-                        //2) Make the rounding consistent, not proportional to segment length
-                        //3) add more polys for rounding
                     }
         
                     normals.Add(-normal);
