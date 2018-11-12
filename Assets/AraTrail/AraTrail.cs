@@ -701,6 +701,11 @@ namespace Ara{
                     if (output.Count < 3) { return input; } // safeguard for while statement
                 }
 
+                Point newLastPoint = new Point(initialLastPoint.position, initialLastPoint.velocity, initialLastPoint.tangent, initialLastPoint.normal, Color.red, 0.0005f, 512f);
+                Vector3 newSecondPos = newLastPoint.position - 0.4f * dir;
+                Point newSecond = new Point(newSecondPos, initialLastPoint.velocity, initialLastPoint.tangent, initialLastPoint.normal, Color.cyan, 0.004f, 512f);
+                output.Add(newSecond);
+                output.Add(newLastPoint);
                     // Add extra points leading up to end point, setting the points' thickness to round the edge
 
                     // Set overall distance of round = strokeThickness. Generate that point where the rounding starts
@@ -973,7 +978,7 @@ namespace Ara{
 
                         vertices.Add(trail[i].position + bitangent * correctedThickness);
                         vertices.Add(trail[i].position - bitangent * correctedThickness);
-
+                        /*
                         // adding extra rounding polys at the end -df
                         if (i == trail.Count - 1)
                         {
@@ -1029,6 +1034,7 @@ namespace Ara{
                             //2) Make the rounding consistent, not proportional to segment length
                             //3) add more polys for rounding
                         }
+                        */
                     }
         
                     normals.Add(-normal);
