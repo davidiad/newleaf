@@ -282,7 +282,8 @@ namespace Ara{
 
         public bool hasMoved = true; // testing -df
         public bool loading = false; // testing -df
-        private bool readyToAddEndPoints = false; // testing -df // flag on whether to add extra points at leading edge, for a rounded edge
+        public bool active = true; // -df Is the stroke being actively drawn? either initial creation, or by loading
+        private bool readyToAddEndPoints = false; // not currently used -df // flag on whether to add extra points at leading edge, for a rounded edge
         public float mag; // testing -df
         private List<Point> renderablePoints = new List<Point>();
         private List<int> discontinuities = new List<int>();
@@ -669,11 +670,11 @@ namespace Ara{
 
     	}
 
+        // TODO: When trail becomes not active, need to add the rounding points to the regular points, since they would no longer be in Renderable points
+
         // TODO: call in GetRenderablePoints, as one approach to add rounding to leading edge of stroke
         private List<Point> AddRoundingToEnd (List<Point> input)
         {
-
-
             // Distance between points should be proportional to overall thickness
             // Store the thickness from the last point
             Point initialLastPoint = input[input.Count - 1];
@@ -730,8 +731,9 @@ namespace Ara{
             if (smoothness <= 1){
                 for (int i = start; i <= end; ++i)
                     renderablePoints.Add(points[i]);
-                //return renderablePoints;
-                return AddRoundingToEnd(renderablePoints); // -df
+
+                if (active) { return AddRoundingToEnd(renderablePoints); } else 
+                            { return renderablePoints; } // -df
             }
 
             // calculate sample size in normalized coordinates:
@@ -757,8 +759,8 @@ namespace Ara{
             }
 
             if (points[end].life > 0) { renderablePoints.Add(points[end]); }
-            //return renderablePoints;
-            return AddRoundingToEnd(renderablePoints); // -df
+            if (active) { return AddRoundingToEnd(renderablePoints); } else
+                        { return renderablePoints; } // -df
         }
     
         /**

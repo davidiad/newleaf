@@ -271,6 +271,7 @@ public class PaintManager : MonoBehaviour
         List<float> sizeList = new List<float>();
 
             AraTrail araTrail = brush.GetComponent<AraTrail>();
+            araTrail.active = false; // not being actively drawn, so do not need to constantly update rounded end points
             araTrail.initialColor = paintColor;
             araTrail.initialThickness = brushSize;
             int numPosAra = araTrail.points.Count;
