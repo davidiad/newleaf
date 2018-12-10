@@ -4,7 +4,7 @@
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: BrushMatC
   m_Shader: {fileID: 4800000, guid: 1dabe6b588a5e46f5a5c866af8e41981, type: 3}
@@ -85,5 +85,5 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 1, g: 0.8982899, b: 0, a: 1}
+    - _Color: {r: 0, g: 1, b: 0.4793799, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
