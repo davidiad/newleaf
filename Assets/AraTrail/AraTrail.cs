@@ -29,6 +29,14 @@ namespace Ara{
             Stretch,
             Tile
         }
+
+        // -df
+        public enum TrailState{
+            Drawing,
+            Redrawing,
+            DrawnFlatEnd,
+            DrawnRoundEnd
+        }
     
         /**
          * Spatial frame, consisting of a point an three axis. This is used to implement the parallel transport method 
@@ -189,6 +197,8 @@ namespace Ara{
         public Timescale timescale = Timescale.Normal; 
         [Tooltip("How to align the trail geometry: facing the camera (view) of using the transform's rotation (local).")]
         public TrailAlignment alignment = TrailAlignment.View;
+        [Tooltip("The state of the paintstroke. Used to determine if rounding end points need to be added")]
+        public TrailState trailstate = TrailState.Drawing; // -df
         [Tooltip("Thickness multiplier, in meters.")]
         public float thickness = 0.1f;
         [Tooltip("Amount of smoothing iterations applied to the trail shape.")]
@@ -266,23 +276,28 @@ namespace Ara{
     
         public event System.Action onUpdatePoints;
     	
-    	[HideInInspector] public List<Point> points = new List<Point>(); 
+
+    	[HideInInspector] public List<Point> points = new List<Point>();
 
         //***************** Customizations for Leaves -df *******************
+        public List<Point> endPoints = new List<Point>(); // -df For leaves to hold the list of point to round the end of a stroke
+        //(contiually derived while being actively drawn, but don't change once trail is not active)
+
+       
         public List<Vector3> poss = new List<Vector3>(); // test -df
 
         /////////////////////////// Debug ////////////////////////////////////
 
         private DebugLeaves debug;
         public float maxTaperLength = 0.01f;
-
+      
 
 
         //END************** Customizations for Leaves -df *******************
 
         public bool hasMoved = true; // testing -df
         public bool loading = false; // testing -df
-        public bool active = true; // -df Is the stroke being actively drawn? either initial creation, or by loading
+        //public bool active = true; // -df Is the stroke being actively drawn? either initial creation, or by loading
         private bool readyToAddEndPoints = false; // not currently used -df // flag on whether to add extra points at leading edge, for a rounded edge
         public float mag; // testing -df
         private List<Point> renderablePoints = new List<Point>();
@@ -441,12 +456,17 @@ namespace Ara{
                     //if (points.Count <= 1 || Vector3.Distance(position,previousPosition) >= minDistance)
                     if ( points.Count <= 1 || loading || hasMoved ) // testing -df
                     {
+                        if (trailstate == TrailState.Drawing || trailstate == TrailState.Redrawing) 
+                        {
+                            
+                        
                         EmitPoint(position);
                         readyToAddEndPoints = true; // allow adding extra points for a softer leading edge, in UpdatePoints
 #if UNITY_EDITOR
                         hasMoved = false; // prevents doubling of points when clicking mouse in Editor
 #endif
                         accumTime = 0;
+                        }
                     }
                 }
             }
@@ -554,7 +574,11 @@ namespace Ara{
             PhysicsStep(FixedDeltaTime);
     
         }
-    
+
+        // TODO: Add a list of ending points (which will be tapered), to append to the list of emitted points.
+        // This would happen when the trail changes from active to inactive
+        // Get this list from the renderable points, which generate them each frame, when stroke is active
+
         /**
          * Spawns a new point in the trail.
          */
@@ -673,7 +697,7 @@ namespace Ara{
         // TODO: When trail becomes not active, need to add the rounding points to the regular points, since they would no longer be in Renderable points
 
         // TODO: call in GetRenderablePoints, as one approach to add rounding to leading edge of stroke
-        private List<Point> AddRoundingToEnd (List<Point> input)
+        private List<Point> AddRoundingToEnd (List<Point> input) // -df
         {
             // Distance between points should be proportional to overall thickness
             // Store the thickness from the last point
@@ -705,14 +729,20 @@ namespace Ara{
                 Point newLastPoint = new Point(initialLastPoint.position, initialLastPoint.velocity, initialLastPoint.tangent, initialLastPoint.normal, Color.red, 0.0005f, 512f);
                 Vector3 newSecondPos = newLastPoint.position - 0.4f * dir;
                 Point newSecond = new Point(newSecondPos, initialLastPoint.velocity, initialLastPoint.tangent, initialLastPoint.normal, Color.cyan, 0.004f, 512f);
-                output.Add(newSecond);
-                output.Add(newLastPoint);
+
+                endPoints.Clear();
+                endPoints.Add(newSecond);
+                endPoints.Add(newLastPoint);
+
+                output.AddRange(endPoints);
+                //output.Add(newSecond);
+                //output.Add(newLastPoint);
                     // Add extra points leading up to end point, setting the points' thickness to round the edge
 
                     // Set overall distance of round = strokeThickness. Generate that point where the rounding starts
                     // that startRoundingPoint should be on the vector between secondToLast and Last
                     // The thickness of the very last point will be very small
-                    
+                //TODO: if the stroke is turned inactive(not being actively drawn), at this point, save this list of ending rouding points, to add to main list of points.
                     return output;
 
             } else {
@@ -732,8 +762,19 @@ namespace Ara{
                 for (int i = start; i <= end; ++i)
                     renderablePoints.Add(points[i]);
 
-                if (active) { return AddRoundingToEnd(renderablePoints); } else 
-                            { return renderablePoints; } // -df
+                if (trailstate == TrailState.Drawing) { return AddRoundingToEnd(renderablePoints); }
+                else
+                {
+                    ////TODO: need to only add these endpoint once, upon changing from active to inactive (or not current to current)
+                    //if (endPoints != null)
+                    //{
+                    //    for (int i = 0; i < endPoints.Count; i++)
+                    //    {
+                    //        points.Add(endPoints[i]);
+                    //    }
+                    //}
+                    return renderablePoints; 
+                } // -df
             }
 
             // calculate sample size in normalized coordinates:
@@ -759,7 +800,7 @@ namespace Ara{
             }
 
             if (points[end].life > 0) { renderablePoints.Add(points[end]); }
-            if (active) { return AddRoundingToEnd(renderablePoints); } else
+            if (trailstate == TrailState.Drawing) { return AddRoundingToEnd(renderablePoints); } else
                         { return renderablePoints; } // -df
         }
     
@@ -787,6 +828,18 @@ namespace Ara{
     	private void UpdateTrailMesh(Camera cam){
     
     		ClearMeshData();
+
+            //******************** -df
+           
+            // If the state is that the stroke is NOT being actively AND rounding points have not yet been added
+            // then add rounding points to point list here
+            if (trailstate == TrailState.DrawnFlatEnd)
+            {
+                points = AddRoundingToEnd(points);
+                trailstate = TrailState.DrawnRoundEnd;
+
+            }
+            //********************
     
             // We need at least two points to create a trail mesh.
             if (points.Count > 1){

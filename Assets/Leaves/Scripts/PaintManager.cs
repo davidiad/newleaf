@@ -212,6 +212,7 @@ public class PaintManager : MonoBehaviour
             araTrail.loading = true;
             araTrail.initialColor = paintstroke.color;
             araTrail.space = Space.Self; // allows the paintstroke to be moved with the parent's movement
+            araTrail.trailstate = AraTrail.TrailState.Redrawing;
             StartCoroutine(PaintTrail(newBrush, paintstroke, araTrail));
         }
 
@@ -271,7 +272,8 @@ public class PaintManager : MonoBehaviour
         List<float> sizeList = new List<float>();
 
             AraTrail araTrail = brush.GetComponent<AraTrail>();
-            araTrail.active = false; // not being actively drawn, so do not need to constantly update rounded end points
+            //araTrail.active = false; // not being actively drawn, so do not need to constantly update rounded end points
+            araTrail.trailstate = AraTrail.TrailState.DrawnFlatEnd; // allow rounding points to be added. 
             araTrail.initialColor = paintColor;
             araTrail.initialThickness = brushSize;
             int numPosAra = araTrail.points.Count;
@@ -285,6 +287,14 @@ public class PaintManager : MonoBehaviour
                 // alternately, could add the AraTrail points themselves to the Paintstroke, 
                 // since they already hold the colors, plus other info such as discontinuous.
             }
+        // Add the rounding endpoints to the list of points
+        //for (int i = 0; i < araTrail.endPoints.Count; i++)
+        //{
+        //    vertList.Add(araTrail.endPoints[i].position);
+        //    colorList.Add(Color.yellow); // test to see if endpoints are added //colorList.Add(araTrail.endPoints[i].color);
+        //    sizeList.Add(araTrail.endPoints[i].thickness);
+        //}
+
 
         // Only add the new PaintStrokes if it's newly created, not if loading from a saved map
         // TODO: Need a bool to prevent saving to list when strokes are being recreated?
