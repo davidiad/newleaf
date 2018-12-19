@@ -280,10 +280,11 @@ namespace Ara{
     	[HideInInspector] public List<Point> points = new List<Point>();
 
         //***************** Customizations for Leaves -df *******************
+        //TODO: Make endPoints and its array all part of one data structure
         public List<Point> endPoints = new List<Point>(); // -df For leaves to hold the list of point to round the end of a stroke
-        //(contiually derived while being actively drawn, but don't change once trail is not active)
-
-       
+        //(continually derived while being actively drawn, but don't change once trail is not active)
+        public float[] endPointRelDistance  = new float[] { 0.0f,    0.05f,  0.3f,  0.6f  };
+        public float[] endPointRelThickness = new float[] { 0.0001f, 0.125f, 0.33f, 0.45f };
         public List<Vector3> poss = new List<Vector3>(); // test -df
 
         /////////////////////////// Debug ////////////////////////////////////
@@ -714,6 +715,7 @@ namespace Ara{
             Vector3 dir = initialLastPoint.position - initialSecondToLastPoint.position;
             output.RemoveAt(input.Count - 1);
 
+            // Set overall distance of the round equal to the stroke thickness.
             if (length > overallThickness) // first, check that the stroke is currently long enough to be rounded  // needs to be the overall thickness
             {
                 //Debug.Log(dir.magnitude + " : " + strokeThickness);
@@ -726,29 +728,36 @@ namespace Ara{
                     if (output.Count < 3) { return input; } // safeguard for while statement
                 }
 
-                Point newLastPoint = new Point(initialLastPoint.position, initialLastPoint.velocity, initialLastPoint.tangent, initialLastPoint.normal, Color.red, 0.0001f, 512f);
-                Vector3 newSecondPos = newLastPoint.position - 0.05f * dir;
-                Point newSecond = new Point(newSecondPos, initialLastPoint.velocity, initialLastPoint.tangent, initialLastPoint.normal, Color.yellow, overallThickness * 0.125f, 512f);
-                Vector3 newThirdPos = newLastPoint.position - 0.3f * dir;
-                Point newThird = new Point(newThirdPos, initialLastPoint.velocity, initialLastPoint.tangent, initialLastPoint.normal, Color.cyan, overallThickness * 0.33f, 512f);
-                Vector3 newFourthPos = newLastPoint.position - 0.6f * dir;
-                Point newFourth = new Point(newFourthPos, initialLastPoint.velocity, initialLastPoint.tangent, initialLastPoint.normal, Color.green, overallThickness * 0.45f, 512f);
-
                 endPoints.Clear();
-                endPoints.Add(newFourth);
-                endPoints.Add(newThird);
-                endPoints.Add(newSecond);
-                endPoints.Add(newLastPoint);
+                // Create the points that make up the rounded end, and add them to endpoints array
+                for (int i=endPointRelDistance.Length-1; i>=0; i--)
+                {
+                    Vector3 pos = initialLastPoint.position - endPointRelDistance[i] * dir;
+                    Point p = new Point(pos, initialLastPoint.velocity, initialLastPoint.tangent, initialLastPoint.normal, Color.red, overallThickness * endPointRelThickness[i], 512f);
+                    endPoints.Add(p);
+                }
+                //Point newLastPoint = new Point(initialLastPoint.position, initialLastPoint.velocity, initialLastPoint.tangent, initialLastPoint.normal, Color.red, 0.0001f, 512f);
+                //Vector3 newSecondPos = newLastPoint.position - 0.05f * dir;
+                //Point newSecond = new Point(newSecondPos, initialLastPoint.velocity, initialLastPoint.tangent, initialLastPoint.normal, Color.yellow, overallThickness * 0.125f, 512f);
+                //Vector3 newThirdPos = newLastPoint.position - 0.3f * dir;
+                //Point newThird = new Point(newThirdPos, initialLastPoint.velocity, initialLastPoint.tangent, initialLastPoint.normal, Color.cyan, overallThickness * 0.33f, 512f);
+                //Vector3 newFourthPos = newLastPoint.position - 0.6f * dir;
+                //Point newFourth = new Point(newFourthPos, initialLastPoint.velocity, initialLastPoint.tangent, initialLastPoint.normal, Color.green, overallThickness * 0.45f, 512f);
+
+                //endPoints.Clear();
+                //endPoints.Add(newFourth);
+                //endPoints.Add(newThird);
+                //endPoints.Add(newSecond);
+                //endPoints.Add(newLastPoint);
 
                 output.AddRange(endPoints);
-                //output.Add(newSecond);
-                //output.Add(newLastPoint);
+
                     // Add extra points leading up to end point, setting the points' thickness to round the edge
 
-                    // Set overall distance of round = strokeThickness. Generate that point where the rounding starts
+                    // Generate that point where the rounding starts
                     // that startRoundingPoint should be on the vector between secondToLast and Last
                     // The thickness of the very last point will be very small
-                //TODO: if the stroke is turned inactive(not being actively drawn), at this point, save this list of ending rouding points, to add to main list of points.
+
                     return output;
 
             } else {
