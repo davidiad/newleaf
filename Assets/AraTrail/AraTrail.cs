@@ -716,21 +716,27 @@ namespace Ara{
 
             if (length > overallThickness) // first, check that the stroke is currently long enough to be rounded  // needs to be the overall thickness
             {
-                Debug.Log(dir.magnitude + " : " + strokeThickness);
+                //Debug.Log(dir.magnitude + " : " + strokeThickness);
                 // and which points, if any, are within the rounding distance and so need to be deleted
                 while (dir.magnitude < overallThickness)
                 {
-                    Debug.Log("while " + dir.magnitude + " : " + strokeThickness + " : " + output.Count);
+                    //Debug.Log("while " + dir.magnitude + " : " + strokeThickness + " : " + output.Count);
                     output.RemoveAt(output.Count - 1);
                     dir = initialLastPoint.position - output[output.Count - 1].position;
                     if (output.Count < 3) { return input; } // safeguard for while statement
                 }
 
-                Point newLastPoint = new Point(initialLastPoint.position, initialLastPoint.velocity, initialLastPoint.tangent, initialLastPoint.normal, Color.red, 0.0005f, 512f);
-                Vector3 newSecondPos = newLastPoint.position - 0.4f * dir;
-                Point newSecond = new Point(newSecondPos, initialLastPoint.velocity, initialLastPoint.tangent, initialLastPoint.normal, Color.cyan, 0.004f, 512f);
+                Point newLastPoint = new Point(initialLastPoint.position, initialLastPoint.velocity, initialLastPoint.tangent, initialLastPoint.normal, Color.red, 0.0001f, 512f);
+                Vector3 newSecondPos = newLastPoint.position - 0.05f * dir;
+                Point newSecond = new Point(newSecondPos, initialLastPoint.velocity, initialLastPoint.tangent, initialLastPoint.normal, Color.yellow, overallThickness * 0.125f, 512f);
+                Vector3 newThirdPos = newLastPoint.position - 0.3f * dir;
+                Point newThird = new Point(newThirdPos, initialLastPoint.velocity, initialLastPoint.tangent, initialLastPoint.normal, Color.cyan, overallThickness * 0.33f, 512f);
+                Vector3 newFourthPos = newLastPoint.position - 0.6f * dir;
+                Point newFourth = new Point(newFourthPos, initialLastPoint.velocity, initialLastPoint.tangent, initialLastPoint.normal, Color.green, overallThickness * 0.45f, 512f);
 
                 endPoints.Clear();
+                endPoints.Add(newFourth);
+                endPoints.Add(newThird);
                 endPoints.Add(newSecond);
                 endPoints.Add(newLastPoint);
 
