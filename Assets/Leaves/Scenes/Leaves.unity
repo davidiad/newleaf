@@ -8392,6 +8392,7 @@ GameObject:
   - component: {fileID: 2033934937}
   - component: {fileID: 2033934939}
   - component: {fileID: 2033934938}
+  - component: {fileID: 2033934940}
   m_Layer: 5
   m_Name: ColorWheel
   m_TagString: Untagged
@@ -8545,6 +8546,17 @@ MonoBehaviour:
       m_TypeName: UnityEngine.EventSystems.EventTrigger+TriggerEvent, UnityEngine.UI,
         Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   delegates: []
+--- !u!114 &2033934940
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2033934932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 686adcd9cda9c4aa7a650d4c807af395, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2036299907
 GameObject:
   m_ObjectHideFlags: 0
