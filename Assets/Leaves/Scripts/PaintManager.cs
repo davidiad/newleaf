@@ -112,6 +112,15 @@ public class PaintManager : MonoBehaviour
         }
     }
 
+    public void AdjustHue(float hue)
+    {
+        // convert hue to RGB
+        Color tempColor = Color.yellow;
+        SetHue(tempColor);
+        UpdateSV();
+
+    }
+
     private Color AdjustSV () {
         
         float H, S, V;
