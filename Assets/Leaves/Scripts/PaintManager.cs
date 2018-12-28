@@ -102,6 +102,7 @@ public class PaintManager : MonoBehaviour
         }
     }
 
+    // uses paint slider
     public void AdjustPaintColor() {
         if (paintSlider)
         {
@@ -112,11 +113,17 @@ public class PaintManager : MonoBehaviour
         }
     }
 
-    public void AdjustHue(float hue)
+    // uses colorwheel
+    public void AdjustHue(float newHue)
     {
         // convert hue to RGB
-        Color tempColor = Color.yellow;
-        SetHue(tempColor);
+
+        float H, S, V;
+        Color.RGBToHSV(paintColor, out H, out S, out V);
+        // new color with new hue but existing S and V
+        Color c = Color.HSVToRGB(newHue, S, V);
+
+        SetHue(c);
         UpdateSV();
 
     }
