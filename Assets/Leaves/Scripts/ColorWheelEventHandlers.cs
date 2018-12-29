@@ -18,6 +18,11 @@ public class ColorWheelEventHandlers : MonoBehaviour, IPointerEnterHandler, IDra
         paintManager = GameObject.FindWithTag("PaintManager").GetComponent<PaintManager>();     
     }
 
+    public void OnTap()
+    {
+        Debug.Log("Tapped at: " + Event.current.mousePosition);
+    }
+
     public void OnBeginDrag(PointerEventData eventData)
     {
         wheelPos = this.gameObject.transform.position;
