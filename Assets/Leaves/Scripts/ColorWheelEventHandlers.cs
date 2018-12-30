@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using DigitalRubyShared; // Fingers Gesture Recognizer
 
 public class ColorWheelEventHandlers : MonoBehaviour, IPointerEnterHandler, IDragHandler, IBeginDragHandler, IPointerExitHandler, IDropHandler
 {
@@ -12,16 +13,41 @@ public class ColorWheelEventHandlers : MonoBehaviour, IPointerEnterHandler, IDra
     private float rotZ = 0.0f;
     private float angleChange = 0.0f;
 
+    public TapGestureRecognizer tapGesture { get; private set; }
+
     void Start()
     {
         rectTransform = GetComponent<RectTransform>();
-        paintManager = GameObject.FindWithTag("PaintManager").GetComponent<PaintManager>();     
+        paintManager = GameObject.FindWithTag("PaintManager").GetComponent<PaintManager>();
+        CreateTapGesture();
     }
 
     public void OnTap()
     {
-        Debug.Log("Tapped at: " + Event.current.mousePosition);
+        TapGestureCallback(tapGesture);    
     }
+
+    private void TapGestureCallback(GestureRecognizer gesture)
+    {
+        Debug.Log("CB");
+        if (gesture.State == GestureRecognizerState.Ended)
+        {
+            Debug.Log("Tapped at: " + gesture.FocusX + ", " + gesture.FocusY);
+        }
+    }
+
+    private void CreateTapGesture()
+    {
+        Debug.Log("CCCC");
+        //tapGesture = this.GetComponent<TapGestureRecognizer>();  //new TapGestureRecognizer();
+        tapGesture = new TapGestureRecognizer();
+        tapGesture.StateUpdated += TapGestureCallback;
+        //tapGesture.RequireGestureRecognizerToFail = doubleTapGesture;
+        FingersScript.Instance.AddGesture(tapGesture);
+    }
+
+
+
 
     public void OnBeginDrag(PointerEventData eventData)
     {
