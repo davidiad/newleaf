@@ -6,6 +6,7 @@ using DigitalRubyShared; // Fingers Gesture Recognizer
 
 public class ColorWheelEventHandlers : MonoBehaviour, IPointerEnterHandler, IDragHandler, IBeginDragHandler, IPointerExitHandler, IDropHandler
 {
+
     private PaintManager paintManager;
     private RectTransform rectTransform;
     private Vector3 wheelPos;
@@ -22,31 +23,25 @@ public class ColorWheelEventHandlers : MonoBehaviour, IPointerEnterHandler, IDra
         CreateTapGesture();
     }
 
-    public void OnTap()
-    {
-        TapGestureCallback(tapGesture);    
-    }
-
     private void TapGestureCallback(GestureRecognizer gesture)
     {
-        Debug.Log("CB");
+        Debug.Log("CB: " + gesture.State.ToString());
         if (gesture.State == GestureRecognizerState.Ended)
         {
             Debug.Log("Tapped at: " + gesture.FocusX + ", " + gesture.FocusY);
+            Vector3 v = rectTransform.position;
+            this.rectTransform.SetPositionAndRotation(new Vector3(gesture.FocusX, gesture.FocusY, rectTransform.position.z), Quaternion.identity);
         }
     }
 
     private void CreateTapGesture()
     {
-        Debug.Log("CCCC");
-        //tapGesture = this.GetComponent<TapGestureRecognizer>();  //new TapGestureRecognizer();
         tapGesture = new TapGestureRecognizer();
         tapGesture.StateUpdated += TapGestureCallback;
+        tapGesture.PlatformSpecificView = this.gameObject;
         //tapGesture.RequireGestureRecognizerToFail = doubleTapGesture;
         FingersScript.Instance.AddGesture(tapGesture);
     }
-
-
 
 
     public void OnBeginDrag(PointerEventData eventData)
