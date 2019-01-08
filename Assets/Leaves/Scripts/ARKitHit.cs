@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
-using Ara;
+using UnityEngine.XR.iOS;
+using UnityEngine;
 
-namespace UnityEngine.XR.iOS // TODO: move out of this namespace
-{
+//namespace UnityEngine.XR.iOS // TODO: move out of this namespace
+//{
     public class ARKitHit : MonoBehaviour
     {
         public LayerMask collisionLayer         = 1 <<  8;  // ARKitPlane layer
@@ -302,4 +303,4 @@ namespace UnityEngine.XR.iOS // TODO: move out of this namespace
             }
         }
     }
-}
+//}

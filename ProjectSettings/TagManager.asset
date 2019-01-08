@@ -36,6 +36,7 @@ TagManager:
   - nameInput
   - StopPainting
   - DebugPanel
+  - ColorWheel
   layers:
   - Default
   - TransparentFX

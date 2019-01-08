@@ -6258,6 +6258,7 @@ GameObject:
   - component: {fileID: 1501893098}
   - component: {fileID: 1501893097}
   - component: {fileID: 1501893100}
+  - component: {fileID: 1501893101}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -6336,6 +6337,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d665aadaf044549809d495c4029f7b8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1501893101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1501893096}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6970d9bb082394451a50299c9517dcff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  colorWheel: {fileID: 2033934932}
 --- !u!1 &1503738074
 GameObject:
   m_ObjectHideFlags: 0
@@ -8405,7 +8418,7 @@ GameObject:
   - component: {fileID: 2033934939}
   m_Layer: 5
   m_Name: ColorWheel
-  m_TagString: Untagged
+  m_TagString: ColorWheel
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

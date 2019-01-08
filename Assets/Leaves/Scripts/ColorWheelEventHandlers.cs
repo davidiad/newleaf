@@ -43,7 +43,6 @@ public class ColorWheelEventHandlers : MonoBehaviour, IPointerEnterHandler, IDra
         FingersScript.Instance.AddGesture(tapGesture);
     }
 
-
     public void OnBeginDrag(PointerEventData eventData)
     {
         wheelPos = this.gameObject.transform.position;
